@@ -78,15 +78,32 @@ def obtenir_nombre_informations():
 def connaitre(cle):
     if cle in memoire:
         valeur = memoire[cle]
-        print(f"Roy : Oui, ton {cle} est {valeur}.")
+
+        if cle in cles_feminines:
+            possessif = "ta"
+        else:
+            possessif = "ton"
+
+        print(f"Roy : Oui, {possessif} {cle} est {valeur}.")
     else:
         print(f"Roy : Non, je ne connais encore aucune information sur {cle}.")
         print("Roy : Veux-tu me l'apprendre ?")
-        reponse = input("Toi : ").lower()
-        if reponse == "oui":
-            valeur = input("Roy : Quelle est l'information ? ")
-            apprendre(cle, valeur)
 
+        while True:
+           reponse = input("Toi : ").lower()
+
+           if reponse == "oui":
+               valeur = input("Roy : Quelle est l'information ? ")
+               apprendre(cle, valeur)
+               break
+
+           elif reponse == "non":
+               print("Roy : D'accord, je n'apprendrai pas cette information.")
+               break
+
+           else:
+               print("Roy : Je n'ai pas compris. Réponds par oui ou non.")
+            
 salutations = ["bonjour", "salut", "hello", "coucou"]
 
 commandes_memoire = [
@@ -100,11 +117,29 @@ commandes_memoire = [
 formes_connaitre = [
     "connais-tu",
     "connais tu",
-    "est-ce que tu connais"
+    "est-ce que tu connais",
+    "est ce que tu connais",
+    "tu connais",
+    "tu sais",
+    "tu te souviens de"
+]
+
+mots_inutiles = [
+    "s'il te plaît ",
+    "s'il te plait ",
+    "stp ",
+    "svp"
+]
+
+cles_feminines = [
+    "couleur",
+    "voiture",
+    "musique"
 ]
 
 while True:
-    message = input("Toi : ").lower()
+    message_original = input("Toi : ")
+    message = message_original.lower()
     if message.startswith("roy "):
         message = message.removeprefix("roy ")
 
@@ -141,7 +176,9 @@ while True:
         print("Roy : Ton animal préféré est", memoire.get("animal"))
 
     elif message.startswith("retiens "):
-        information = message.replace("retiens ", "")
+        information = message_original
+        information = information.replace("Roy ", "").replace("roy ", "")
+        information = information[len("retiens "):]
 
         if "=" not in information:
             print("Roy : Utilise le format : retiens clé = valeur")
@@ -181,10 +218,17 @@ while True:
     elif message == "combien d'informations connais-tu":
         compter_memoire()
 
-    elif any(message.startswith(forme) for forme in formes_connaitre):
+    elif any(forme in message for forme in formes_connaitre):
         for forme in formes_connaitre:
-            if message.startswith(forme):
+            if forme in message:
                 cle = message.replace(forme, "").strip()
+
+                for mot in mots_inutiles:
+                    cle = cle.removeprefix(mot).strip()
+
+                cle = cle.removeprefix("mon ").removeprefix("ma ").removeprefix("mes ")
+                cle = cle.replace("?", "").strip()
+                break
 
         if cle == "":
             print("Roy : Dis-moi ce que tu veux savoir si je connais.")
