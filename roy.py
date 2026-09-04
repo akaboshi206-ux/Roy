@@ -137,6 +137,96 @@ cles_feminines = [
     "musique"
 ]
 
+def traiter_message(message, message_original):
+    
+    if message in salutations:
+        saluer(nom)
+        return True
+
+    elif message == "comment vas-tu":
+        print("Roy : Je vais bien, merci !")
+        return True
+
+    elif "mon nom" in message:
+        print("Roy : Ton nom est", memoire["nom"])
+        return True
+
+    elif "mon humeur" in message:
+        print("Roy : Tu m'as dit que ton humeur était", memoire["humeur"])
+        return True
+
+    elif message in commandes_memoire:
+        afficher_memoire()
+        return True
+
+    elif message == "combien d'informations connais-tu":
+        compter_memoire()
+        return True
+
+    elif message.startswith("rappelle"):
+        cle = message.replace("rappelle", "").strip()
+
+        if cle == "":
+            print("Roy : Quelle information veux-tu que je te rappelle ?")
+        else:
+            rappeler(cle)
+
+        return True
+
+    elif message.startswith("oublie"):
+        cle = message.replace("oublie", "").strip()
+
+        if cle == "":
+            print("Roy : Quelle information veux-tu que j'oublie ?")
+        else:
+            oublier(cle)
+
+        return True
+
+    elif any(forme in message for forme in formes_connaitre):
+        for forme in formes_connaitre:
+            if forme in message:
+                cle = message.replace(forme, "").strip()
+
+                for mot in mots_inutiles:
+                    cle = cle.removeprefix(mot).strip()
+                cle = cle .removeprefix("mon ").removeprefix("ma ").removeprefix("mes ")
+                cle = cle.replace("?", "").strip()
+                break
+
+        if cle == "":
+            print("Roy : Dis-moi ce que tu veux savoir si je connais.")
+            return True
+        
+        connaitre(cle)
+        return True
+
+    elif message.startswith("retiens "):
+        information = message_original
+        information = information.replace("Roy ", "").replace("roy ", "")
+        information = information[len("retiens "):]
+
+        if "=" not in information:
+           print("Roy : Utilise le format : retiens clé = valeur")
+           return True
+
+        try:
+            cle, valeur = information.split("=")
+        except ValueError:
+            print("Roy : Il y a un problème dans le format.")
+            return True
+
+        cle = cle.strip()
+        valeur = valeur.strip()
+        if cle == "" or valeur == "":
+            print("Roy : La clé et la valeur ne peuvent pas être vides.")
+            return True
+
+        apprendre(cle, valeur)
+        return True
+
+    return False
+
 while True:
     message_original = input("Toi : ")
     message = message_original.lower()
@@ -147,94 +237,7 @@ while True:
         print("Roy : À bientôt !")
         break
 
-    elif any(mot in message for mot in salutations):
-        saluer(nom)
+    if traiter_message(message, message_original):
+        continue
 
-    elif message == "comment vas-tu":
-        print("Roy : Je vais bien, merci !")
-        
-    elif "mon nom" in message:
-        print("Roy : Ton nom est", memoire["nom"])
-
-    elif "mon humeur" in message:
-        print("Roy : Tu m'as dit que ton humeur était", memoire["humeur"])
-
-    elif "ma couleur préférée est" in message:
-        couleur = message.replace("ma couleur préférée est", "").strip()
-        apprendre("couleur", couleur)
-        print("Roy : D'accord, je retiens que ta couleur préférée est", couleur)
-
-    elif "ma couleur préférée" in message:
-        print("Roy : Ta couleur préférée est", memoire.get("couleur"))
-
-    elif "mon animal préféré est" in message:
-        animal = message.replace("mon animal préféré est", "").strip()
-        apprendre("animal", animal)
-        print("Roy : D'accord, je retiens que ton animal préféré est", animal)
-
-    elif "mon animal préféré" in message:
-        print("Roy : Ton animal préféré est", memoire.get("animal"))
-
-    elif message.startswith("retiens "):
-        information = message_original
-        information = information.replace("Roy ", "").replace("roy ", "")
-        information = information[len("retiens "):]
-
-        if "=" not in information:
-            print("Roy : Utilise le format : retiens clé = valeur")
-            continue
-
-        try:
-            cle, valeur = information.split("=")
-        except ValueError:
-            print("Roy : Il y a un problème dans le format.")
-            continue
-
-        cle = cle.strip()
-        valeur = valeur.strip()
-
-        if cle == "" or valeur == "":
-            print("Roy : La clé et la valeur ne peuvent pas être vides.")
-            continue
-
-        apprendre(cle, valeur)
-
-    elif message.startswith("rappelle"):
-        cle = message.replace("rappelle", "").strip()
-
-        if cle == "":
-            print("Roy : Dis-moi ce que tu veux que je rappelle.")
-            continue
-
-        rappeler(cle)
-
-    elif message.startswith("oublie "):
-        cle = message.replace("oublie ", "").strip()
-        oublier(cle)
-
-    elif message in commandes_memoire:
-        afficher_memoire()
-
-    elif message == "combien d'informations connais-tu":
-        compter_memoire()
-
-    elif any(forme in message for forme in formes_connaitre):
-        for forme in formes_connaitre:
-            if forme in message:
-                cle = message.replace(forme, "").strip()
-
-                for mot in mots_inutiles:
-                    cle = cle.removeprefix(mot).strip()
-
-                cle = cle.removeprefix("mon ").removeprefix("ma ").removeprefix("mes ")
-                cle = cle.replace("?", "").strip()
-                break
-
-        if cle == "":
-            print("Roy : Dis-moi ce que tu veux savoir si je connais.")
-            continue
-
-        connaitre(cle)
-
-    else:
-        print("Roy : Je ne sais pas encore quoi répondre.")
+    print("Roy : Je ne sais pas encore quoi répondre.")
