@@ -53,9 +53,24 @@ def rappeler(cle):
 
 def oublier(cle):
     if cle in memoire:
-        del memoire[cle]
-        sauvegarder_memoire()
-        print("Roy : J'ai oublié", cle)
+        while True:
+            reponse = nettoyer_texte(
+               input("Roy : Es-tu sûr de vouloir oublier " + cle + " ? ")
+            )
+
+            if reponse == "oui":    
+                del memoire[cle]
+                sauvegarder_memoire()
+                print("Roy : J'ai oublié", cle)
+                break
+
+            elif reponse == "non":
+                print("Roy : D'accord, je garde cette information.")
+                break
+
+            else:
+                print("Roy : Réponds par oui ou non.")
+        
     else:
         print("Roy : Je ne connaissais pas", cle)
 
@@ -90,10 +105,13 @@ def connaitre(cle):
         print("Roy : Veux-tu me l'apprendre ?")
 
         while True:
-           reponse = input("Toi : ").lower()
+           reponse = nettoyer_texte(input("Toi : "))
 
            if reponse == "oui":
-               valeur = input("Roy : Quelle est l'information ? ")
+               valeur = nettoyer_texte(
+                   input("Roy : Quelle est l'information ? "),
+                   False
+                )
                apprendre(cle, valeur)
                break
 
@@ -103,6 +121,26 @@ def connaitre(cle):
 
            else:
                print("Roy : Je n'ai pas compris. Réponds par oui ou non.")
+
+def nettoyer_texte(texte, minuscules=True):
+    texte_nettoye = texte.strip()
+
+    if minuscules:
+        texte_nettoye = texte_nettoye.lower()
+
+    return texte_nettoye
+
+def extraire_cle(message, formes):
+    for forme in formes:
+        if forme in message:
+            cle = message.replace(forme, "").strip()
+
+            for mot in mots_inutiles:
+                cle = cle.removeprefix(mot).strip()
+                cle = cle.removeprefix("mon ").removeprefix("ma ").removeprefix("mes ")
+
+            cle = cle.replace("?", "").strip()
+            return cle
             
 salutations = ["bonjour", "salut", "hello", "coucou"]
 
@@ -124,6 +162,11 @@ formes_connaitre = [
     "tu te souviens de"
 ]
 
+formes_question = [
+    "quelle est ma ",
+    "quel est mon "
+]
+
 mots_inutiles = [
     "s'il te plaît ",
     "s'il te plait ",
@@ -134,7 +177,9 @@ mots_inutiles = [
 cles_feminines = [
     "couleur",
     "voiture",
-    "musique"
+    "musique",
+    "ville",
+    "magie"
 ]
 
 def traiter_message(message, message_original):
@@ -184,20 +229,17 @@ def traiter_message(message, message_original):
         return True
 
     elif any(forme in message for forme in formes_connaitre):
-        for forme in formes_connaitre:
-            if forme in message:
-                cle = message.replace(forme, "").strip()
-
-                for mot in mots_inutiles:
-                    cle = cle.removeprefix(mot).strip()
-                cle = cle .removeprefix("mon ").removeprefix("ma ").removeprefix("mes ")
-                cle = cle.replace("?", "").strip()
-                break
-
+        cle = extraire_cle(message, formes_connaitre)
+        
         if cle == "":
             print("Roy : Dis-moi ce que tu veux savoir si je connais.")
             return True
         
+        connaitre(cle)
+        return True
+
+    elif any(forme in message for forme in formes_question):
+        cle = extraire_cle(message, formes_question)
         connaitre(cle)
         return True
 
