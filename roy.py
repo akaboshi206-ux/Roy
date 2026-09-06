@@ -141,6 +141,8 @@ def extraire_cle(message, formes):
 
             cle = cle.replace("?", "").strip()
             return cle
+
+    return None
             
 salutations = ["bonjour", "salut", "hello", "coucou"]
 
@@ -159,12 +161,33 @@ formes_connaitre = [
     "est ce que tu connais",
     "tu connais",
     "tu sais",
-    "tu te souviens de"
+    "tu te souviens de",
+    "tu te rappelles de"
 ]
 
 formes_question = [
     "quelle est ma ",
-    "quel est mon "
+    "quel est mon ",
+    "c'est quoi mon ",
+    "c'est quoi ma "
+]
+
+formes_rappeler = [
+    "rappelle-moi ",
+    "rappelle moi ",
+    "rappelle "
+]
+
+formes_oublie = [
+    "oublie-moi ",
+    "oublie "
+]
+
+formes_apprendre = [
+    "souviens-toi que ",
+    "souviens toi que ",
+    "retiens que ",
+    "retiens "
 ]
 
 mots_inutiles = [
@@ -181,6 +204,21 @@ cles_feminines = [
     "ville",
     "magie"
 ]
+
+def traiter_apprentissage(information):
+    if "=" not in information:
+        print("Roy : Utilise le format : clé = valeur")
+        return
+
+    cle, valeur = information.split("=", 1)
+    cle = cle.strip()
+    valeur = valeur.strip()
+
+    if cle == "" or valeur == "":
+        print("Roy : la clé et la valeur ne peuvent pas être vides.")
+        return
+
+    apprendre(cle, valeur)
 
 def traiter_message(message, message_original):
     
@@ -208,20 +246,20 @@ def traiter_message(message, message_original):
         compter_memoire()
         return True
 
-    elif message.startswith("rappelle"):
-        cle = message.replace("rappelle", "").strip()
+    elif any(forme in message for forme in formes_rappeler):
+        cle = extraire_cle(message, formes_rappeler)
 
-        if cle == "":
+        if cle is None:
             print("Roy : Quelle information veux-tu que je te rappelle ?")
         else:
             rappeler(cle)
 
         return True
 
-    elif message.startswith("oublie"):
-        cle = message.replace("oublie", "").strip()
+    elif any(forme in message for forme in formes_oublie):
+        cle = extraire_cle(message, formes_oublie)
 
-        if cle == "":
+        if cle is None:
             print("Roy : Quelle information veux-tu que j'oublie ?")
         else:
             oublier(cle)
@@ -230,8 +268,8 @@ def traiter_message(message, message_original):
 
     elif any(forme in message for forme in formes_connaitre):
         cle = extraire_cle(message, formes_connaitre)
-        
-        if cle == "":
+
+        if cle is None:
             print("Roy : Dis-moi ce que tu veux savoir si je connais.")
             return True
         
@@ -240,33 +278,27 @@ def traiter_message(message, message_original):
 
     elif any(forme in message for forme in formes_question):
         cle = extraire_cle(message, formes_question)
+
+        if cle is None:
+            print("Roy : Je n'ai pas trouvé ce que tu veux connaître.")
+            return True
+        
         connaitre(cle)
         return True
 
-    elif message.startswith("retiens "):
-        information = message_original
-        information = information.replace("Roy ", "").replace("roy ", "")
-        information = information[len("retiens "):]
+    elif any(forme in message for forme in formes_apprendre):
+        if message_original.lower().startswith("roy "):
+            message_sans_roy = message_original[4:]
+        else:
+            message_sans_roy = message_original
+        for forme in formes_apprendre:
+            if forme in message:
+                message_sans_roy = message_sans_roy.removeprefix(forme)
+                break
 
-        if "=" not in information:
-           print("Roy : Utilise le format : retiens clé = valeur")
-           return True
-
-        try:
-            cle, valeur = information.split("=")
-        except ValueError:
-            print("Roy : Il y a un problème dans le format.")
-            return True
-
-        cle = cle.strip()
-        valeur = valeur.strip()
-        if cle == "" or valeur == "":
-            print("Roy : La clé et la valeur ne peuvent pas être vides.")
-            return True
-
-        apprendre(cle, valeur)
+        traiter_apprentissage(message_sans_roy)
         return True
-
+             
     return False
 
 while True:
