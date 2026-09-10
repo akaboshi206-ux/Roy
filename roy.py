@@ -1,5 +1,18 @@
 import json
 
+from outils import nettoyer_texte, extraire_cle
+from config import (
+    salutations,
+    commandes_memoire,
+    formes_connaitre,
+    formes_question,
+    formes_rappeler,
+    formes_oublie,
+    formes_apprendre,
+    mots_inutiles,
+    cles_feminines
+)
+
 class Roy:
     def __init__(self):
         self.nom = "Roy"
@@ -200,7 +213,7 @@ class Roy:
             return True
 
         elif any(forme in message for forme in formes_rappeler):
-            cle = extraire_cle(message, formes_rappeler)
+            cle = extraire_cle(message, formes_rappeler, mots_inutiles)
 
             if cle is None:
                 print("Roy : Quelle information veux-tu que je te rappelle ?")
@@ -210,7 +223,7 @@ class Roy:
             return True
 
         elif any(forme in message for forme in formes_oublie):
-            cle = extraire_cle(message, formes_oublie)
+            cle = extraire_cle(message, formes_oublie, mots_inutiles)
 
             if cle is None:
                 print("Roy : Quelle information veux-tu que j'oublie ?")
@@ -220,7 +233,7 @@ class Roy:
             return True
 
         elif any(forme in message for forme in formes_connaitre):
-            cle = extraire_cle(message, formes_connaitre)
+            cle = extraire_cle(message, formes_connaitre, mots_inutiles)
 
             if cle is None:
                 print("Roy : Dis-moi ce que tu veux savoir si je connais.")
@@ -230,7 +243,7 @@ class Roy:
             return True
 
         elif any(forme in message for forme in formes_question):
-            cle = extraire_cle(message, formes_question)
+            cle = extraire_cle(message, formes_question, mots_inutiles)
 
             if cle is None:
                 print("Roy : Je n'ai pas trouvé ce que tu veux connaître.")
@@ -253,107 +266,3 @@ class Roy:
             return True
              
         return False      
-
-roy = Roy()
-roy.se_presenter()
-roy.reagir_humeur()
-roy.se_presenter_utilisateur()
-
-def nettoyer_texte(texte, minuscules=True):
-    texte_nettoye = texte.strip()
-
-    if minuscules:
-        texte_nettoye = texte_nettoye.lower()
-
-    return texte_nettoye
-
-def extraire_cle(message, formes):
-    for forme in formes:
-        if forme in message:
-            cle = message.replace(forme, "").strip()
-
-            for mot in mots_inutiles:
-                cle = cle.removeprefix(mot).strip()
-                cle = cle.removeprefix("mon ").removeprefix("ma ").removeprefix("mes ")
-
-            cle = cle.replace("?", "").strip()
-            return cle
-
-    return None
-
-            
-salutations = ["bonjour", "salut", "hello", "coucou"]
-
-commandes_memoire = [
-    "montre ta mémoire",
-    "montre moi ta mémoire",
-    "affiche ta mémoire",
-    "affiche la mémoire",
-    "présente la mémoire"
-]
-
-formes_connaitre = [
-    "connais-tu",
-    "connais tu",
-    "est-ce que tu connais",
-    "est ce que tu connais",
-    "tu connais",
-    "tu sais",
-    "tu te souviens de",
-    "tu te rappelles de"
-]
-
-formes_question = [
-    "quelle est ma ",
-    "quel est mon ",
-    "c'est quoi mon ",
-    "c'est quoi ma "
-]
-
-formes_rappeler = [
-    "rappelle-moi ",
-    "rappelle moi ",
-    "rappelle "
-]
-
-formes_oublie = [
-    "oublie-moi ",
-    "oublie "
-]
-
-formes_apprendre = [
-    "souviens-toi que ",
-    "souviens toi que ",
-    "retiens que ",
-    "retiens "
-]
-
-mots_inutiles = [
-    "s'il te plaît ",
-    "s'il te plait ",
-    "stp ",
-    "svp"
-]
-
-cles_feminines = [
-    "couleur",
-    "voiture",
-    "musique",
-    "ville",
-    "magie"
-]
-
-while True:
-    message_original = input("Toi : ")
-    message = message_original.lower()
-    if message.startswith("roy "):
-        message = message.removeprefix("roy ")
-
-    if message == "quitter":
-        print("Roy : À bientôt !")
-        break
-
-    if roy.traiter_message(message, message_original):
-        continue
-
-    print("Roy : Je ne sais pas encore quoi répondre.")
