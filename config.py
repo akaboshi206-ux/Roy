@@ -59,3 +59,5 @@ cles_feminines = [
     "magie",
     "boisson"
 ]
+
+commandes_aide = {"aide", "help", "commandes"}

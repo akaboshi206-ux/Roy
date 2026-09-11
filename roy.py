@@ -10,7 +10,8 @@ from config import (
     formes_oublie,
     formes_apprendre,
     mots_inutiles,
-    cles_feminines
+    cles_feminines,
+    commandes_aide
 )
 
 class Roy:
@@ -21,14 +22,19 @@ class Roy:
     def se_presenter(self):
         print("Bonjour ! Je m'appelle", self.nom + ".")
 
+    def verifier_texte(self, texte):
+        if not texte.strip():
+            raise ValueError("Le texte ne peut pas être vide.")
+
     def charger_memoire(self):
         try:
             with open("memoire.json", "r", encoding="utf-8") as fichier:
                 self.memoire = json.load(fichier)                
         except FileNotFoundError:
             self.memoire = {}
-        except json.JSONDecodeError:
+        except json.JSONDecodeError as erreur:
             print("Roy : Ma mémoire semble endommagée.")
+            print(erreur)
             self.memoire = {}        
 
     def saluer(self):
@@ -125,8 +131,8 @@ class Roy:
 
     def afficher_memoire(self):
         print("Roy : Voici ce que je sais sur toi :")
-        for cle, valeur in self.memoire.items():
-            print("-", cle, ":", valeur)
+        for numero, (cle, valeur) in enumerate(self.memoire.items(), start=1):
+            print(numero, cle, ":", valeur)
 
     def compter_memoire(self):
         nombre = self.obtenir_nombre_informations()
@@ -187,6 +193,16 @@ class Roy:
         self.apprendre(cle, valeur)
 
     def traiter_message(self, message, message_original):
+
+        try:
+            self.verifier_texte(message)
+        except ValueError as erreur:
+            print("Roy :", erreur)
+            return True
+
+        if message in commandes_aide:
+            print("Roy : Je peux saluer, apprendre, rappeler, oublier et afficher ma mémoire.")
+            return True
     
         if message in salutations:
             self.saluer()
