@@ -23,6 +23,8 @@ class Roy:
         print("Bonjour ! Je m'appelle", self.nom + ".")
 
     def verifier_texte(self, texte):
+        if not isinstance(texte, str):
+            raise ValueError("Le texte doit être une chaîne de caractères.")
         if not texte.strip():
             raise ValueError("Le texte ne peut pas être vide.")
 
@@ -192,6 +194,18 @@ class Roy:
 
         self.apprendre(cle, valeur)
 
+    def afficher_aide(self):
+        print("Roy : Voici ce que je peux faire :")
+        commandes = [
+            "bonjour",
+            "retiens que clé = valeur",
+            "rappelle-moi clé",
+            "oublie clé",
+            "montre ta mémoire"
+        ]
+        for numero, commande in enumerate(commandes, start=1):
+            print(f"{numero}. {commande}")
+
     def traiter_message(self, message, message_original):
 
         try:
@@ -201,7 +215,7 @@ class Roy:
             return True
 
         if message in commandes_aide:
-            print("Roy : Je peux saluer, apprendre, rappeler, oublier et afficher ma mémoire.")
+            self.afficher_aide()
             return True
     
         if message in salutations:
