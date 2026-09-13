@@ -11,24 +11,28 @@ from config import (
     formes_apprendre,
     mots_inutiles,
     cles_feminines,
-    commandes_aide
+    commandes_aide,
+    commandes_statut,
+    commandes_activer_memoire,
+    commandes_desactiver_memoire
 )
 
 class Roy:
     def __init__(self):
         self.nom = "Roy"
+        self.memoire_active = True
         self.charger_memoire()
 
     def se_presenter(self):
         print("Bonjour ! Je m'appelle", self.nom + ".")
 
-    def verifier_texte(self, texte):
+    def verifier_texte(self, texte: str) -> None:
         if not isinstance(texte, str):
             raise ValueError("Le texte doit être une chaîne de caractères.")
         if not texte.strip():
             raise ValueError("Le texte ne peut pas être vide.")
 
-    def charger_memoire(self):
+    def charger_memoire(self) -> None:
         try:
             with open("memoire.json", "r", encoding="utf-8") as fichier:
                 self.memoire = json.load(fichier)                
@@ -69,6 +73,9 @@ class Roy:
             return False
         
     def apprendre(self, cle, valeur):
+        if not self.verifier_memoire_active():
+            return False
+        
         cle_existait = cle in self.memoire
 
         if cle_existait:
@@ -97,12 +104,18 @@ class Roy:
         return False
 
     def rappeler(self, cle):
+        if not self.verifier_memoire_active():
+            return
+        
         if cle in self.memoire:
             print("Roy :", self.memoire[cle])
         else:
             print("Roy : Je n'ai aucune information sur", cle)
 
     def oublier(self, cle):
+        if not self.verifier_memoire_active():
+            return
+        
         if cle in self.memoire:
             while True:
                 reponse = nettoyer_texte(
@@ -132,6 +145,9 @@ class Roy:
             print("Roy : Je ne connaissais pas", cle)
 
     def afficher_memoire(self):
+        if not self.verifier_memoire_active():
+            return
+
         print("Roy : Voici ce que je sais sur toi :")
         for numero, (cle, valeur) in enumerate(self.memoire.items(), start=1):
             print(numero, cle, ":", valeur)
@@ -144,10 +160,10 @@ class Roy:
         else:
             print("Roy : Je connais", nombre, "informations sur toi.")
 
-    def obtenir_nombre_informations(self):
+    def obtenir_nombre_informations(self) -> int:
         return len(self.memoire)
 
-    def connaitre(self, cle):
+    def connaitre(self, cle: str) -> None:
         if cle in self.memoire:
             valeur = self.memoire[cle]
 
@@ -201,10 +217,58 @@ class Roy:
             "retiens que clé = valeur",
             "rappelle-moi clé",
             "oublie clé",
-            "montre ta mémoire"
+            "montre ta mémoire",
+            "statut",
+            "active ta mémoire",
+            "désactive ta mémoire",
+            "bascule ta mémoire"
         ]
         for numero, commande in enumerate(commandes, start=1):
             print(f"{numero}. {commande}")
+
+    @property
+    def etat_memoire(self):
+            if self.memoire_active:
+                return "active"
+            else:
+                return "désactivée"
+
+    def afficher_statut(self) -> None:
+        print("Roy : Statut du système")
+        print(f"Nom : {self.nom}")
+        print(f"Informations en mémoire : {self.obtenir_nombre_informations()}")
+        print(f"Mémoire : {self.etat_memoire}")
+
+    def desactiver_memoire(self):
+        if not self.memoire_active:
+            print("Roy : Ma mémoire est déjà désactivée.")
+            return
+
+        self.memoire_active = False
+        print("Roy : Mémoire désactivée.")
+
+    def basculer_memoire(self):
+        self.memoire_active = not self.memoire_active
+
+        if self.memoire_active:
+            print("Roy : Mémoire activée.")
+        else:
+            print("Roy : Mémoire désactivée.")
+
+    def activer_memoire(self):
+        if self.memoire_active:
+            print("Roy : Ma mémoire est déjà activée.")
+            return
+                
+        self.memoire_active = True
+        print("Roy : Mémoire activée.")
+
+    def verifier_memoire_active(self):
+        if not self.memoire_active:
+            print("Roy : Ma mémoire est désactivée.")
+            return False
+
+        return True
 
     def traiter_message(self, message, message_original):
 
@@ -216,6 +280,22 @@ class Roy:
 
         if message in commandes_aide:
             self.afficher_aide()
+            return True
+
+        if message in commandes_statut:
+            self.afficher_statut()
+            return True
+
+        if message in commandes_desactiver_memoire:
+            self.desactiver_memoire()
+            return True
+
+        if message == "bascule ta mémoire":
+            self.basculer_memoire()
+            return True
+
+        if message in commandes_activer_memoire:
+            self.activer_memoire()
             return True
     
         if message in salutations:

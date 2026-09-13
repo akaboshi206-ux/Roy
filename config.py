@@ -61,3 +61,21 @@ cles_feminines = [
 ]
 
 commandes_aide = {"aide", "help", "commandes"}
+
+commandes_statut = {
+    "statut",
+    "état",
+    "état du système"
+}
+
+commandes_activer_memoire = {
+    "active ta mémoire",
+    "active la mémoire",
+    "réactive ta mémoire"
+}
+
+commandes_desactiver_memoire = {
+    "désactive ta mémoire",
+    "désactive la mémoire",
+    "coupe ta mémoire"
+}
