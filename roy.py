@@ -14,7 +14,8 @@ from config import (
     commandes_aide,
     commandes_statut,
     commandes_activer_memoire,
-    commandes_desactiver_memoire
+    commandes_desactiver_memoire,
+    formes_renommer
 )
 
 class Roy:
@@ -63,7 +64,7 @@ class Roy:
         else:
             print("Roy : D'accord, merci de me l'avoir dit.")
 
-    def sauvegarder_memoire(self):                              
+    def sauvegarder_memoire(self) -> bool:                              
         try:
             with open("memoire.json", "w", encoding="utf-8") as fichier:
                 json.dump(self.memoire, fichier, ensure_ascii=False, indent=4)
@@ -72,7 +73,7 @@ class Roy:
             print("Roy : Impossible de sauvegarder ma mémoire.")
             return False
         
-    def apprendre(self, cle, valeur):
+    def apprendre(self, cle: str, valeur: str):
         if not self.verifier_memoire_active():
             return False
         
@@ -112,35 +113,130 @@ class Roy:
         else:
             print("Roy : Je n'ai aucune information sur", cle)
 
-    def oublier(self, cle):
+    def renommer_information(self, ancienne_cle: str, nouvelle_cle: str):
         if not self.verifier_memoire_active():
             return
         
-        if cle in self.memoire:
-            while True:
-                reponse = nettoyer_texte(
-                   input("Roy : Es-tu sûr de vouloir oublier " + cle + " ? ")
-                )
+        if ancienne_cle in self.memoire:
 
-                if reponse == "oui": 
-                    ancienne_valeur = self.memoire[cle]   
-                    del self.memoire[cle]
+            if nouvelle_cle in self.memoire:
+                print("Roy : Une information porte déjà ce nom.")
+                return
+            
+            ancienne_valeur = self.memoire[ancienne_cle]
+            self.memoire[nouvelle_cle] = ancienne_valeur
+            del self.memoire[ancienne_cle]
+            if self.sauvegarder_memoire():
+                print(f"Roy : J'ai renommé {ancienne_cle} en {nouvelle_cle}.")
+                return
 
-                    if self.sauvegarder_memoire():                        
-                        print("Roy : J'ai oublié", cle)                    
-                        break
-                    else:
-                        self.memoire[cle] = ancienne_valeur
-                        print("Roy : Oublie de l'information échoué.")
-                        break
+            self.memoire[ancienne_cle] = ancienne_valeur
+            del self.memoire[nouvelle_cle]
+            print("Roy : Le renommage a échoué. La modification a été annulée.")
 
-                elif reponse == "non":
-                    print("Roy : D'accord, je garde cette information.")
-                    break
+        else:
+            print("Roy : Je ne connais aucune information portant ce nom.")
 
-                else:
-                    print("Roy : Réponds par oui ou non.")
+    def demander_confirmation(self, question: str) -> bool:
+        while True:
+            reponse = nettoyer_texte(
+                input("Roy : " + question + " ")
+            )
+            if reponse == "oui":
+                return True
+            elif reponse == "non":
+                return False
+            else:
+                print("Roy : Réponds par oui ou non.")
+
+    def oublier_tout_sauf(self, cle):
+        elements = cle.removeprefix("tout sauf ").split(",")
+        elements_propres = []
         
+        for element in elements:
+            element = element.strip()
+            elements_propres.append(element)
+        
+        nouvelle_memoire = {}
+        
+        for cle in self.memoire:
+            if cle in elements_propres:
+                nouvelle_memoire[cle] = self.memoire[cle]
+        
+        elements_a_garder = ", ".join(elements_propres)
+        elements_inconnus = []
+        
+        for element in elements_propres:
+            if element not in self.memoire:
+                elements_inconnus.append(element)
+        
+        if elements_inconnus:
+            print("Roy : Je ne connais pas :", ", ".join(elements_inconnus))
+            return
+                    
+        nombre_total = len(self.memoire)
+        nombre_gardes = len(nouvelle_memoire)
+        nombre_supprimes = nombre_total - nombre_gardes
+        
+        print("Roy : Je vais conserver :", elements_a_garder)
+        print("Roy :", nombre_supprimes, "informations seront supprimées.")
+        
+        if self.demander_confirmation(
+            f"Es-tu sûr de vouloir tout oublier sauf {elements_a_garder} ?"
+        ):
+            ancienne_memoire = self.memoire.copy()
+            self.memoire = nouvelle_memoire
+            if self.sauvegarder_memoire():
+                print("Roy : J'ai oublié tout sauf les informations que tu voulais garder.")
+                return
+        
+            self.memoire = ancienne_memoire
+            print("Roy : L'effacement a échoué. La mémoire a été restaurée.")
+            return
+        
+        print("Roy : D'accord, je garde toute ma mémoire.")
+        return
+    
+    def oublier(self, cle):
+        if not self.verifier_memoire_active():
+            return
+
+        if cle.startswith("tout sauf "):
+            self.oublier_tout_sauf(cle)
+            return
+
+        if cle == "tout":
+            if self.demander_confirmation("Es-tu sûr de vouloir effacer toute ma mémoire ?"):
+                ancienne_memoire = self.memoire.copy()
+                self.memoire.clear()
+
+                if self.sauvegarder_memoire():
+                    print("Roy : Toute ma mémoire a été effacée.")
+                    return
+
+                self.memoire = ancienne_memoire
+                print("Roy : L'effacement a échoué. La mémoire a été restaurée.")
+                return
+
+            return
+        
+        if cle in self.memoire:
+            if self.demander_confirmation(f"Es-tu sûr de vouloir oublier {cle} ?"):
+                ancienne_valeur = self.memoire[cle]
+                del self.memoire[cle]
+
+                if self.sauvegarder_memoire():
+                    print("Roy : J'ai oublié", cle)
+                    return
+
+                self.memoire[cle] = ancienne_valeur
+                print("Roy : L'oubli de l'information a échoué.")
+                return
+
+            else:
+                print("Roy : D'accord, je garde cette information.")
+                return
+
         else:
             print("Roy : Je ne connaissais pas", cle)
 
@@ -225,7 +321,7 @@ class Roy:
         ]
         for numero, commande in enumerate(commandes, start=1):
             print(f"{numero}. {commande}")
-
+    
     @property
     def etat_memoire(self):
             if self.memoire_active:
@@ -270,6 +366,28 @@ class Roy:
 
         return True
 
+    def traiter_renommage(self, message: str):
+        information = None
+
+        for forme in formes_renommer:
+            if message.startswith(forme):
+                information = message.removeprefix(forme)
+                break
+        if information is not None:
+                    if " en " in information:
+                        ancienne_cle, nouvelle_cle = information.split(" en ", 1)
+                        ancienne_cle = ancienne_cle.strip()
+                        nouvelle_cle = nouvelle_cle.strip()
+                        if not ancienne_cle or not nouvelle_cle:
+                            print("Roy : Les deux noms doivent être renseignés.")
+                            return True
+                        self.renommer_information(ancienne_cle, nouvelle_cle)
+                        return True
+                    else:
+                        print("Roy : Utilise le format : renomme ancienne_clé en nouvelle_clé")
+                        return True
+        return False
+
     def traiter_message(self, message, message_original):
 
         try:
@@ -296,8 +414,11 @@ class Roy:
 
         if message in commandes_activer_memoire:
             self.activer_memoire()
+            return True                      
+
+        if self.traiter_renommage(message):
             return True
-    
+        
         if message in salutations:
             self.saluer()
             return True

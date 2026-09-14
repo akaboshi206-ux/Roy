@@ -79,3 +79,8 @@ commandes_desactiver_memoire = {
     "désactive la mémoire",
     "coupe ta mémoire"
 }
+
+formes_renommer = [
+    "renomme ",
+    "renommer "
+]
