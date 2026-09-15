@@ -20,8 +20,12 @@ from config import (
 
 class Roy:
     def __init__(self):
-        self.nom = "Roy"
-        self.memoire_active = True
+        self.nom = "Roy"        
+        self.etat = {
+            "memoire": {
+                "active": True
+            }
+        }
         self.charger_memoire()
 
     def se_presenter(self):
@@ -151,11 +155,7 @@ class Roy:
 
     def oublier_tout_sauf(self, cle):
         elements = cle.removeprefix("tout sauf ").split(",")
-        elements_propres = []
-        
-        for element in elements:
-            element = element.strip()
-            elements_propres.append(element)
+        elements_propres = [element.strip() for element in elements]
         
         nouvelle_memoire = {}
         
@@ -164,11 +164,7 @@ class Roy:
                 nouvelle_memoire[cle] = self.memoire[cle]
         
         elements_a_garder = ", ".join(elements_propres)
-        elements_inconnus = []
-        
-        for element in elements_propres:
-            if element not in self.memoire:
-                elements_inconnus.append(element)
+        elements_inconnus = [element for element in elements_propres if element not in self.memoire]
         
         if elements_inconnus:
             print("Roy : Je ne connais pas :", ", ".join(elements_inconnus))
@@ -256,6 +252,13 @@ class Roy:
         else:
             print("Roy : Je connais", nombre, "informations sur toi.")
 
+    def mettre_a_jour_etat(self, categorie, changements):
+        if categorie not in self.etat:
+            print(f"Roy : Catégorie d'état inconnue : {categorie}")
+            return
+         
+        self.etat[categorie].update(changements)
+
     def obtenir_nombre_informations(self) -> int:
         return len(self.memoire)
 
@@ -324,7 +327,7 @@ class Roy:
     
     @property
     def etat_memoire(self):
-            if self.memoire_active:
+            if self.etat["memoire"]["active"]:
                 return "active"
             else:
                 return "désactivée"
@@ -334,33 +337,36 @@ class Roy:
         print(f"Nom : {self.nom}")
         print(f"Informations en mémoire : {self.obtenir_nombre_informations()}")
         print(f"Mémoire : {self.etat_memoire}")
-
+        
     def desactiver_memoire(self):
-        if not self.memoire_active:
+        if not self.etat["memoire"]["active"]:
             print("Roy : Ma mémoire est déjà désactivée.")
             return
 
-        self.memoire_active = False
+        self.mettre_a_jour_etat("memoire", {"active": False})
         print("Roy : Mémoire désactivée.")
 
     def basculer_memoire(self):
-        self.memoire_active = not self.memoire_active
+        self.mettre_a_jour_etat(
+            "memoire",
+            {"active": not self.etat["memoire"]["active"]}
+        )
 
-        if self.memoire_active:
+        if self.etat["memoire"]["active"]:
             print("Roy : Mémoire activée.")
         else:
             print("Roy : Mémoire désactivée.")
 
     def activer_memoire(self):
-        if self.memoire_active:
+        if self.etat["memoire"]["active"]:
             print("Roy : Ma mémoire est déjà activée.")
             return
                 
-        self.memoire_active = True
+        self.mettre_a_jour_etat("memoire", {"active": True})
         print("Roy : Mémoire activée.")
 
     def verifier_memoire_active(self):
-        if not self.memoire_active:
+        if not self.etat["memoire"]["active"]:
             print("Roy : Ma mémoire est désactivée.")
             return False
 
