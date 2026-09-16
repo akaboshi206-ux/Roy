@@ -15,6 +15,10 @@ from config import (
     commandes_statut,
     commandes_activer_memoire,
     commandes_desactiver_memoire,
+    commandes_basculer_memoire,
+    commandes_desactiver_systeme,
+    commandes_activer_systeme,
+    commandes_basculer_systeme,
     formes_renommer
 )
 
@@ -24,6 +28,9 @@ class Roy:
         self.etat = {
             "memoire": {
                 "active": True
+            },
+            "systeme": {
+                "actif": True
             }
         }
         self.charger_memoire()
@@ -253,6 +260,14 @@ class Roy:
             print("Roy : Je connais", nombre, "informations sur toi.")
 
     def mettre_a_jour_etat(self, categorie, changements):
+        if not isinstance(categorie, str):
+            print("Roy : La catégorie doit être du texte.")
+            return
+
+        if not isinstance(changements, dict):
+            print("Roy : Les changements doivent être un dictionnaire.")
+            return
+
         if categorie not in self.etat:
             print(f"Roy : Catégorie d'état inconnue : {categorie}")
             return
@@ -372,6 +387,33 @@ class Roy:
 
         return True
 
+    def desactiver_systeme(self):
+        if not self.etat["systeme"]["actif"]:
+            print("Roy : Le système est déjà désactivé.")
+            return
+
+        self.mettre_a_jour_etat("systeme", {"actif": False})
+        print("Roy : Système désactivé.")
+
+    def activer_systeme(self):
+        if self.etat["systeme"]["actif"]:
+            print("Roy : Le système est déjà actif.")
+            return
+
+        self.mettre_a_jour_etat("systeme", {"actif": True})
+        print("Roy : Système activé.")
+
+    def basculer_systeme(self):
+        self.mettre_a_jour_etat(
+            "systeme",
+            {"actif": not self.etat["systeme"]["actif"]}
+        )
+
+        if self.etat["systeme"]["actif"]:
+            print("Roy : Système activé.")
+        else:
+            print("Roy : Système désactivé.")
+
     def traiter_renommage(self, message: str):
         information = None
 
@@ -402,6 +444,22 @@ class Roy:
             print("Roy :", erreur)
             return True
 
+        if message in commandes_activer_systeme:
+            self.activer_systeme()
+            return True
+        
+        if message in commandes_desactiver_systeme:
+            self.desactiver_systeme()
+            return True
+        
+        if message in commandes_basculer_systeme:
+            self.basculer_systeme()
+            return True
+        
+        if not self.etat["systeme"]["actif"]:
+            print("Roy : Le système est désactivé. Réactive-le pour continuer.")
+            return True        
+
         if message in commandes_aide:
             self.afficher_aide()
             return True
@@ -414,14 +472,14 @@ class Roy:
             self.desactiver_memoire()
             return True
 
-        if message == "bascule ta mémoire":
+        if message in commandes_basculer_memoire:
             self.basculer_memoire()
             return True
 
         if message in commandes_activer_memoire:
             self.activer_memoire()
-            return True                      
-
+            return True  
+        
         if self.traiter_renommage(message):
             return True
         

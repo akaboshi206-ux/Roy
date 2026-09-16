@@ -80,6 +80,31 @@ commandes_desactiver_memoire = {
     "coupe ta mémoire"
 }
 
+commandes_basculer_memoire = {
+    "bascule ta mémoire",
+    "bascule la mémoire",
+    "change ta mémoire",
+    "inverse ta mémoire"
+}
+
+commandes_desactiver_systeme = {
+    "désactive le système",
+    "coupe le système",
+    "éteins le système"
+}
+
+commandes_activer_systeme = {
+    "active le système",
+    "allume le système",
+    "réactive le système"
+}
+
+commandes_basculer_systeme = {
+    "bascule le système",
+    "change le système",
+    "inverse le système"
+}
+
 formes_renommer = [
     "renomme ",
     "renommer "
