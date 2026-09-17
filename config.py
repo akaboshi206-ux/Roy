@@ -84,7 +84,8 @@ commandes_basculer_memoire = {
     "bascule ta mémoire",
     "bascule la mémoire",
     "change ta mémoire",
-    "inverse ta mémoire"
+    "inverse ta mémoire",
+    "inverse la mémoire"
 }
 
 commandes_desactiver_systeme = {

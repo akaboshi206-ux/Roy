@@ -95,15 +95,16 @@ class Roy:
 
             if ancienne_valeur == valeur:
                 print("Roy : Je connaissais déjà exactement cette information.")
-                return
-
-            print("Roy : J'ai remplacé", ancienne_valeur, "par", valeur)
-        else:
-            print("Roy : J'ai appris une nouvelle information.")
-
+                return 
+        
         self.memoire[cle] = valeur
 
         if self.sauvegarder_memoire():
+            if cle_existait:
+                print("Roy : J'ai remplacé", ancienne_valeur, "par", valeur)
+            else:
+                print("Roy : J'ai appris une nouvelle information.")
+
             print("Roy : Mémoire sauvegardée")
             return True
         
@@ -259,20 +260,30 @@ class Roy:
         else:
             print("Roy : Je connais", nombre, "informations sur toi.")
 
-    def mettre_a_jour_etat(self, categorie, changements):
+    def mettre_a_jour_etat(self, categorie, changements) -> bool:
         if not isinstance(categorie, str):
             print("Roy : La catégorie doit être du texte.")
-            return
+            return False
 
         if not isinstance(changements, dict):
             print("Roy : Les changements doivent être un dictionnaire.")
-            return
+            return False
 
         if categorie not in self.etat:
             print(f"Roy : Catégorie d'état inconnue : {categorie}")
-            return
-         
+            return False
+        
+        for cle, valeur in changements.items():
+            if cle not in self.etat[categorie]:
+                print(f"Roy : Clé d'état inconnue : {cle}")
+                return False
+
+            if not isinstance(valeur, type(self.etat[categorie][cle])):
+                print(f"Roy : Type incorrect pour la clé : {cle}")
+                return False
+            
         self.etat[categorie].update(changements)
+        return True
 
     def obtenir_nombre_informations(self) -> int:
         return len(self.memoire)
@@ -358,27 +369,26 @@ class Roy:
             print("Roy : Ma mémoire est déjà désactivée.")
             return
 
-        self.mettre_a_jour_etat("memoire", {"active": False})
-        print("Roy : Mémoire désactivée.")
+        if self.mettre_a_jour_etat("memoire", {"active": False}):
+            print("Roy : Mémoire désactivée.")
 
     def basculer_memoire(self):
-        self.mettre_a_jour_etat(
+        if self.mettre_a_jour_etat(
             "memoire",
             {"active": not self.etat["memoire"]["active"]}
-        )
-
-        if self.etat["memoire"]["active"]:
-            print("Roy : Mémoire activée.")
-        else:
-            print("Roy : Mémoire désactivée.")
+        ):
+            if self.etat["memoire"]["active"]:
+                print("Roy : Mémoire activée.")
+            else:
+                print("Roy : Mémoire désactivée.")
 
     def activer_memoire(self):
         if self.etat["memoire"]["active"]:
             print("Roy : Ma mémoire est déjà activée.")
             return
                 
-        self.mettre_a_jour_etat("memoire", {"active": True})
-        print("Roy : Mémoire activée.")
+        if self.mettre_a_jour_etat("memoire", {"active": True}):
+            print("Roy : Mémoire activée.")
 
     def verifier_memoire_active(self):
         if not self.etat["memoire"]["active"]:
@@ -392,27 +402,26 @@ class Roy:
             print("Roy : Le système est déjà désactivé.")
             return
 
-        self.mettre_a_jour_etat("systeme", {"actif": False})
-        print("Roy : Système désactivé.")
+        if self.mettre_a_jour_etat("systeme", {"actif": False}):
+            print("Roy : Système désactivé.")
 
     def activer_systeme(self):
         if self.etat["systeme"]["actif"]:
             print("Roy : Le système est déjà actif.")
             return
 
-        self.mettre_a_jour_etat("systeme", {"actif": True})
-        print("Roy : Système activé.")
+        if self.mettre_a_jour_etat("systeme", {"actif": True}):
+            print("Roy : Système activé.")
 
     def basculer_systeme(self):
-        self.mettre_a_jour_etat(
+        if self.mettre_a_jour_etat(
             "systeme",
             {"actif": not self.etat["systeme"]["actif"]}
-        )
-
-        if self.etat["systeme"]["actif"]:
-            print("Roy : Système activé.")
-        else:
-            print("Roy : Système désactivé.")
+        ):
+            if self.etat["systeme"]["actif"]:
+                print("Roy : Système activé.")
+            else:
+                print("Roy : Système désactivé.")
 
     def traiter_renommage(self, message: str):
         information = None

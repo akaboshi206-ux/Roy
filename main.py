@@ -2,7 +2,7 @@ from roy import Roy
 
 if __name__ == "__main__":
     roy = Roy()
-
+    
     roy.se_presenter()
     roy.reagir_humeur()
     roy.se_presenter_utilisateur()
