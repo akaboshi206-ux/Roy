@@ -285,6 +285,17 @@ class Roy:
         self.etat[categorie].update(changements)
         return True
 
+    def afficher_etat(self) -> None:
+        if self.etat["systeme"]["actif"]:
+            print("Roy : Système actif.")
+        else:
+            print("Roy : Système désactivé.")
+
+        if self.etat["memoire"]["active"]:
+            print("Roy : Mémoire activée.")
+        else:
+            print("Roy : Mémoire désactivée.")
+
     def obtenir_nombre_informations(self) -> int:
         return len(self.memoire)
 
@@ -335,7 +346,7 @@ class Roy:
 
         self.apprendre(cle, valeur)
 
-    def afficher_aide(self):
+    def afficher_aide(self) -> None:
         print("Roy : Voici ce que je peux faire :")
         commandes = [
             "bonjour",
@@ -346,7 +357,10 @@ class Roy:
             "statut",
             "active ta mémoire",
             "désactive ta mémoire",
-            "bascule ta mémoire"
+            "bascule ta mémoire",
+            "active le système",
+            "désactive le système",
+            "bascule le système"
         ]
         for numero, commande in enumerate(commandes, start=1):
             print(f"{numero}. {commande}")
@@ -362,7 +376,7 @@ class Roy:
         print("Roy : Statut du système")
         print(f"Nom : {self.nom}")
         print(f"Informations en mémoire : {self.obtenir_nombre_informations()}")
-        print(f"Mémoire : {self.etat_memoire}")
+        self.afficher_etat()
         
     def desactiver_memoire(self):
         if not self.etat["memoire"]["active"]:
@@ -464,6 +478,10 @@ class Roy:
         if message in commandes_basculer_systeme:
             self.basculer_systeme()
             return True
+
+        if message in commandes_statut:
+            self.afficher_statut()
+            return True
         
         if not self.etat["systeme"]["actif"]:
             print("Roy : Le système est désactivé. Réactive-le pour continuer.")
@@ -472,11 +490,7 @@ class Roy:
         if message in commandes_aide:
             self.afficher_aide()
             return True
-
-        if message in commandes_statut:
-            self.afficher_statut()
-            return True
-
+        
         if message in commandes_desactiver_memoire:
             self.desactiver_memoire()
             return True
