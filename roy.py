@@ -19,12 +19,14 @@ from config import (
     commandes_desactiver_systeme,
     commandes_activer_systeme,
     commandes_basculer_systeme,
-    formes_renommer
+    formes_renommer,
+    commandes_historique
 )
 
 class Roy:
-    def __init__(self):
+    def __init__(self, historique_actif: bool = True):
         self.nom = "Roy"        
+        self.historique_actif = historique_actif
         self.etat = {
             "memoire": {
                 "active": True
@@ -33,10 +35,64 @@ class Roy:
                 "actif": True
             }
         }
+        self.historique = []
         self.charger_memoire()
+        if self.historique_actif:
+            self.charger_historique()
+
+    def ajouter_historique(self, role: str, contenu: str) -> None:
+        message = {
+            "role": role,
+            "content": contenu
+        }
+        self.historique.append(message)
+
+    def repondre(self, contenu: str) -> None:
+        self.ajouter_historique("assistant", contenu)
+        self.sauvegarder_historique()
+        print(f"Roy : {contenu}")
+
+    def charger_historique(self) -> None:
+        try:
+            with open("historique.json", "r", encoding="utf-8") as fichier:
+                self.historique = json.load(fichier)
+        except FileNotFoundError:
+            self.historique = []
+        except json.JSONDecodeError as erreur:
+            print("Roy : Mon historique semble endommagé.")
+            print(erreur)
+            self.historique = []
+
+    def sauvegarder_historique(self) -> bool:
+        if not self.historique_actif:
+            return True
+
+        try:
+            with open("historique.json", "w", encoding="utf-8") as fichier:
+                json.dump(
+                    self.historique,
+                    fichier,
+                    ensure_ascii=False,
+                    indent=4
+                )
+            return True
+        except OSError:
+            print("Roy : Impossible de sauvegarder mon historique.")
+            return False        
+
+    def afficher_historique(self) -> None:
+        if not self.historique:
+            print("Roy : L'historique est vide.")
+            return
+
+        print("Roy : Historique de la conversation :")
+
+        for message in self.historique:
+            auteur = "Toi" if message["role"] == "user" else "Roy"
+            print(f"{auteur} : {message['content']}")
 
     def se_presenter(self):
-        print("Bonjour ! Je m'appelle", self.nom + ".")
+        self.repondre(f"Bonjour ! Je m'appelle {self.nom}.")
 
     def verifier_texte(self, texte: str) -> None:
         if not isinstance(texte, str):
@@ -56,24 +112,24 @@ class Roy:
             self.memoire = {}        
 
     def saluer(self):
-        print("Roy : Bonjour", self.memoire.get("nom", "utilisateur"), "!")
+        self.repondre(f"Bonjour {self.memoire.get('nom', 'utilisateur')} !")
 
     def se_presenter_utilisateur(self):
-        print("Enchanté", self.memoire.get("nom", "utilisateur"), "!")
+        self.repondre(f"Enchanté {self.memoire.get('nom', 'utilisateur')} !")
 
     def reagir_humeur(self):
         humeur = self.memoire.get("humeur")
         
         if humeur is None:
-            print("Roy : Je ne connais pas encore ton humeur")
+            self.repondre("Je ne connais pas encore ton humeur")
         elif humeur == "bien":
-            print("Roy : Je suis content de l'apprendre !")
+            self.repondre("Je suis content de l'apprendre !")
         elif humeur == "mal":
-            print("Roy : Désolé de l'apprendre. J'espère que ça ira mieux.")
+            self.repondre("Désolé de l'apprendre. J'espère que ça ira mieux.")
         elif humeur == "fatigué":
-            print("Roy : Tu devrais peut-être te reposer un peu.")
+            self.repondre("Tu devrais peut-être te reposer un peu.")
         else:
-            print("Roy : D'accord, merci de me l'avoir dit.")
+            self.repondre("D'accord, merci de me l'avoir dit.")
 
     def sauvegarder_memoire(self) -> bool:                              
         try:
@@ -94,18 +150,18 @@ class Roy:
             ancienne_valeur = self.memoire[cle]
 
             if ancienne_valeur == valeur:
-                print("Roy : Je connaissais déjà exactement cette information.")
+                self.repondre("Je connaissais déjà exactement cette information.")
                 return 
         
         self.memoire[cle] = valeur
 
         if self.sauvegarder_memoire():
             if cle_existait:
-                print("Roy : J'ai remplacé", ancienne_valeur, "par", valeur)
+                self.repondre(f"J'ai remplacé {ancienne_valeur} par {valeur}")
             else:
-                print("Roy : J'ai appris une nouvelle information.")
+                self.repondre("J'ai appris une nouvelle information.")
 
-            print("Roy : Mémoire sauvegardée")
+            self.repondre("Mémoire sauvegardée")
             return True
         
         if cle_existait:
@@ -113,7 +169,7 @@ class Roy:
         else:
             del self.memoire[cle]
 
-        print("Roy : La modification a été annulée.")
+        self.repondre("La modification a été annulée.")
         return False
 
     def rappeler(self, cle):
@@ -121,9 +177,9 @@ class Roy:
             return
         
         if cle in self.memoire:
-            print("Roy :", self.memoire[cle])
+            self.repondre(str(self.memoire[cle]))
         else:
-            print("Roy : Je n'ai aucune information sur", cle)
+            self.repondre(f"Je n'ai aucune information sur {cle}")
 
     def renommer_information(self, ancienne_cle: str, nouvelle_cle: str):
         if not self.verifier_memoire_active():
@@ -132,34 +188,34 @@ class Roy:
         if ancienne_cle in self.memoire:
 
             if nouvelle_cle in self.memoire:
-                print("Roy : Une information porte déjà ce nom.")
+                self.repondre("Une information porte déjà ce nom.")
                 return
             
             ancienne_valeur = self.memoire[ancienne_cle]
             self.memoire[nouvelle_cle] = ancienne_valeur
             del self.memoire[ancienne_cle]
             if self.sauvegarder_memoire():
-                print(f"Roy : J'ai renommé {ancienne_cle} en {nouvelle_cle}.")
+                self.repondre(f"J'ai renommé {ancienne_cle} en {nouvelle_cle}.")
                 return
 
             self.memoire[ancienne_cle] = ancienne_valeur
             del self.memoire[nouvelle_cle]
-            print("Roy : Le renommage a échoué. La modification a été annulée.")
+            self.repondre("Le renommage a échoué. La modification a été annulée.")
 
         else:
-            print("Roy : Je ne connais aucune information portant ce nom.")
+            self.repondre("Je ne connais aucune information portant ce nom.")
 
     def demander_confirmation(self, question: str) -> bool:
+        self.repondre(question)
+
         while True:
-            reponse = nettoyer_texte(
-                input("Roy : " + question + " ")
-            )
+            reponse = nettoyer_texte(input("Toi : "))
             if reponse == "oui":
                 return True
             elif reponse == "non":
                 return False
             else:
-                print("Roy : Réponds par oui ou non.")
+                self.repondre("Réponds par oui ou non.")
 
     def oublier_tout_sauf(self, cle):
         elements = cle.removeprefix("tout sauf ").split(",")
@@ -175,15 +231,15 @@ class Roy:
         elements_inconnus = [element for element in elements_propres if element not in self.memoire]
         
         if elements_inconnus:
-            print("Roy : Je ne connais pas :", ", ".join(elements_inconnus))
+            self.repondre(f"Je ne connais pas : {', '.join(elements_inconnus)}")
             return
                     
         nombre_total = len(self.memoire)
         nombre_gardes = len(nouvelle_memoire)
         nombre_supprimes = nombre_total - nombre_gardes
         
-        print("Roy : Je vais conserver :", elements_a_garder)
-        print("Roy :", nombre_supprimes, "informations seront supprimées.")
+        self.repondre(f"Je vais conserver : {elements_a_garder}")
+        self.repondre(f"{nombre_supprimes} informations seront supprimées.")
         
         if self.demander_confirmation(
             f"Es-tu sûr de vouloir tout oublier sauf {elements_a_garder} ?"
@@ -191,14 +247,14 @@ class Roy:
             ancienne_memoire = self.memoire.copy()
             self.memoire = nouvelle_memoire
             if self.sauvegarder_memoire():
-                print("Roy : J'ai oublié tout sauf les informations que tu voulais garder.")
+                self.repondre("J'ai oublié tout sauf les informations que tu voulais garder.")
                 return
         
             self.memoire = ancienne_memoire
-            print("Roy : L'effacement a échoué. La mémoire a été restaurée.")
+            self.repondre("L'effacement a échoué. La mémoire a été restaurée.")
             return
         
-        print("Roy : D'accord, je garde toute ma mémoire.")
+        self.repondre("D'accord, je garde toute ma mémoire.")
         return
     
     def oublier(self, cle):
@@ -215,11 +271,11 @@ class Roy:
                 self.memoire.clear()
 
                 if self.sauvegarder_memoire():
-                    print("Roy : Toute ma mémoire a été effacée.")
+                    self.repondre("Toute ma mémoire a été effacée.")
                     return
 
                 self.memoire = ancienne_memoire
-                print("Roy : L'effacement a échoué. La mémoire a été restaurée.")
+                self.repondre("L'effacement a échoué. La mémoire a été restaurée.")
                 return
 
             return
@@ -230,56 +286,56 @@ class Roy:
                 del self.memoire[cle]
 
                 if self.sauvegarder_memoire():
-                    print("Roy : J'ai oublié", cle)
+                    self.repondre(f"J'ai oublié {cle}")
                     return
 
                 self.memoire[cle] = ancienne_valeur
-                print("Roy : L'oubli de l'information a échoué.")
+                self.repondre("L'oubli de l'information a échoué.")
                 return
 
             else:
-                print("Roy : D'accord, je garde cette information.")
+                self.repondre("D'accord, je garde cette information.")
                 return
 
         else:
-            print("Roy : Je ne connaissais pas", cle)
+            self.repondre(f"Je ne connaissais pas {cle}")
 
     def afficher_memoire(self):
         if not self.verifier_memoire_active():
             return
 
-        print("Roy : Voici ce que je sais sur toi :")
+        self.repondre("Voici ce que je sais sur toi :")
         for numero, (cle, valeur) in enumerate(self.memoire.items(), start=1):
-            print(numero, cle, ":", valeur)
+            self.repondre(f"{numero}. {cle} : {valeur}")
 
     def compter_memoire(self):
         nombre = self.obtenir_nombre_informations()
 
         if nombre == 1:
-            print("Roy : Je connais 1 information sur toi.")
+            self.repondre("Je connais 1 information sur toi.")
         else:
-            print("Roy : Je connais", nombre, "informations sur toi.")
+            self.repondre(f"Je connais {nombre} informations sur toi.")
 
     def mettre_a_jour_etat(self, categorie, changements) -> bool:
         if not isinstance(categorie, str):
-            print("Roy : La catégorie doit être du texte.")
+            self.repondre("La catégorie doit être du texte.")
             return False
 
         if not isinstance(changements, dict):
-            print("Roy : Les changements doivent être un dictionnaire.")
+            self.repondre("Les changements doivent être un dictionnaire.")
             return False
 
         if categorie not in self.etat:
-            print(f"Roy : Catégorie d'état inconnue : {categorie}")
+            self.repondre(f"Catégorie d'état inconnue : {categorie}")
             return False
         
         for cle, valeur in changements.items():
             if cle not in self.etat[categorie]:
-                print(f"Roy : Clé d'état inconnue : {cle}")
+                self.repondre(f"Clé d'état inconnue : {cle}")
                 return False
 
             if not isinstance(valeur, type(self.etat[categorie][cle])):
-                print(f"Roy : Type incorrect pour la clé : {cle}")
+                self.repondre(f"Type incorrect pour la clé : {cle}")
                 return False
             
         self.etat[categorie].update(changements)
@@ -287,14 +343,14 @@ class Roy:
 
     def afficher_etat(self) -> None:
         if self.etat["systeme"]["actif"]:
-            print("Roy : Système actif.")
+            self.repondre("Système actif.")
         else:
-            print("Roy : Système désactivé.")
+            self.repondre("Système désactivé.")
 
         if self.etat["memoire"]["active"]:
-            print("Roy : Mémoire activée.")
+            self.repondre("Mémoire activée.")
         else:
-            print("Roy : Mémoire désactivée.")
+            self.repondre("Mémoire désactivée.")
 
     def obtenir_nombre_informations(self) -> int:
         return len(self.memoire)
@@ -308,32 +364,33 @@ class Roy:
             else:
                 possessif = "ton"
             
-            print(f"Roy : Oui, {possessif} {cle} est {valeur}.")
+            self.repondre(f"Oui, {possessif} {cle} est {valeur}.")
         else:
-            print(f"Roy : Non, je ne connais encore aucune information sur {cle}.")
-            print("Roy : Veux-tu me l'apprendre ?")
+            self.repondre(f"Non, je ne connais encore aucune information sur {cle}.")
+            self.repondre("Veux-tu me l'apprendre ?")
             
             while True:
                reponse = nettoyer_texte(input("Toi : "))
             
                if reponse == "oui":
+                   self.repondre("Quelle est l'information ?")
                    valeur = nettoyer_texte(
-                        input("Roy : Quelle est l'information ? "),
+                        input("Toi : "),
                         False
-                    )
+                   )
                    self.apprendre(cle, valeur)
                    break
             
                elif reponse == "non":
-                   print("Roy : D'accord, je n'apprendrai pas cette information.")
+                   self.repondre("D'accord, je n'apprendrai pas cette information.")
                    break
             
                else:
-                   print("Roy : Je n'ai pas compris. Réponds par oui ou non.")
+                   self.repondre("Je n'ai pas compris. Réponds par oui ou non.")
 
     def traiter_apprentissage(self, information):
         if "=" not in information:
-            print("Roy : Utilise le format : clé = valeur")
+            self.repondre("Utilise le format : clé = valeur")
             return
 
         cle, valeur = information.split("=", 1)
@@ -341,13 +398,13 @@ class Roy:
         valeur = valeur.strip()
 
         if cle == "" or valeur == "":
-            print("Roy : la clé et la valeur ne peuvent pas être vides.")
+            self.repondre("La clé et la valeur ne peuvent pas être vides.")
             return
 
         self.apprendre(cle, valeur)
 
     def afficher_aide(self) -> None:
-        print("Roy : Voici ce que je peux faire :")
+        self.repondre("Voici ce que je peux faire :")
         commandes = [
             "bonjour",
             "retiens que clé = valeur",
@@ -360,10 +417,11 @@ class Roy:
             "bascule ta mémoire",
             "active le système",
             "désactive le système",
-            "bascule le système"
+            "bascule le système",
+            "quitter"
         ]
         for numero, commande in enumerate(commandes, start=1):
-            print(f"{numero}. {commande}")
+            self.repondre(f"{numero}. {commande}")
     
     @property
     def etat_memoire(self):
@@ -373,18 +431,18 @@ class Roy:
                 return "désactivée"
 
     def afficher_statut(self) -> None:
-        print("Roy : Statut du système")
-        print(f"Nom : {self.nom}")
-        print(f"Informations en mémoire : {self.obtenir_nombre_informations()}")
+        self.repondre("Statut du système")
+        self.repondre(f"Nom : {self.nom}")
+        self.repondre(f"Informations en mémoire : {self.obtenir_nombre_informations()}")
         self.afficher_etat()
         
     def desactiver_memoire(self):
         if not self.etat["memoire"]["active"]:
-            print("Roy : Ma mémoire est déjà désactivée.")
+            self.repondre("Ma mémoire est déjà désactivée.")
             return
 
         if self.mettre_a_jour_etat("memoire", {"active": False}):
-            print("Roy : Mémoire désactivée.")
+            self.repondre("Mémoire désactivée.")
 
     def basculer_memoire(self):
         if self.mettre_a_jour_etat(
@@ -392,40 +450,40 @@ class Roy:
             {"active": not self.etat["memoire"]["active"]}
         ):
             if self.etat["memoire"]["active"]:
-                print("Roy : Mémoire activée.")
+                self.repondre("Mémoire activée.")
             else:
-                print("Roy : Mémoire désactivée.")
+                self.repondre("Mémoire désactivée.")
 
     def activer_memoire(self):
         if self.etat["memoire"]["active"]:
-            print("Roy : Ma mémoire est déjà activée.")
+            self.repondre("Ma mémoire est déjà activée.")
             return
                 
         if self.mettre_a_jour_etat("memoire", {"active": True}):
-            print("Roy : Mémoire activée.")
+            self.repondre("Mémoire activée.")
 
     def verifier_memoire_active(self):
         if not self.etat["memoire"]["active"]:
-            print("Roy : Ma mémoire est désactivée.")
+            self.repondre("Ma mémoire est désactivée.")
             return False
 
         return True
 
     def desactiver_systeme(self):
         if not self.etat["systeme"]["actif"]:
-            print("Roy : Le système est déjà désactivé.")
+            self.repondre("Le système est déjà désactivé.")
             return
 
         if self.mettre_a_jour_etat("systeme", {"actif": False}):
-            print("Roy : Système désactivé.")
+            self.repondre("Système désactivé.")
 
     def activer_systeme(self):
         if self.etat["systeme"]["actif"]:
-            print("Roy : Le système est déjà actif.")
+            self.repondre("Le système est déjà actif.")
             return
 
         if self.mettre_a_jour_etat("systeme", {"actif": True}):
-            print("Roy : Système activé.")
+            self.repondre("Système activé.")
 
     def basculer_systeme(self):
         if self.mettre_a_jour_etat(
@@ -433,9 +491,9 @@ class Roy:
             {"actif": not self.etat["systeme"]["actif"]}
         ):
             if self.etat["systeme"]["actif"]:
-                print("Roy : Système activé.")
+                self.repondre("Système activé.")
             else:
-                print("Roy : Système désactivé.")
+                self.repondre("Système désactivé.")
 
     def traiter_renommage(self, message: str):
         information = None
@@ -450,12 +508,12 @@ class Roy:
                         ancienne_cle = ancienne_cle.strip()
                         nouvelle_cle = nouvelle_cle.strip()
                         if not ancienne_cle or not nouvelle_cle:
-                            print("Roy : Les deux noms doivent être renseignés.")
+                            self.repondre("Les deux noms doivent être renseignés.")
                             return True
                         self.renommer_information(ancienne_cle, nouvelle_cle)
                         return True
                     else:
-                        print("Roy : Utilise le format : renomme ancienne_clé en nouvelle_clé")
+                        self.repondre("Utilise le format : renomme ancienne_clé en nouvelle_clé")
                         return True
         return False
 
@@ -464,7 +522,7 @@ class Roy:
         try:
             self.verifier_texte(message)
         except ValueError as erreur:
-            print("Roy :", erreur)
+            self.repondre(str(erreur))
             return True
 
         if message in commandes_activer_systeme:
@@ -484,7 +542,7 @@ class Roy:
             return True
         
         if not self.etat["systeme"]["actif"]:
-            print("Roy : Le système est désactivé. Réactive-le pour continuer.")
+            self.repondre("Le système est désactivé. Réactive-le pour continuer.")
             return True        
 
         if message in commandes_aide:
@@ -501,7 +559,11 @@ class Roy:
 
         if message in commandes_activer_memoire:
             self.activer_memoire()
-            return True  
+            return True 
+
+        if message in commandes_historique:
+            self.afficher_historique()
+            return True 
         
         if self.traiter_renommage(message):
             return True
@@ -511,15 +573,18 @@ class Roy:
             return True
 
         elif message == "comment vas-tu":
-            print("Roy : Je vais bien, merci !")
+            self.repondre("Je vais bien, merci !")
             return True
 
         elif "mon nom" in message:
-            print("Roy : Ton nom est", self.memoire.get("nom", "utilisateur"))
+            self.repondre(f"Ton nom est {self.memoire.get('nom', 'utilisateur')}")
             return True
 
         elif "mon humeur" in message:
-            print("Roy : Tu m'as dit que ton humeur était", self.memoire.get("humeur", "inconnue"))
+            self.repondre(
+                f"Tu m'as dit que ton humeur était "
+                f"{self.memoire.get('humeur', 'inconnue')}"
+            )
             return True
 
         elif message in commandes_memoire:
@@ -534,7 +599,7 @@ class Roy:
             cle = extraire_cle(message, formes_rappeler, mots_inutiles)
 
             if cle is None:
-                print("Roy : Quelle information veux-tu que je te rappelle ?")
+                self.repondre("Quelle information veux-tu que je te rappelle ?")
             else:
                 self.rappeler(cle)
 
@@ -544,7 +609,7 @@ class Roy:
             cle = extraire_cle(message, formes_oublie, mots_inutiles)
 
             if cle is None:
-                print("Roy : Quelle information veux-tu que j'oublie ?")
+                self.repondre("Quelle information veux-tu que j'oublie ?")
             else:
                 self.oublier(cle)
 
@@ -554,7 +619,7 @@ class Roy:
             cle = extraire_cle(message, formes_connaitre, mots_inutiles)
 
             if cle is None:
-                print("Roy : Dis-moi ce que tu veux savoir si je connais.")
+                self.repondre("Dis-moi ce que tu veux savoir si je connais.")
                 return True
         
             self.connaitre(cle)
@@ -564,7 +629,7 @@ class Roy:
             cle = extraire_cle(message, formes_question, mots_inutiles)
 
             if cle is None:
-                print("Roy : Je n'ai pas trouvé ce que tu veux connaître.")
+                self.repondre("Je n'ai pas trouvé ce que tu veux connaître.")
                 return True
         
             self.connaitre(cle)

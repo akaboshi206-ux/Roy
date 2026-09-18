@@ -106,7 +106,22 @@ commandes_basculer_systeme = {
     "inverse le système"
 }
 
-formes_renommer = [
+formes_renommer = {
     "renomme ",
     "renommer "
-]
+}
+
+commandes_quitter = {
+    "quitter",
+    "au revoir",
+    "à bientôt",
+    "arrête-toi",
+    "arrete-toi"
+}
+
+commandes_historique = {
+    "historique",
+    "montre l'historique",
+    "affiche l'historique",
+    "montre notre conversation"
+}
