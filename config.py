@@ -125,3 +125,19 @@ commandes_historique = {
     "affiche l'historique",
     "montre notre conversation"
 }
+
+commandes_rechercher_historique = {
+    "recherche historique",
+    "recherche l'historique",
+    "cherche dans l'historique",
+    "cherche l'historique dans",
+    "recherche l'historique dans",
+    "recherche dans l'historique"
+}
+
+commandes_statistiques_historique = {
+    "statistiques historique",
+    "statistique historique",
+    "combien de messages",
+    "taille historique"
+}

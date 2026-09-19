@@ -1,3 +1,7 @@
+import json
+
+from pathlib import Path
+from tempfile import TemporaryDirectory
 from roy import Roy
 from config import commandes_quitter
 from main import nettoyer_message
@@ -28,12 +32,15 @@ def tester_historique():
 
     roy.ajouter_historique("user", "bonjour")
 
-    assert roy.historique == [
-        {
-            "role": "user",
-            "content": "bonjour"
-        }
-    ]
+    assert len(roy.historique) == 1
+
+    premier_message = roy.historique[0]
+
+    assert premier_message["role"] == "user"
+    assert premier_message["content"] == "bonjour"
+    assert "timestamp" in premier_message
+    assert isinstance(premier_message["timestamp"], str)
+
     for numero in range(25):
         roy.ajouter_historique("user", f"message {numero}")
 
@@ -41,17 +48,82 @@ def tester_historique():
     assert roy.historique[0]["content"] == "bonjour"
     assert roy.historique[-1]["content"] == "message 24"
 
+def tester_recherche_historique():
+    roy = Roy(historique_actif=False)
+    roy.etat["systeme"]["actif"] = True
+
+    roy.ajouter_historique("user", "Bonjour Cyan")
+    roy.ajouter_historique(
+        "user",
+        "recherche historique cyan"
+    )
+
+    resultat = roy.traiter_message(
+        "recherche historique cyan",
+        "recherche historique Cyan"
+    )
+
+    assert resultat is True
+    assert len(roy.historique) == 2
+    assert roy.historique[0]["content"] == "Bonjour Cyan"
+
+def tester_statistiques_historique():
+    roy = Roy(historique_actif=False)
+    roy.etat["systeme"]["actif"] = True
+
+    roy.ajouter_historique("user", "bonjour")
+    roy.ajouter_historique(
+        "assistant",
+        "Bonjour Cyan !"
+    )
+
+    resultat = roy.traiter_message(
+        "statistiques historique",
+        "statistiques historique"
+    )
+
+    assert resultat is True
+    assert len(roy.historique) == 2
+    assert roy.historique[0]["role"] == "user"
+    assert roy.historique[1]["role"] == "assistant"
+
+def tester_chargement_historique_invalide():
+    with TemporaryDirectory() as dossier_temporaire:
+        chemin = Path(dossier_temporaire) / "historique_test.json"
+
+        donnees = [
+            {
+                "role": "user",
+                "content": "Bonjour"
+            },
+            {
+                "role": "user"
+            },
+            42
+        ]
+
+        with open(chemin, "w", encoding="utf-8") as fichier:
+            json.dump(donnees, fichier, ensure_ascii=False, indent=4)
+
+        roy = Roy(fichier_historique=str(chemin))
+
+        assert len(roy.historique) == 1
+        assert roy.historique[0]["role"] == "user"
+        assert roy.historique[0]["content"] == "Bonjour"
+
 def tester_repondre():
     roy = Roy(historique_actif=False)
 
     roy.repondre("Réponse de test")
 
-    assert roy.historique == [
-        {
-            "role": "assistant",
-            "content": "Réponse de test"
-        }
-    ]
+    assert len(roy.historique) == 1
+
+    reponse = roy.historique[0]
+
+    assert reponse["role"] == "assistant"
+    assert reponse["content"] == "Réponse de test"
+    assert "timestamp" in reponse
+    assert isinstance(reponse["timestamp"], str)
 
 def tester_mise_a_jour_etat():
     roy = Roy(historique_actif=False)
@@ -117,6 +189,9 @@ def tester_statut():
 tester_commandes_quitter()
 tester_nettoyer_message()
 tester_historique()
+tester_recherche_historique()
+tester_statistiques_historique()
+tester_chargement_historique_invalide()
 tester_repondre()
 tester_mise_a_jour_etat()
 tester_statut()

@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 
 from outils import nettoyer_texte, extraire_cle
 from config import (
@@ -20,11 +21,17 @@ from config import (
     commandes_activer_systeme,
     commandes_basculer_systeme,
     formes_renommer,
-    commandes_historique
+    commandes_historique,
+    commandes_rechercher_historique,
+    commandes_statistiques_historique
 )
 
 class Roy:
-    def __init__(self, historique_actif: bool = True):
+    def __init__(
+        self,
+        historique_actif: bool = True,
+        fichier_historique: str = "historique.json"
+    ):
         self.nom = "Roy"        
         self.historique_actif = historique_actif
         self.etat = {
@@ -36,15 +43,21 @@ class Roy:
             }
         }
         self.historique = []
+        self.fichier_historique = fichier_historique
         self.charger_memoire()
+
         if self.historique_actif:
             self.charger_historique()
 
     def ajouter_historique(self, role: str, contenu: str) -> None:
+        date_message = datetime.now().isoformat(timespec="seconds")
+
         message = {
             "role": role,
-            "content": contenu
+            "content": contenu,
+            "timestamp": date_message
         }
+
         self.historique.append(message)
 
     def repondre(self, contenu: str) -> None:
@@ -54,12 +67,41 @@ class Roy:
 
     def charger_historique(self) -> None:
         try:
-            with open("historique.json", "r", encoding="utf-8") as fichier:
-                self.historique = json.load(fichier)
+            with open(
+                self.fichier_historique,
+                "r",
+                encoding="utf-8"
+            ) as fichier:
+                donnees = json.load(fichier)
+
+            if isinstance(donnees, list):
+                historique_valide = []
+
+                for message in donnees:
+                    if (
+                        isinstance(message, dict)
+                        and isinstance(message.get("role"), str)
+                        and isinstance(message.get("content"), str)
+                    ):
+                        historique_valide.append(message)
+
+                self.historique = historique_valide
+            else:
+                print(
+                    "Roy : Le format de l'historique est invalide."
+                )
+                self.historique = []
+
         except FileNotFoundError:
             self.historique = []
+
         except json.JSONDecodeError as erreur:
             print("Roy : Mon historique semble endommagé.")
+            print(erreur)
+            self.historique = []
+
+        except OSError as erreur:
+            print("Roy : Impossible de charger mon historique.")
             print(erreur)
             self.historique = []
 
@@ -68,7 +110,7 @@ class Roy:
             return True
 
         try:
-            with open("historique.json", "w", encoding="utf-8") as fichier:
+            with open(self.fichier_historique, "w", encoding="utf-8") as fichier:
                 json.dump(
                     self.historique,
                     fichier,
@@ -80,16 +122,83 @@ class Roy:
             print("Roy : Impossible de sauvegarder mon historique.")
             return False        
 
-    def afficher_historique(self) -> None:
+    def afficher_historique(self, limite: int = 20) -> None:
         if not self.historique:
             print("Roy : L'historique est vide.")
             return
 
         print("Roy : Historique de la conversation :")
 
-        for message in self.historique:
+        messages_a_afficher = self.historique[-limite:]
+
+        for message in messages_a_afficher:
             auteur = "Toi" if message["role"] == "user" else "Roy"
-            print(f"{auteur} : {message['content']}")
+            timestamp = message.get("timestamp")
+
+            if timestamp:
+                date_affichee = timestamp.replace("T", " ")
+                print(f"[{date_affichee}] {auteur} : {message['content']}")
+            else:
+                print(f"{auteur} : {message['content']}")
+
+    def rechercher_historique(self, mot_cle: str) -> None:
+        mot_cle = mot_cle.strip()
+
+        if not mot_cle:
+            print("Roy : Indique un mot à rechercher.")
+            return
+
+        resultats = []
+
+        for message in self.historique[:-1]:
+            contenu = message["content"]
+
+            est_une_recherche = (
+                message["role"] == "user"
+                and any(
+                    contenu.lower().startswith(commande)
+                    for commande in commandes_rechercher_historique
+                )
+            )
+
+            if est_une_recherche:
+                continue
+
+            if mot_cle.lower() in contenu.lower():
+                resultats.append(message)
+
+        if not resultats:
+            print(f"Roy : Aucun message trouvé pour : {mot_cle}")
+            return
+
+        print(f"Roy : {len(resultats)} message(s) trouvé(s) pour : {mot_cle}")
+
+        for message in resultats[-20:]:
+            auteur = "Toi" if message["role"] == "user" else "Roy"
+            timestamp = message.get("timestamp")
+
+            if timestamp:
+                date_affichee = timestamp.replace("T", " ")
+                print(f"[{date_affichee}] {auteur} : {message['content']}")
+            else:
+                print(f"{auteur} : {message['content']}")
+
+    def afficher_statistiques_historique(self) -> None:
+        total_messages = len(self.historique)
+        messages_cyan = 0
+        messages_roy = 0
+
+        for message in self.historique:
+            if message["role"] == "user":
+                messages_cyan += 1
+
+            if message["role"] == "assistant":
+                messages_roy += 1
+
+        print("Roy : Statistiques de l'historique")
+        print(f"Messages totaux : {total_messages}")
+        print(f"Messages de Cyan : {messages_cyan}")
+        print(f"Messages de Roy : {messages_roy}")
 
     def se_presenter(self):
         self.repondre(f"Bonjour ! Je m'appelle {self.nom}.")
@@ -559,11 +668,21 @@ class Roy:
 
         if message in commandes_activer_memoire:
             self.activer_memoire()
-            return True 
+            return True
+
+        for commande in commandes_rechercher_historique:
+            if message.startswith(commande):
+                mot_cle = message.removeprefix(commande).strip()
+                self.rechercher_historique(mot_cle)
+                return True 
 
         if message in commandes_historique:
             self.afficher_historique()
             return True 
+
+        if message in commandes_statistiques_historique:
+            self.afficher_statistiques_historique()
+            return True
         
         if self.traiter_renommage(message):
             return True
