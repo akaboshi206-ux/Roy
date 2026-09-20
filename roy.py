@@ -23,7 +23,8 @@ from config import (
     formes_renommer,
     commandes_historique,
     commandes_rechercher_historique,
-    commandes_statistiques_historique
+    commandes_statistiques_historique,
+    commandes_exporter_historique
 )
 
 class Roy:
@@ -140,6 +141,86 @@ class Roy:
                 print(f"[{date_affichee}] {auteur} : {message['content']}")
             else:
                 print(f"{auteur} : {message['content']}")
+
+    def traiter_historique(self, message: str) -> bool:
+        for commande in commandes_historique:
+            if message == commande:
+                self.afficher_historique()
+                return True
+
+            prefixe = commande + " "
+
+            if message.startswith(prefixe):
+                nombre_texte = message.removeprefix(prefixe).strip()
+
+                try:
+                    limite = int(nombre_texte)
+                except ValueError:
+                    self.repondre(
+                        "Utilise un nombre, par exemple : historique 5"
+                    )
+                    return True
+
+                if limite <= 0:
+                    self.repondre(
+                        "Le nombre de messages doit être supérieur à zéro."
+                    )
+                    return True
+
+                self.afficher_historique(limite)
+                return True
+
+        return False
+
+    def exporter_historique(self, nom_fichier: str = "") -> bool:
+        if not self.historique:
+            self.repondre("L'historique est vide.")
+            return False
+
+        if not nom_fichier:
+            horodatage = datetime.now().strftime(
+                "%Y-%m-%d_%H-%M-%S"
+            )
+            nom_fichier = (
+                f"conversation_{horodatage}.txt"
+            )
+
+        try:
+            with open(
+                nom_fichier,
+                "w",
+                encoding="utf-8"
+            ) as fichier:
+                for message in self.historique:
+                    date_brute = message.get("timestamp")
+
+                    if isinstance(date_brute, str):
+                        date = date_brute.replace("T", " ")
+                    else:
+                        date = "date inconnue"
+
+                    auteur = (
+                        "Toi"
+                        if message["role"] == "user"
+                        else "Roy"
+                    )
+
+                    contenu = message["content"]
+
+                    fichier.write(
+                        f"[{date}] {auteur} : {contenu}\n"
+                    )
+
+        except OSError:
+            self.repondre(
+                "Impossible d'exporter l'historique."
+            )
+            return False
+
+        self.repondre(
+            f"Historique exporté dans {nom_fichier}."
+        )
+        return True
 
     def rechercher_historique(self, mot_cle: str) -> None:
         mot_cle = mot_cle.strip()
@@ -676,9 +757,12 @@ class Roy:
                 self.rechercher_historique(mot_cle)
                 return True 
 
-        if message in commandes_historique:
-            self.afficher_historique()
+        if self.traiter_historique(message):
             return True 
+
+        if message in commandes_exporter_historique:
+            self.exporter_historique()
+            return True
 
         if message in commandes_statistiques_historique:
             self.afficher_statistiques_historique()

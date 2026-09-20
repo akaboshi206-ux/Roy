@@ -111,6 +111,67 @@ def tester_chargement_historique_invalide():
         assert roy.historique[0]["role"] == "user"
         assert roy.historique[0]["content"] == "Bonjour"
 
+def tester_commande_historique_avec_limite():
+    roy = Roy(historique_actif=False)
+
+    assert roy.traiter_historique("statut") is False
+    assert roy.traiter_historique("historique") is True
+    assert roy.traiter_historique("historique 3") is True
+    assert roy.traiter_historique("historique banane") is True
+    assert roy.historique[-1]["content"] == ("Utilise un nombre, par exemple : historique 5")
+    assert roy.traiter_historique("historique 0") is True
+    assert roy.historique[-1]["content"] == ("Le nombre de messages doit être supérieur à zéro.")
+    assert roy.traiter_historique("historique -5") is True
+
+def tester_export_historique():
+    with TemporaryDirectory() as dossier_temporaire:
+        chemin = Path(dossier_temporaire) / "conversation_test.txt"
+
+        roy = Roy(historique_actif=False)
+        roy.historique = [
+            {
+                "role": "user",
+                "content": "Bonjour",
+                "timestamp": "2026-09-20T10:00:00"
+            },
+            {
+                "role": "assistant",
+                "content": "Salut Cyan",
+                "timestamp": None
+            }
+        ]
+
+        resultat = roy.exporter_historique(str(chemin))
+
+        assert resultat is True
+        assert chemin.exists()
+
+        contenu = chemin.read_text(encoding="utf-8")
+
+        assert (
+            "[2026-09-20 10:00:00] Toi : Bonjour"
+            in contenu
+        )
+        assert (
+            "[date inconnue] Roy : Salut Cyan"
+            in contenu
+        )
+        chemin_vide = (
+            Path(dossier_temporaire)
+            / "conversation_vide.txt"
+        )
+
+        roy_vide = Roy(historique_actif=False)
+
+        assert (
+            roy_vide.exporter_historique(
+                str(chemin_vide)
+            )
+            is False
+        )
+
+        assert not chemin_vide.exists()
+
 def tester_repondre():
     roy = Roy(historique_actif=False)
 
@@ -192,6 +253,8 @@ tester_historique()
 tester_recherche_historique()
 tester_statistiques_historique()
 tester_chargement_historique_invalide()
+tester_commande_historique_avec_limite()
+tester_export_historique()
 tester_repondre()
 tester_mise_a_jour_etat()
 tester_statut()

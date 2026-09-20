@@ -2,3 +2,5 @@ memoire.json
 __pycache__/
 memoire copy.json
 historique.json
+conversation.txt
+conversation_*.txt

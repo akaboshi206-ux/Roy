@@ -141,3 +141,10 @@ commandes_statistiques_historique = {
     "combien de messages",
     "taille historique"
 }
+
+commandes_exporter_historique = {
+    "exporte l'historique",
+    "exporter l'historique",
+    "export historique",
+    "exporte la conversation"
+}
