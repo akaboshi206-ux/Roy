@@ -1,4 +1,5 @@
 import json
+from collections.abc import Callable
 from datetime import datetime
 
 from outils import nettoyer_texte, extraire_cle
@@ -27,6 +28,11 @@ from config import (
     commandes_exporter_historique
 )
 
+CommandeAction = tuple[
+    set[str],
+    Callable[[], object]
+]
+
 class Roy:
     def __init__(
         self,
@@ -49,6 +55,62 @@ class Roy:
 
         if self.historique_actif:
             self.charger_historique()
+        self.commandes_systeme = [
+            (
+                commandes_activer_systeme,
+                self.activer_systeme
+            ),
+            (
+                commandes_desactiver_systeme,
+                self.desactiver_systeme
+            ),
+            (
+                commandes_basculer_systeme,
+                self.basculer_systeme
+            ),
+            (
+                commandes_statut,
+                self.afficher_statut
+            )
+        ]
+        self.commandes_simples = [
+            (
+                commandes_aide,
+                self.afficher_aide
+            ),
+            (
+                commandes_desactiver_memoire,
+                self.desactiver_memoire
+            ),
+            (
+                commandes_basculer_memoire,
+                self.basculer_memoire
+            ),
+            (
+                commandes_activer_memoire,
+                self.activer_memoire
+            ),
+            (
+                commandes_exporter_historique,
+                self.exporter_historique
+            ),
+            (
+                commandes_statistiques_historique,
+                self.afficher_statistiques_historique
+            ),
+            (
+                salutations,
+                self.saluer
+            ),
+            (
+                commandes_memoire,
+                self.afficher_memoire
+            ),
+            (
+                commandes_historique,
+                self.afficher_historique
+            ),
+        ]
 
     def ajouter_historique(self, role: str, contenu: str) -> None:
         date_message = datetime.now().isoformat(timespec="seconds")
@@ -707,6 +769,14 @@ class Roy:
                         return True
         return False
 
+    def executer_commande(self, message: str, commandes_actions: list[CommandeAction]) -> bool:
+        for formulations, action in commandes_actions:
+            if message in formulations:
+                action()
+                return True
+
+        return False
+
     def traiter_message(self, message, message_original):
 
         try:
@@ -714,41 +784,21 @@ class Roy:
         except ValueError as erreur:
             self.repondre(str(erreur))
             return True
-
-        if message in commandes_activer_systeme:
-            self.activer_systeme()
+                
+        if self.executer_commande(
+            message,
+            self.commandes_systeme
+        ):
             return True
-        
-        if message in commandes_desactiver_systeme:
-            self.desactiver_systeme()
-            return True
-        
-        if message in commandes_basculer_systeme:
-            self.basculer_systeme()
-            return True
-
-        if message in commandes_statut:
-            self.afficher_statut()
-            return True
-        
+                
         if not self.etat["systeme"]["actif"]:
             self.repondre("Le système est désactivé. Réactive-le pour continuer.")
-            return True        
-
-        if message in commandes_aide:
-            self.afficher_aide()
-            return True
-        
-        if message in commandes_desactiver_memoire:
-            self.desactiver_memoire()
-            return True
-
-        if message in commandes_basculer_memoire:
-            self.basculer_memoire()
-            return True
-
-        if message in commandes_activer_memoire:
-            self.activer_memoire()
+            return True     
+           
+        if self.executer_commande(
+            message,
+            self.commandes_simples
+        ):
             return True
 
         for commande in commandes_rechercher_historique:
@@ -759,23 +809,11 @@ class Roy:
 
         if self.traiter_historique(message):
             return True 
-
-        if message in commandes_exporter_historique:
-            self.exporter_historique()
-            return True
-
-        if message in commandes_statistiques_historique:
-            self.afficher_statistiques_historique()
-            return True
-        
+                
         if self.traiter_renommage(message):
             return True
-        
-        if message in salutations:
-            self.saluer()
-            return True
-
-        elif message == "comment vas-tu":
+              
+        if message == "comment vas-tu":
             self.repondre("Je vais bien, merci !")
             return True
 
@@ -788,11 +826,7 @@ class Roy:
                 f"Tu m'as dit que ton humeur était "
                 f"{self.memoire.get('humeur', 'inconnue')}"
             )
-            return True
-
-        elif message in commandes_memoire:
-            self.afficher_memoire()
-            return True
+            return True     
 
         elif message == "combien d'informations connais-tu":
             self.compter_memoire()

@@ -172,6 +172,76 @@ def tester_export_historique():
 
         assert not chemin_vide.exists()
 
+def tester_executer_commande():
+    roy = Roy(historique_actif=False)
+    appels = []
+
+    def action_test():
+        appels.append("ok")
+
+    commandes = [
+        (
+            {"test"},
+            action_test
+        )
+    ]
+
+    resultat_connu = roy.executer_commande(
+        "test",
+        commandes
+    )
+
+    assert resultat_connu is True
+    assert appels == ["ok"]
+
+    resultat_inconnu = roy.executer_commande(
+        "inconnue",
+        commandes
+    )
+
+    assert resultat_inconnu is False
+    assert appels == ["ok"]
+
+def tester_commandes_centralisees():
+    roy = Roy(historique_actif=False)
+
+    resultat_historique = roy.traiter_message(
+        "historique",
+        "historique"
+    )
+    assert resultat_historique is True
+
+    resultat_salutation = roy.traiter_message(
+        "bonjour",
+        "bonjour"
+    )
+    assert resultat_salutation is True
+
+    resultat_statut = roy.traiter_message(
+        "statut",
+        "statut"
+    )
+    assert resultat_statut is True
+
+def tester_reactivation_systeme():
+    roy = Roy(historique_actif=False)
+
+    resultat_desactivation = roy.traiter_message(
+        "désactive le système",
+        "désactive le système"
+    )
+
+    assert resultat_desactivation is True
+    assert roy.etat["systeme"]["actif"] is False
+
+    resultat_reactivation = roy.traiter_message(
+        "active le système",
+        "active le système"
+    )
+
+    assert resultat_reactivation is True
+    assert roy.etat["systeme"]["actif"] is True
+
 def tester_repondre():
     roy = Roy(historique_actif=False)
 
@@ -255,6 +325,9 @@ tester_statistiques_historique()
 tester_chargement_historique_invalide()
 tester_commande_historique_avec_limite()
 tester_export_historique()
+tester_executer_commande()
+tester_commandes_centralisees()
+tester_reactivation_systeme()   
 tester_repondre()
 tester_mise_a_jour_etat()
 tester_statut()
