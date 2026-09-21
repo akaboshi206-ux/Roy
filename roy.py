@@ -1,5 +1,5 @@
 import json
-from collections.abc import Callable
+from collections.abc import Callable, Collection
 from datetime import datetime
 
 from outils import nettoyer_texte, extraire_cle
@@ -29,7 +29,7 @@ from config import (
 )
 
 CommandeAction = tuple[
-    set[str],
+    Collection[str],
     Callable[[], object]
 ]
 
@@ -37,7 +37,8 @@ class Roy:
     def __init__(
         self,
         historique_actif: bool = True,
-        fichier_historique: str = "historique.json"
+        fichier_historique: str = "historique.json",
+        fichier_memoire: str = "memoire.json"
     ):
         self.nom = "Roy"        
         self.historique_actif = historique_actif
@@ -51,6 +52,7 @@ class Roy:
         }
         self.historique = []
         self.fichier_historique = fichier_historique
+        self.fichier_memoire = fichier_memoire
         self.charger_memoire()
 
         if self.historique_actif:
@@ -354,7 +356,7 @@ class Roy:
 
     def charger_memoire(self) -> None:
         try:
-            with open("memoire.json", "r", encoding="utf-8") as fichier:
+            with open(self.fichier_memoire, "r", encoding="utf-8") as fichier:
                 self.memoire = json.load(fichier)                
         except FileNotFoundError:
             self.memoire = {}
@@ -385,7 +387,7 @@ class Roy:
 
     def sauvegarder_memoire(self) -> bool:                              
         try:
-            with open("memoire.json", "w", encoding="utf-8") as fichier:
+            with open(self.fichier_memoire, "w", encoding="utf-8") as fichier:
                 json.dump(self.memoire, fichier, ensure_ascii=False, indent=4)
             return True
         except OSError:
@@ -662,7 +664,14 @@ class Roy:
             "retiens que clé = valeur",
             "rappelle-moi clé",
             "oublie clé",
+            "renomme ancienne_clé en nouvelle_clé",
             "montre ta mémoire",
+            "combien d'informations connais-tu",
+            "historique",
+            "historique 5",
+            "recherche historique mot",
+            "statistiques historique",
+            "export historique",
             "statut",
             "active ta mémoire",
             "désactive ta mémoire",

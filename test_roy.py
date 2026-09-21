@@ -242,6 +242,27 @@ def tester_reactivation_systeme():
     assert resultat_reactivation is True
     assert roy.etat["systeme"]["actif"] is True
 
+def tester_memoire_configurable():
+    with TemporaryDirectory() as dossier_temporaire:
+        chemin = Path(dossier_temporaire) / "memoire_test.json"
+
+        roy = Roy(
+            historique_actif=False,
+            fichier_memoire=str(chemin)
+        )
+
+        assert roy.memoire == {}
+
+        assert roy.apprendre("couleur", "cyan") is True
+        assert chemin.exists()
+
+        roy_recharge = Roy(
+            historique_actif=False,
+            fichier_memoire=str(chemin)
+        )
+
+        assert roy_recharge.memoire["couleur"] == "cyan"
+
 def tester_repondre():
     roy = Roy(historique_actif=False)
 
@@ -331,5 +352,6 @@ tester_reactivation_systeme()
 tester_repondre()
 tester_mise_a_jour_etat()
 tester_statut()
+tester_memoire_configurable()
 
 print("Tous les tests ont réussi.")
