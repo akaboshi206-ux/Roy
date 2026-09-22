@@ -1,8 +1,10 @@
 import json
+import os
+from tempfile import NamedTemporaryFile
 from collections.abc import Callable, Collection
 from datetime import datetime
 
-from outils import nettoyer_texte, extraire_cle
+from outils import nettoyer_texte, extraire_cle, formater_message_historique, sauvegarder_json_atomiquement
 from config import (
     salutations,
     commandes_memoire,
@@ -25,7 +27,8 @@ from config import (
     commandes_historique,
     commandes_rechercher_historique,
     commandes_statistiques_historique,
-    commandes_exporter_historique
+    commandes_exporter_historique,
+    exemples_aide
 )
 
 CommandeAction = tuple[
@@ -53,8 +56,10 @@ class Roy:
         self.historique = []
         self.fichier_historique = fichier_historique
         self.fichier_memoire = fichier_memoire
+        self.memoire_sauvegardable = True
         self.charger_memoire()
 
+        self.historique_sauvegardable = True
         if self.historique_actif:
             self.charger_historique()
         self.commandes_systeme = [
@@ -132,30 +137,27 @@ class Roy:
 
     def charger_historique(self) -> None:
         try:
-            with open(
-                self.fichier_historique,
-                "r",
-                encoding="utf-8"
-            ) as fichier:
+            with open(self.fichier_historique, "r", encoding="utf-8") as fichier:
                 donnees = json.load(fichier)
 
-            if isinstance(donnees, list):
-                historique_valide = []
-
-                for message in donnees:
-                    if (
-                        isinstance(message, dict)
-                        and isinstance(message.get("role"), str)
-                        and isinstance(message.get("content"), str)
-                    ):
-                        historique_valide.append(message)
-
-                self.historique = historique_valide
-            else:
-                print(
-                    "Roy : Le format de l'historique est invalide."
-                )
+            if not isinstance(donnees, list):
+                print("Roy : Le format de l'historique est invalide.")
+                self.historique_sauvegardable = False
                 self.historique = []
+                return
+
+            historique_valide = []
+            for message in donnees:
+                if (
+                    isinstance(message, dict)
+                    and isinstance(message.get("role"), str)
+                    and isinstance(message.get("content"), str)
+                ):
+                    historique_valide.append(message)
+                else:
+                    self.historique_sauvegardable = False
+
+            self.historique = historique_valide
 
         except FileNotFoundError:
             self.historique = []
@@ -163,29 +165,31 @@ class Roy:
         except json.JSONDecodeError as erreur:
             print("Roy : Mon historique semble endommagé.")
             print(erreur)
+            self.historique_sauvegardable = False
             self.historique = []
 
         except OSError as erreur:
             print("Roy : Impossible de charger mon historique.")
             print(erreur)
+            self.historique_sauvegardable = False
             self.historique = []
 
     def sauvegarder_historique(self) -> bool:
         if not self.historique_actif:
             return True
 
-        try:
-            with open(self.fichier_historique, "w", encoding="utf-8") as fichier:
-                json.dump(
-                    self.historique,
-                    fichier,
-                    ensure_ascii=False,
-                    indent=4
-                )
+        if not self.historique_sauvegardable:
+            print("Roy : Sauvegarde bloquée : le fichier historique est endommagé.")
+            return False
+
+        if sauvegarder_json_atomiquement(
+            self.fichier_historique,
+            self.historique
+        ):
             return True
-        except OSError:
-            print("Roy : Impossible de sauvegarder mon historique.")
-            return False        
+
+        print("Roy : Impossible de sauvegarder mon historique.")
+        return False    
 
     def afficher_historique(self, limite: int = 20) -> None:
         if not self.historique:
@@ -197,14 +201,7 @@ class Roy:
         messages_a_afficher = self.historique[-limite:]
 
         for message in messages_a_afficher:
-            auteur = "Toi" if message["role"] == "user" else "Roy"
-            timestamp = message.get("timestamp")
-
-            if timestamp:
-                date_affichee = timestamp.replace("T", " ")
-                print(f"[{date_affichee}] {auteur} : {message['content']}")
-            else:
-                print(f"{auteur} : {message['content']}")
+            print(formater_message_historique(message))
 
     def traiter_historique(self, message: str) -> bool:
         for commande in commandes_historique:
@@ -298,6 +295,12 @@ class Roy:
         for message in self.historique[:-1]:
             contenu = message["content"]
 
+            if (
+                message["role"] == "assistant"
+                and contenu.startswith("Voici ce que je peux faire :\n")
+            ):
+                continue
+
             est_une_recherche = (
                 message["role"] == "user"
                 and any(
@@ -319,14 +322,7 @@ class Roy:
         print(f"Roy : {len(resultats)} message(s) trouvé(s) pour : {mot_cle}")
 
         for message in resultats[-20:]:
-            auteur = "Toi" if message["role"] == "user" else "Roy"
-            timestamp = message.get("timestamp")
-
-            if timestamp:
-                date_affichee = timestamp.replace("T", " ")
-                print(f"[{date_affichee}] {auteur} : {message['content']}")
-            else:
-                print(f"{auteur} : {message['content']}")
+            print(formater_message_historique(message))
 
     def afficher_statistiques_historique(self) -> None:
         total_messages = len(self.historique)
@@ -357,11 +353,17 @@ class Roy:
     def charger_memoire(self) -> None:
         try:
             with open(self.fichier_memoire, "r", encoding="utf-8") as fichier:
-                self.memoire = json.load(fichier)                
+                self.memoire = json.load(fichier)  
+
+            if not isinstance(self.memoire, dict):
+                print("Roy : Le format de ma mémoire est invalide.")
+                self.memoire_sauvegardable = False
+                self.memoire = {}              
         except FileNotFoundError:
             self.memoire = {}
         except json.JSONDecodeError as erreur:
             print("Roy : Ma mémoire semble endommagée.")
+            self.memoire_sauvegardable = False
             print(erreur)
             self.memoire = {}        
 
@@ -385,14 +387,16 @@ class Roy:
         else:
             self.repondre("D'accord, merci de me l'avoir dit.")
 
-    def sauvegarder_memoire(self) -> bool:                              
-        try:
-            with open(self.fichier_memoire, "w", encoding="utf-8") as fichier:
-                json.dump(self.memoire, fichier, ensure_ascii=False, indent=4)
-            return True
-        except OSError:
-            print("Roy : Impossible de sauvegarder ma mémoire.")
+    def sauvegarder_memoire(self) -> bool:
+        if not self.memoire_sauvegardable:
+            print("Roy : Sauvegarde bloquée : le fichier mémoire est endommagé.")
             return False
+        
+        if sauvegarder_json_atomiquement(self.fichier_memoire, self.memoire):
+            return True
+
+        print("Roy : Impossible de sauvegarder ma mémoire.")
+        return False
         
     def apprendre(self, cle: str, valeur: str):
         if not self.verifier_memoire_active():
@@ -558,9 +562,12 @@ class Roy:
         if not self.verifier_memoire_active():
             return
 
-        self.repondre("Voici ce que je sais sur toi :")
+        lignes = ["Voici ce que je sais sur toi :"]
+
         for numero, (cle, valeur) in enumerate(self.memoire.items(), start=1):
-            self.repondre(f"{numero}. {cle} : {valeur}")
+            lignes.append(f"{numero}. {cle} : {valeur}")
+
+        self.repondre("\n".join(lignes))
 
     def compter_memoire(self):
         nombre = self.obtenir_nombre_informations()
@@ -595,17 +602,19 @@ class Roy:
         self.etat[categorie].update(changements)
         return True
 
-    def afficher_etat(self) -> None:
+    def afficher_etat(self) -> list[str]:
         if self.etat["systeme"]["actif"]:
-            self.repondre("Système actif.")
+            ligne_systeme = "Système actif."
         else:
-            self.repondre("Système désactivé.")
+            ligne_systeme = "Système désactivé."
 
         if self.etat["memoire"]["active"]:
-            self.repondre("Mémoire activée.")
+            ligne_memoire = "Mémoire activée."
         else:
-            self.repondre("Mémoire désactivée.")
+            ligne_memoire = "Mémoire désactivée."
 
+        return [ligne_systeme, ligne_memoire]
+    
     def obtenir_nombre_informations(self) -> int:
         return len(self.memoire)
 
@@ -658,31 +667,12 @@ class Roy:
         self.apprendre(cle, valeur)
 
     def afficher_aide(self) -> None:
-        self.repondre("Voici ce que je peux faire :")
-        commandes = [
-            "bonjour",
-            "retiens que clé = valeur",
-            "rappelle-moi clé",
-            "oublie clé",
-            "renomme ancienne_clé en nouvelle_clé",
-            "montre ta mémoire",
-            "combien d'informations connais-tu",
-            "historique",
-            "historique 5",
-            "recherche historique mot",
-            "statistiques historique",
-            "export historique",
-            "statut",
-            "active ta mémoire",
-            "désactive ta mémoire",
-            "bascule ta mémoire",
-            "active le système",
-            "désactive le système",
-            "bascule le système",
-            "quitter"
-        ]
-        for numero, commande in enumerate(commandes, start=1):
-            self.repondre(f"{numero}. {commande}")
+        lignes = ["Voici ce que je peux faire :"]
+
+        for numero, commande in enumerate(exemples_aide, start=1):
+            lignes.append(f"{numero}. {commande}")
+
+        self.repondre("\n".join(lignes))
     
     @property
     def etat_memoire(self):
@@ -692,10 +682,14 @@ class Roy:
                 return "désactivée"
 
     def afficher_statut(self) -> None:
-        self.repondre("Statut du système")
-        self.repondre(f"Nom : {self.nom}")
-        self.repondre(f"Informations en mémoire : {self.obtenir_nombre_informations()}")
-        self.afficher_etat()
+        lignes = [
+            "Statut du système",
+            f"Nom : {self.nom}",
+            f"Informations en mémoire : {self.obtenir_nombre_informations()}"
+        ]
+
+        lignes.extend(self.afficher_etat())
+        self.repondre("\n".join(lignes))
         
     def desactiver_memoire(self):
         if not self.etat["memoire"]["active"]:

@@ -1,3 +1,7 @@
+import json
+import os
+from tempfile import NamedTemporaryFile
+
 def nettoyer_texte(texte, minuscules=True):
     texte_nettoye = texte.strip()
 
@@ -22,3 +26,41 @@ def extraire_cle(message, formes, mots_inutiles):
             return cle
 
     return None
+
+def formater_message_historique(message):
+    auteur = "Toi" if message["role"] == "user" else "Roy"
+    timestamp = message.get("timestamp")
+
+    if timestamp:
+        date_affichee = timestamp.replace("T", " ")
+        return f"[{date_affichee}] {auteur} : {message['content']}"
+
+    return f"{auteur} : {message['content']}"
+
+def sauvegarder_json_atomiquement(chemin, donnees) -> bool:
+    chemin_temporaire = None
+
+    try:
+        dossier = os.path.dirname(os.path.abspath(chemin))
+
+        with NamedTemporaryFile(
+            mode="w",
+            encoding="utf-8",
+            dir=dossier,
+            suffix=".tmp",
+            delete=False
+        ) as fichier:
+            chemin_temporaire = fichier.name
+            json.dump(donnees, fichier, ensure_ascii=False, indent=4)
+
+        os.replace(chemin_temporaire, chemin)
+        return True
+
+    except (OSError, TypeError):
+        if chemin_temporaire is not None:
+            try:
+                os.unlink(chemin_temporaire)
+            except OSError:
+                pass
+
+        return False

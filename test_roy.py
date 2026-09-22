@@ -3,8 +3,21 @@ import json
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from roy import Roy
+from outils import formater_message_historique
 from config import commandes_quitter
 from main import nettoyer_message
+from itertools import count
+from contextlib import redirect_stdout
+from io import StringIO
+from unittest.mock import patch
+
+dossier_tests = TemporaryDirectory()
+numeros_tests = count()
+
+
+def creer_roy_test(**options):
+    chemin = Path(dossier_tests.name) / f"memoire_{next(numeros_tests)}.json"
+    return Roy(fichier_memoire=str(chemin), **options)
 
 def tester_commandes_quitter():
     assert "quitter" in commandes_quitter
@@ -26,8 +39,12 @@ def tester_nettoyer_message():
         assert nettoyer_message(message) == resultat_attendu
 
 def tester_historique():
-    roy = Roy(historique_actif=False)
-    
+    with TemporaryDirectory() as dossier:
+        roy = Roy(
+            historique_actif=False,
+            fichier_memoire=str(Path(dossier) / "memoire_test.json")
+        )
+                    
     assert roy.historique == []
 
     roy.ajouter_historique("user", "bonjour")
@@ -49,7 +66,7 @@ def tester_historique():
     assert roy.historique[-1]["content"] == "message 24"
 
 def tester_recherche_historique():
-    roy = Roy(historique_actif=False)
+    roy = creer_roy_test(historique_actif=False)
     roy.etat["systeme"]["actif"] = True
 
     roy.ajouter_historique("user", "Bonjour Cyan")
@@ -68,7 +85,7 @@ def tester_recherche_historique():
     assert roy.historique[0]["content"] == "Bonjour Cyan"
 
 def tester_statistiques_historique():
-    roy = Roy(historique_actif=False)
+    roy = creer_roy_test(historique_actif=False)
     roy.etat["systeme"]["actif"] = True
 
     roy.ajouter_historique("user", "bonjour")
@@ -105,14 +122,14 @@ def tester_chargement_historique_invalide():
         with open(chemin, "w", encoding="utf-8") as fichier:
             json.dump(donnees, fichier, ensure_ascii=False, indent=4)
 
-        roy = Roy(fichier_historique=str(chemin))
+        roy = creer_roy_test(fichier_historique=str(chemin))
 
         assert len(roy.historique) == 1
         assert roy.historique[0]["role"] == "user"
         assert roy.historique[0]["content"] == "Bonjour"
 
 def tester_commande_historique_avec_limite():
-    roy = Roy(historique_actif=False)
+    roy = creer_roy_test(historique_actif=False)
 
     assert roy.traiter_historique("statut") is False
     assert roy.traiter_historique("historique") is True
@@ -127,7 +144,7 @@ def tester_export_historique():
     with TemporaryDirectory() as dossier_temporaire:
         chemin = Path(dossier_temporaire) / "conversation_test.txt"
 
-        roy = Roy(historique_actif=False)
+        roy = creer_roy_test(historique_actif=False)
         roy.historique = [
             {
                 "role": "user",
@@ -161,7 +178,7 @@ def tester_export_historique():
             / "conversation_vide.txt"
         )
 
-        roy_vide = Roy(historique_actif=False)
+        roy_vide = creer_roy_test(historique_actif=False)
 
         assert (
             roy_vide.exporter_historique(
@@ -173,7 +190,7 @@ def tester_export_historique():
         assert not chemin_vide.exists()
 
 def tester_executer_commande():
-    roy = Roy(historique_actif=False)
+    roy = creer_roy_test(historique_actif=False)
     appels = []
 
     def action_test():
@@ -203,7 +220,7 @@ def tester_executer_commande():
     assert appels == ["ok"]
 
 def tester_commandes_centralisees():
-    roy = Roy(historique_actif=False)
+    roy = creer_roy_test(historique_actif=False)
 
     resultat_historique = roy.traiter_message(
         "historique",
@@ -224,7 +241,7 @@ def tester_commandes_centralisees():
     assert resultat_statut is True
 
 def tester_reactivation_systeme():
-    roy = Roy(historique_actif=False)
+    roy = creer_roy_test(historique_actif=False)
 
     resultat_desactivation = roy.traiter_message(
         "désactive le système",
@@ -264,7 +281,7 @@ def tester_memoire_configurable():
         assert roy_recharge.memoire["couleur"] == "cyan"
 
 def tester_repondre():
-    roy = Roy(historique_actif=False)
+    roy = creer_roy_test(historique_actif=False)
 
     roy.repondre("Réponse de test")
 
@@ -278,7 +295,7 @@ def tester_repondre():
     assert isinstance(reponse["timestamp"], str)
 
 def tester_mise_a_jour_etat():
-    roy = Roy(historique_actif=False)
+    roy = creer_roy_test(historique_actif=False)
 
     assert roy.mettre_a_jour_etat(
         "memoire",
@@ -316,7 +333,7 @@ def tester_mise_a_jour_etat():
 
 
 def tester_statut():
-    roy = Roy(historique_actif=False)
+    roy = creer_roy_test(historique_actif=False)
 
     assert roy.mettre_a_jour_etat(
         "systeme",
@@ -337,6 +354,87 @@ def tester_statut():
 
     assert roy.etat["systeme"]["actif"] is True
 
+def tester_formatage_message_historique():
+    ancien_message = {
+        "role": "user",
+        "content": "salut"
+    }
+    assert formater_message_historique(ancien_message) == "Toi : salut"
+
+    message_date = {
+        "role": "assistant",
+        "content": "Bonjour Cyan",
+        "timestamp": "2026-09-22T08:46:28"
+    }
+    assert formater_message_historique(message_date) == (
+        "[2026-09-22 08:46:28] Roy : Bonjour Cyan"
+    )
+
+def tester_aide_un_seul_message():
+    roy = creer_roy_test(historique_actif=False)
+
+    roy.afficher_aide()
+
+    assert len(roy.historique) == 1
+    assert "1. bonjour" in roy.historique[0]["content"]
+    assert "20. quitter" in roy.historique[0]["content"]
+
+def tester_recherche_ignore_nouvelle_aide():
+    roy = creer_roy_test(historique_actif=False)
+    roy.afficher_aide()
+    roy.ajouter_historique("user", "Je veux quitter")
+    roy.ajouter_historique("user", "recherche historique quitter")
+
+    sortie = StringIO()
+    with redirect_stdout(sortie):
+        roy.rechercher_historique("quitter")
+
+    texte = sortie.getvalue()
+    assert "1 message(s) trouvé(s)" in texte
+    assert "Je veux quitter" in texte
+    assert "20. quitter" not in texte
+
+def tester_statut_un_seul_message():
+    roy = creer_roy_test(historique_actif=False)
+
+    roy.afficher_statut()
+
+    assert len(roy.historique) == 1
+    lignes = roy.historique[0]["content"].splitlines()
+    assert len(lignes) == 5
+    assert lignes[0] == "Statut du système"
+    assert "Système actif." in lignes
+    assert "Mémoire activée." in lignes
+
+def tester_affichage_memoire_un_seul_message():
+    roy = creer_roy_test(historique_actif=False)
+    roy.memoire = {"couleur": "cyan", "ville": "Paris"}
+
+    roy.afficher_memoire()
+
+    assert len(roy.historique) == 1
+    contenu = roy.historique[0]["content"]
+    assert "1. couleur : cyan" in contenu
+    assert "2. ville : Paris" in contenu
+
+def tester_echec_sauvegarde_preserve_memoire():
+    with TemporaryDirectory() as dossier:
+        chemin = Path(dossier) / "memoire_test.json"
+        chemin.write_text('{"couleur": "bleu"}', encoding="utf-8")
+
+        roy = Roy(
+            historique_actif=False,
+            fichier_memoire=str(chemin)
+        )
+        roy.memoire["couleur"] = "cyan"
+
+        with patch("roy.os.replace", side_effect=OSError("échec simulé")):
+            assert roy.sauvegarder_memoire() is False
+
+        assert json.loads(chemin.read_text(encoding="utf-8")) == {
+            "couleur": "bleu"
+        }
+        assert list(Path(dossier).iterdir()) == [chemin]
 
 tester_commandes_quitter()
 tester_nettoyer_message()
@@ -353,5 +451,10 @@ tester_repondre()
 tester_mise_a_jour_etat()
 tester_statut()
 tester_memoire_configurable()
+tester_formatage_message_historique()
+tester_aide_un_seul_message()
+tester_recherche_ignore_nouvelle_aide()
+tester_statut_un_seul_message()
+tester_echec_sauvegarde_preserve_memoire()
 
 print("Tous les tests ont réussi.")

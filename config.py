@@ -148,3 +148,26 @@ commandes_exporter_historique = {
     "export historique",
     "exporte la conversation"
 }
+
+exemples_aide = [
+    "bonjour",
+    "retiens que clé = valeur",
+    "rappelle-moi clé",
+    "oublie clé",
+    "renomme ancienne_clé en nouvelle_clé",
+    "montre ta mémoire",
+    "combien d'informations connais-tu",
+    "historique",
+    "historique 5",
+    "recherche historique mot",
+    "statistiques historique",
+    "export historique",
+    "statut",
+    "active ta mémoire",
+    "désactive ta mémoire",
+    "bascule ta mémoire",
+    "active le système",
+    "désactive le système",
+    "bascule le système",
+    "quitter"
+]
