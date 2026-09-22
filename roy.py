@@ -3,6 +3,7 @@ import os
 from tempfile import NamedTemporaryFile
 from collections.abc import Callable, Collection
 from datetime import datetime
+from taches import ajouter_tache, formater_taches, terminer_tache
 
 from outils import nettoyer_texte, extraire_cle, formater_message_historique, sauvegarder_json_atomiquement
 from config import (
@@ -41,7 +42,8 @@ class Roy:
         self,
         historique_actif: bool = True,
         fichier_historique: str = "historique.json",
-        fichier_memoire: str = "memoire.json"
+        fichier_memoire: str = "memoire.json",
+        fichier_taches: str = "taches.json"
     ):
         self.nom = "Roy"        
         self.historique_actif = historique_actif
@@ -54,6 +56,10 @@ class Roy:
             }
         }
         self.historique = []
+        self.taches = []
+        self.fichier_taches = fichier_taches
+        self.taches_sauvegardables = True
+        self.charger_taches()
         self.fichier_historique = fichier_historique
         self.fichier_memoire = fichier_memoire
         self.memoire_sauvegardable = True
@@ -134,6 +140,41 @@ class Roy:
         self.ajouter_historique("assistant", contenu)
         self.sauvegarder_historique()
         print(f"Roy : {contenu}")
+
+    def charger_taches(self) -> None:
+        try:
+            with open(self.fichier_taches, "r", encoding="utf-8") as fichier:
+                donnees = json.load(fichier)
+
+            if not isinstance(donnees, list) or any(
+                not isinstance(tache, dict)
+                or not isinstance(tache.get("description"), str)
+                or not isinstance(tache.get("terminee"), bool)
+                for tache in donnees
+            ):
+                print("Roy : Le format des tâches est invalide.")
+                self.taches_sauvegardables = False
+                return
+
+            self.taches = donnees
+
+        except FileNotFoundError:
+            pass  # Première utilisation : la liste reste vide.
+        except (json.JSONDecodeError, OSError) as erreur:
+            print("Roy : Impossible de charger mes tâches.")
+            print(erreur)
+            self.taches_sauvegardables = False
+
+    def sauvegarder_taches(self) -> bool:
+        if not self.taches_sauvegardables:
+            print("Roy : Sauvegarde bloquée : le fichier des tâches est endommagé.")
+            return False
+
+        if sauvegarder_json_atomiquement(self.fichier_taches, self.taches):
+            return True
+
+        print("Roy : Impossible de sauvegarder mes tâches.")
+        return False
 
     def charger_historique(self) -> None:
         try:
@@ -577,7 +618,7 @@ class Roy:
         else:
             self.repondre(f"Je connais {nombre} informations sur toi.")
 
-    def mettre_a_jour_etat(self, categorie, changements) -> bool:
+    def mettre_a_jour_etat(self, categorie, changements) -> bool:       
         if not isinstance(categorie, str):
             self.repondre("La catégorie doit être du texte.")
             return False
@@ -802,6 +843,44 @@ class Roy:
             message,
             self.commandes_simples
         ):
+            return True
+
+        if message.startswith("ajoute une tâche :"):
+            description = message.removeprefix("ajoute une tâche :").strip()
+
+            if not ajouter_tache(self.taches, description):
+                self.repondre("Indique la tâche à ajouter.")
+            elif self.sauvegarder_taches():
+                self.repondre("Tâche ajoutée.")
+            else:
+                self.taches.pop()
+                self.repondre("L'ajout de la tâche a été annulé.")
+            return True
+
+        if message.startswith("termine la tâche "):
+            texte_numero = message.removeprefix("termine la tâche ").strip()
+
+            if not texte_numero.isdecimal():
+                self.repondre("Indique un numéro de tâche valide.")
+                return True
+
+            numero = int(texte_numero)
+            if not 1 <= numero <= len(self.taches):
+                self.repondre("Indique un numéro de tâche valide.")
+                return True
+
+            ancien_etat = self.taches[numero - 1]["terminee"]
+            terminer_tache(self.taches, numero)
+
+            if self.sauvegarder_taches():
+                self.repondre("Tâche terminée.")
+            else:
+                self.taches[numero - 1]["terminee"] = ancien_etat
+                self.repondre("La modification de la tâche a été annulée.")
+            return True
+
+        if message == "montre mes tâches":
+            self.repondre(formater_taches(self.taches))
             return True
 
         for commande in commandes_rechercher_historique:

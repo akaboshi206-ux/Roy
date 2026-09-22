@@ -16,8 +16,26 @@ numeros_tests = count()
 
 
 def creer_roy_test(**options):
-    chemin = Path(dossier_tests.name) / f"memoire_{next(numeros_tests)}.json"
-    return Roy(fichier_memoire=str(chemin), **options)
+    numero = next(numeros_tests)
+
+    chemin_memoire = (
+        Path(dossier_tests.name)
+        / f"memoire_{numero}.json"
+    )
+    chemin_taches = (
+        Path(dossier_tests.name)
+        / f"taches_{numero}.json"
+    )
+
+    options.setdefault(
+        "fichier_taches",
+        str(chemin_taches)
+    )
+
+    return Roy(
+        fichier_memoire=str(chemin_memoire),
+        **options
+    )
 
 def tester_commandes_quitter():
     assert "quitter" in commandes_quitter
@@ -436,6 +454,43 @@ def tester_echec_sauvegarde_preserve_memoire():
         }
         assert list(Path(dossier).iterdir()) == [chemin]
 
+def tester_gestion_taches():
+    roy = creer_roy_test(historique_actif=False)
+
+    resultat = roy.traiter_message(
+        "ajoute une tâche : travailler sur Roy",
+        "ajoute une tâche : travailler sur Roy"
+    )
+    assert resultat is True
+    assert len(roy.taches) == 1
+    assert roy.taches[0]["description"] == "travailler sur Roy"
+    assert roy.taches[0]["terminee"] is False
+
+    roy_recharge = Roy(
+        historique_actif=False,
+        fichier_memoire=roy.fichier_memoire,
+        fichier_taches=roy.fichier_taches
+    )
+
+    assert len(roy_recharge.taches) == 1
+    assert roy_recharge.taches[0]["description"] == "travailler sur Roy"
+
+    resultat = roy_recharge.traiter_message(
+        "termine la tâche 1",
+        "termine la tâche 1"
+    )
+
+    assert resultat is True
+    assert roy_recharge.taches[0]["terminee"] is True
+
+    roy_verification = Roy(
+        historique_actif=False,
+        fichier_memoire=roy.fichier_memoire,
+        fichier_taches=roy.fichier_taches
+    )
+
+    assert roy_verification.taches[0]["terminee"] is True
+
 tester_commandes_quitter()
 tester_nettoyer_message()
 tester_historique()
@@ -456,5 +511,6 @@ tester_aide_un_seul_message()
 tester_recherche_ignore_nouvelle_aide()
 tester_statut_un_seul_message()
 tester_echec_sauvegarde_preserve_memoire()
+tester_gestion_taches()
 
 print("Tous les tests ont réussi.")
