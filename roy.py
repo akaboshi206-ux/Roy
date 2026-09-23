@@ -1,15 +1,19 @@
 import json
-import os
 from tempfile import NamedTemporaryFile
 from collections.abc import Callable, Collection
 from datetime import datetime
+
 from taches import (
-    ajouter_tache,
-    formater_taches,
-    terminer_tache,
-    supprimer_tache,
-    modifier_tache,
-    changer_priorite
+    PRIORITES_VALIDES
+)
+
+from commandes_historique import (
+    traiter_affichage_historique,
+    traiter_commande_historique
+)
+
+from commandes_taches import (
+    traiter_commande_tache
 )
 
 from outils import (
@@ -37,11 +41,8 @@ from config import (
     commandes_desactiver_systeme,
     commandes_activer_systeme,
     commandes_basculer_systeme,
-    formes_renommer,
-    commandes_historique,
-    commandes_rechercher_historique,
-    commandes_statistiques_historique,
-    commandes_exporter_historique,
+    formes_renommer,    
+    commandes_rechercher_historique,    
     exemples_aide
 )
 
@@ -115,15 +116,7 @@ class Roy:
             (
                 commandes_activer_memoire,
                 self.activer_memoire
-            ),
-            (
-                commandes_exporter_historique,
-                self.exporter_historique
-            ),
-            (
-                commandes_statistiques_historique,
-                self.afficher_statistiques_historique
-            ),
+            ),            
             (
                 salutations,
                 self.saluer
@@ -131,11 +124,7 @@ class Roy:
             (
                 commandes_memoire,
                 self.afficher_memoire
-            ),
-            (
-                commandes_historique,
-                self.afficher_historique
-            ),
+            ),            
         ]
 
     def ajouter_historique(self, role: str, contenu: str) -> None:
@@ -156,25 +145,53 @@ class Roy:
 
     def charger_taches(self) -> None:
         try:
-            with open(self.fichier_taches, "r", encoding="utf-8") as fichier:
+            with open(
+                self.fichier_taches,
+                "r",
+                encoding="utf-8"
+            ) as fichier:
                 donnees = json.load(fichier)
 
             if not isinstance(donnees, list) or any(
                 not isinstance(tache, dict)
-                or not isinstance(tache.get("description"), str)
-                or not isinstance(tache.get("terminee"), bool)
+                or not isinstance(
+                    tache.get("description"),
+                    str
+                )
+                or not isinstance(
+                    tache.get("terminee"),
+                    bool
+                )
+                or tache.get(
+                    "priorite",
+                    "normale"
+                ) not in PRIORITES_VALIDES
                 for tache in donnees
             ):
-                print("Roy : Le format des tâches est invalide.")
+                print(
+                    "Roy : Le format des tâches est invalide."
+                )
                 self.taches_sauvegardables = False
                 return
+
+            for tache in donnees:
+                tache.setdefault(
+                    "priorite",
+                    "normale"
+                )
 
             self.taches = donnees
 
         except FileNotFoundError:
-            pass  # Première utilisation : la liste reste vide.
-        except (json.JSONDecodeError, OSError) as erreur:
-            print("Roy : Impossible de charger mes tâches.")
+            pass
+
+        except (
+            json.JSONDecodeError,
+            OSError
+        ) as erreur:
+            print(
+                "Roy : Impossible de charger mes tâches."
+            )
             print(erreur)
             self.taches_sauvegardables = False
 
@@ -201,6 +218,22 @@ class Roy:
             return None
 
         return numero
+
+    def appliquer_etat_tache(self, numero: int, action: Callable[[list[dict], int],bool]) -> bool:
+        ancien_etat = self.taches[
+            numero - 1
+        ]["terminee"]
+
+        if not action(self.taches, numero):
+            return False
+
+        if self.sauvegarder_taches():
+            return True
+
+        self.taches[numero - 1]["terminee"] = (
+            ancien_etat
+        )
+        return False
 
     def charger_historique(self) -> None:
         try:
@@ -271,34 +304,7 @@ class Roy:
             print(formater_message_historique(message))
 
     def traiter_historique(self, message: str) -> bool:
-        for commande in commandes_historique:
-            if message == commande:
-                self.afficher_historique()
-                return True
-
-            prefixe = commande + " "
-
-            if message.startswith(prefixe):
-                nombre_texte = message.removeprefix(prefixe).strip()
-
-                try:
-                    limite = int(nombre_texte)
-                except ValueError:
-                    self.repondre(
-                        "Utilise un nombre, par exemple : historique 5"
-                    )
-                    return True
-
-                if limite <= 0:
-                    self.repondre(
-                        "Le nombre de messages doit être supérieur à zéro."
-                    )
-                    return True
-
-                self.afficher_historique(limite)
-                return True
-
-        return False
+        return traiter_affichage_historique(self, message)
 
     def exporter_historique(self, nom_fichier: str = "") -> bool:
         if not self.historique:
@@ -871,199 +877,10 @@ class Roy:
         ):
             return True
 
-        if message.startswith("ajoute une tâche :"):
-            description = message.removeprefix("ajoute une tâche :").strip()
-
-            if not ajouter_tache(self.taches, description):
-                self.repondre("Indique la tâche à ajouter.")
-            elif self.sauvegarder_taches():
-                self.repondre("Tâche ajoutée.")
-            else:
-                self.taches.pop()
-                self.repondre("L'ajout de la tâche a été annulé.")
+        if traiter_commande_tache(self, message):
             return True
 
-        if message.startswith("termine la tâche "):
-            numero = self.obtenir_numero_tache(
-                message.removeprefix(
-                    "termine la tâche "
-                )
-            )
-
-            if numero is None:
-                self.repondre(
-                    "Indique un numéro de tâche valide."
-                )
-                return True
-
-            ancien_etat = self.taches[numero - 1]["terminee"]
-
-            terminer_tache(self.taches, numero)
-
-            if self.sauvegarder_taches():
-                self.repondre("Tâche terminée.")
-            else:
-                self.taches[numero - 1]["terminee"] = ancien_etat
-                self.repondre(
-                    "La modification de la tâche a été annulée."
-                )
-
-            return True
-
-        if message.startswith("modifie la tâche "):
-            contenu = message.removeprefix(
-                "modifie la tâche "
-            ).strip()
-
-            texte_numero, separateur, nouvelle_description = (
-                contenu.partition(":")
-            )
-
-            nouvelle_description = nouvelle_description.strip()
-
-            if not separateur or not nouvelle_description:
-                self.repondre(
-                    "Utilise le format : "
-                    "modifie la tâche 1 : nouvelle description"
-                )
-                return True
-
-            numero = self.obtenir_numero_tache(
-                texte_numero
-            )
-
-            if numero is None:
-                self.repondre(
-                    "Indique un numéro de tâche valide."
-                )
-                return True
-
-            ancienne_description = (
-                self.taches[numero - 1]["description"]
-            )
-
-            modifier_tache(
-                self.taches,
-                numero,
-                nouvelle_description
-            )
-
-            if self.sauvegarder_taches():
-                self.repondre("Tâche modifiée.")
-            else:
-                self.taches[numero - 1]["description"] = (
-                    ancienne_description
-                )
-                self.repondre(
-                    "La modification de la tâche a été annulée."
-                )
-
-            return True
-
-        if message.startswith("priorité tâche "):
-            contenu = message.removeprefix(
-                "priorité tâche "
-            ).strip()
-
-            texte_numero, separateur, priorite = (
-                contenu.partition(":")
-            )
-
-            priorite = priorite.strip()
-
-            if (
-                not separateur
-                or priorite not in {
-                    "basse",
-                    "normale",
-                    "haute"
-                }
-            ):
-                self.repondre(
-                    "Utilise le format : priorité tâche 1 : haute"
-                )
-                return True
-
-            numero = self.obtenir_numero_tache(
-                texte_numero
-            )
-
-            if numero is None:
-                self.repondre(
-                    "Indique un numéro de tâche valide."
-                )
-                return True
-
-            ancienne_priorite = self.taches[numero - 1].get(
-                "priorite"
-            )
-
-            changer_priorite(
-                self.taches,
-                numero,
-                priorite
-            )
-
-            if self.sauvegarder_taches():
-                self.repondre("Priorité modifiée.")
-            else:
-                if ancienne_priorite is None:
-                    self.taches[numero - 1].pop(
-                        "priorite",
-                        None
-                    )
-                else:
-                    self.taches[numero - 1]["priorite"] = (
-                        ancienne_priorite
-                    )
-
-                self.repondre(
-                    "La modification de la priorité a été annulée."
-                )
-
-            return True
-
-        if message.startswith("supprime la tâche "):
-            numero = self.obtenir_numero_tache(
-                message.removeprefix(
-                    "supprime la tâche "
-                )
-            )
-
-            if numero is None:
-                self.repondre(
-                    "Indique un numéro de tâche valide."
-                )
-                return True
-
-            ancienne_tache = self.taches[numero - 1].copy()
-
-            supprimer_tache(self.taches, numero)
-
-            if self.sauvegarder_taches():
-                self.repondre("Tâche supprimée.")
-            else:
-                self.taches.insert(
-                    numero - 1,
-                    ancienne_tache
-                )
-                self.repondre(
-                    "La suppression de la tâche a été annulée."
-                )
-
-            return True
-
-        if message == "montre mes tâches":
-            self.repondre(formater_taches(self.taches))
-            return True
-
-        for commande in commandes_rechercher_historique:
-            if message.startswith(commande):
-                mot_cle = message.removeprefix(commande).strip()
-                self.rechercher_historique(mot_cle)
-                return True 
-
-        if self.traiter_historique(message):
+        if traiter_commande_historique(self, message):
             return True 
                 
         if self.traiter_renommage(message):

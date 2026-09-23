@@ -4,7 +4,10 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from roy import Roy
 from outils import formater_message_historique
-from config import commandes_quitter
+from config import (
+    commandes_quitter,
+    exemples_aide
+)
 from main import nettoyer_message
 from itertools import count
 from contextlib import redirect_stdout
@@ -396,20 +399,33 @@ def tester_formatage_message_historique():
     )
 
 def tester_aide_un_seul_message():
-    roy = creer_roy_test(historique_actif=False)
+    roy = creer_roy_test(
+        historique_actif=False
+    )
 
     roy.afficher_aide()
 
     assert len(roy.historique) == 1
-    assert "1. bonjour" in roy.historique[0]["content"]
-    assert "20. quitter" in roy.historique[0]["content"]
-    assert "21. ajoute une tâche : description" in roy.historique[0]["content"]
-    assert "22. montre mes tâches" in roy.historique[0]["content"]
-    assert "23. termine la tâche 1" in roy.historique[0]["content"]
-    assert "24. supprime la tâche 1" in roy.historique[0]["content"]
+
+    lignes_attendues = [
+        "Voici ce que je peux faire :"
+    ]
+
+    lignes_attendues.extend(
+        f"{numero}. {exemple}"
+        for numero, exemple in enumerate(
+            exemples_aide,
+            start=1
+        )
+    )
+
+    resultat_attendu = "\n".join(
+        lignes_attendues
+    )
+
     assert (
-        "25. modifie la tâche 1 : nouvelle description"
-        in roy.historique[0]["content"]
+        roy.historique[0]["content"]
+        == resultat_attendu
     )
 
 def tester_recherche_ignore_nouvelle_aide():
@@ -461,7 +477,7 @@ def tester_echec_sauvegarde_preserve_memoire():
         )
         roy.memoire["couleur"] = "cyan"
 
-        with patch("roy.os.replace", side_effect=OSError("échec simulé")):
+        with patch("outils.os.replace", side_effect=OSError("échec simulé")):
             assert roy.sauvegarder_memoire() is False
 
         assert json.loads(chemin.read_text(encoding="utf-8")) == {
@@ -469,8 +485,130 @@ def tester_echec_sauvegarde_preserve_memoire():
         }
         assert list(Path(dossier).iterdir()) == [chemin]
 
+def tester_chargement_priorites_taches():
+    with TemporaryDirectory() as dossier:
+        chemin_taches = Path(dossier) / "taches_test.json"
+        chemin_memoire = Path(dossier) / "memoire_test.json"
+
+        anciennes_taches = [
+            {
+                "description": "ancienne tâche",
+                "terminee": False
+            }
+        ]
+
+        chemin_taches.write_text(
+            json.dumps(
+                anciennes_taches,
+                ensure_ascii=False,
+                indent=4
+            ),
+            encoding="utf-8"
+        )
+
+        roy = Roy(
+            historique_actif=False,
+            fichier_memoire=str(chemin_memoire),
+            fichier_taches=str(chemin_taches)
+        )
+
+        assert roy.taches[0]["priorite"] == "normale"
+        assert roy.taches_sauvegardables is True
+
+        taches_invalides = [
+            {
+                "description": "tâche invalide",
+                "terminee": False,
+                "priorite": "urgente"
+            }
+        ]
+
+        chemin_taches.write_text(
+            json.dumps(
+                taches_invalides,
+                ensure_ascii=False,
+                indent=4
+            ),
+            encoding="utf-8"
+        )
+
+        roy_invalide = Roy(
+            historique_actif=False,
+            fichier_memoire=str(chemin_memoire),
+            fichier_taches=str(chemin_taches)
+        )
+
+        assert roy_invalide.taches == []
+        assert roy_invalide.taches_sauvegardables is False
+
+def tester_filtrage_taches():
+    roy = creer_roy_test(
+        historique_actif=False
+    )
+
+    roy.taches = [
+        {
+            "description": "tâche normale",
+            "terminee": False,
+            "priorite": "normale"
+        },
+        {
+            "description": "tâche haute",
+            "terminee": False,
+            "priorite": "haute"
+        },
+        {
+            "description": "tâche basse",
+            "terminee": True,
+            "priorite": "basse"
+        }
+    ]
+
+    assert roy.traiter_message(
+        "montre mes tâches de priorité haute",
+        "montre mes tâches de priorité haute"
+    ) is True
+
+    reponse = roy.historique[-1]["content"]
+
+    assert "2. ○ [haute] tâche haute" in reponse
+    assert "tâche normale" not in reponse
+    assert "tâche basse" not in reponse
+
+    assert roy.traiter_message(
+        "montre mes tâches à faire",
+        "montre mes tâches à faire"
+    ) is True
+
+    reponse = roy.historique[-1]["content"]
+
+    assert "1. ○ [normale] tâche normale" in reponse
+    assert "2. ○ [haute] tâche haute" in reponse
+    assert "tâche basse" not in reponse
+
+    assert roy.traiter_message(
+        "montre mes tâches terminées",
+        "montre mes tâches terminées"
+    ) is True
+
+    reponse = roy.historique[-1]["content"]
+
+    assert reponse == "3. ✓ [basse] tâche basse"
+
+    assert roy.traiter_message(
+        "montre mes tâches de priorité urgente",
+        "montre mes tâches de priorité urgente"
+    ) is True
+
+    assert roy.historique[-1]["content"] == (
+        "Choisis une priorité : "
+        "basse, normale ou haute."
+    )
+
 def tester_gestion_taches():
-    roy = creer_roy_test(historique_actif=False)
+    roy = creer_roy_test(
+        historique_actif=False
+    )
 
     assert roy.traiter_message(
         "ajoute une tâche : travailler sur Roy",
@@ -483,13 +621,14 @@ def tester_gestion_taches():
         "terminee": False
     }
 
-    # Vérification de l'ajout après rechargement
     roy = recharger_roy_test(roy)
 
     assert len(roy.taches) == 1
-    assert roy.taches[0]["description"] == "travailler sur Roy"
+    assert (
+        roy.taches[0]["description"]
+        == "travailler sur Roy"
+    )
 
-    # Modification de la priorité
     assert roy.traiter_message(
         "priorité tâche 1 : haute",
         "priorité tâche 1 : haute"
@@ -497,12 +636,10 @@ def tester_gestion_taches():
 
     assert roy.taches[0]["priorite"] == "haute"
 
-    # Vérification de la priorité après rechargement
     roy = recharger_roy_test(roy)
 
     assert roy.taches[0]["priorite"] == "haute"
 
-    # Tâche terminée
     assert roy.traiter_message(
         "termine la tâche 1",
         "termine la tâche 1"
@@ -510,30 +647,44 @@ def tester_gestion_taches():
 
     assert roy.taches[0]["terminee"] is True
 
-    # Vérification de l'état terminé après rechargement
     roy = recharger_roy_test(roy)
 
     assert roy.taches[0]["terminee"] is True
     assert roy.taches[0]["priorite"] == "haute"
 
-    # Modification de la description
+    assert roy.traiter_message(
+        "rouvre la tâche 1",
+        "rouvre la tâche 1"
+    ) is True
+
+    assert roy.taches[0]["terminee"] is False
+
+    roy = recharger_roy_test(roy)
+
+    assert roy.taches[0]["terminee"] is False
+    assert roy.taches[0]["priorite"] == "haute"
+
     assert roy.traiter_message(
         "modifie la tâche 1 : travailler sur Python",
         "modifie la tâche 1 : travailler sur Python"
     ) is True
 
-    assert roy.taches[0]["description"] == "travailler sur Python"
-    assert roy.taches[0]["terminee"] is True
+    assert (
+        roy.taches[0]["description"]
+        == "travailler sur Python"
+    )
+    assert roy.taches[0]["terminee"] is False
     assert roy.taches[0]["priorite"] == "haute"
 
-    # Vérification de la description après rechargement
     roy = recharger_roy_test(roy)
 
-    assert roy.taches[0]["description"] == "travailler sur Python"
-    assert roy.taches[0]["terminee"] is True
+    assert (
+        roy.taches[0]["description"]
+        == "travailler sur Python"
+    )
+    assert roy.taches[0]["terminee"] is False
     assert roy.taches[0]["priorite"] == "haute"
 
-    # Suppression
     assert roy.traiter_message(
         "supprime la tâche 1",
         "supprime la tâche 1"
@@ -541,7 +692,6 @@ def tester_gestion_taches():
 
     assert roy.taches == []
 
-    # Vérification de la suppression après rechargement
     roy = recharger_roy_test(roy)
 
     assert roy.taches == []
@@ -566,6 +716,8 @@ tester_aide_un_seul_message()
 tester_recherche_ignore_nouvelle_aide()
 tester_statut_un_seul_message()
 tester_echec_sauvegarde_preserve_memoire()
+tester_chargement_priorites_taches()
+tester_filtrage_taches()
 tester_gestion_taches()
 
 print("Tous les tests ont réussi.")
