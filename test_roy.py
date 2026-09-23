@@ -37,6 +37,13 @@ def creer_roy_test(**options):
         **options
     )
 
+def recharger_roy_test(roy: Roy) -> Roy:
+    return Roy(
+        historique_actif=False,
+        fichier_memoire=roy.fichier_memoire,
+        fichier_taches=roy.fichier_taches
+    )
+
 def tester_commandes_quitter():
     assert "quitter" in commandes_quitter
     assert "au revoir" in commandes_quitter
@@ -396,6 +403,10 @@ def tester_aide_un_seul_message():
     assert len(roy.historique) == 1
     assert "1. bonjour" in roy.historique[0]["content"]
     assert "20. quitter" in roy.historique[0]["content"]
+    assert "21. ajoute une tâche : description" in roy.historique[0]["content"]
+    assert "22. montre mes tâches" in roy.historique[0]["content"]
+    assert "23. termine la tâche 1" in roy.historique[0]["content"]
+    assert "24. supprime la tâche 1" in roy.historique[0]["content"]
 
 def tester_recherche_ignore_nouvelle_aide():
     roy = creer_roy_test(historique_actif=False)
@@ -457,39 +468,42 @@ def tester_echec_sauvegarde_preserve_memoire():
 def tester_gestion_taches():
     roy = creer_roy_test(historique_actif=False)
 
-    resultat = roy.traiter_message(
+    assert roy.traiter_message(
         "ajoute une tâche : travailler sur Roy",
         "ajoute une tâche : travailler sur Roy"
-    )
-    assert resultat is True
+    ) is True
+
     assert len(roy.taches) == 1
-    assert roy.taches[0]["description"] == "travailler sur Roy"
-    assert roy.taches[0]["terminee"] is False
+    assert roy.taches[0] == {
+        "description": "travailler sur Roy",
+        "terminee": False
+    }
 
-    roy_recharge = Roy(
-        historique_actif=False,
-        fichier_memoire=roy.fichier_memoire,
-        fichier_taches=roy.fichier_taches
-    )
+    roy = recharger_roy_test(roy)
 
-    assert len(roy_recharge.taches) == 1
-    assert roy_recharge.taches[0]["description"] == "travailler sur Roy"
+    assert len(roy.taches) == 1
 
-    resultat = roy_recharge.traiter_message(
+    assert roy.traiter_message(
         "termine la tâche 1",
         "termine la tâche 1"
-    )
+    ) is True
 
-    assert resultat is True
-    assert roy_recharge.taches[0]["terminee"] is True
+    assert roy.taches[0]["terminee"] is True
 
-    roy_verification = Roy(
-        historique_actif=False,
-        fichier_memoire=roy.fichier_memoire,
-        fichier_taches=roy.fichier_taches
-    )
+    roy = recharger_roy_test(roy)
 
-    assert roy_verification.taches[0]["terminee"] is True
+    assert roy.taches[0]["terminee"] is True
+
+    assert roy.traiter_message(
+        "supprime la tâche 1",
+        "supprime la tâche 1"
+    ) is True
+
+    assert roy.taches == []
+
+    roy = recharger_roy_test(roy)
+
+    assert roy.taches == []
 
 tester_commandes_quitter()
 tester_nettoyer_message()

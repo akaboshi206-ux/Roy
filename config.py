@@ -169,5 +169,9 @@ exemples_aide = [
     "active le système",
     "désactive le système",
     "bascule le système",
-    "quitter"
+    "quitter",
+    "ajoute une tâche : description",
+    "montre mes tâches",
+    "termine la tâche 1",
+    "supprime la tâche 1"
 ]

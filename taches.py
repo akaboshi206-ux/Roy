@@ -27,3 +27,10 @@ def terminer_tache(taches: list[dict], numero: int) -> bool:
 
     taches[numero - 1]["terminee"] = True
     return True
+
+def supprimer_tache(taches: list[dict], numero: int) -> bool:
+    if not 1 <= numero <= len(taches):
+        return False
+
+    taches.pop(numero - 1)
+    return True

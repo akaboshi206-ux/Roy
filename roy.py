@@ -3,9 +3,20 @@ import os
 from tempfile import NamedTemporaryFile
 from collections.abc import Callable, Collection
 from datetime import datetime
-from taches import ajouter_tache, formater_taches, terminer_tache
+from taches import (
+    ajouter_tache,
+    formater_taches,
+    terminer_tache,
+    supprimer_tache
+)
 
-from outils import nettoyer_texte, extraire_cle, formater_message_historique, sauvegarder_json_atomiquement
+from outils import (
+      nettoyer_texte,
+      extraire_cle,
+      formater_message_historique,
+      sauvegarder_json_atomiquement
+)
+
 from config import (
     salutations,
     commandes_memoire,
@@ -877,6 +888,41 @@ class Roy:
             else:
                 self.taches[numero - 1]["terminee"] = ancien_etat
                 self.repondre("La modification de la tâche a été annulée.")
+            return True
+
+        if message.startswith("supprime la tâche "):
+            texte_numero = message.removeprefix(
+                "supprime la tâche "
+            ).strip()
+
+            if not texte_numero.isdecimal():
+                self.repondre(
+                    "Indique un numéro de tâche valide."
+                )
+                return True
+
+            numero = int(texte_numero)
+
+            if not 1 <= numero <= len(self.taches):
+                self.repondre(
+                    "Indique un numéro de tâche valide."
+                )
+                return True
+
+            tache_supprimee = self.taches[numero - 1].copy()
+            supprimer_tache(self.taches, numero)
+
+            if self.sauvegarder_taches():
+                self.repondre("Tâche supprimée.")
+            else:
+                self.taches.insert(
+                    numero - 1,
+                    tache_supprimee
+                )
+                self.repondre(
+                    "La suppression de la tâche a été annulée."
+                )
+
             return True
 
         if message == "montre mes tâches":
