@@ -34,3 +34,15 @@ def supprimer_tache(taches: list[dict], numero: int) -> bool:
 
     taches.pop(numero - 1)
     return True
+
+def modifier_tache(taches: list[dict], numero: int, nouvelle_description: str) -> bool:
+    nouvelle_description = nouvelle_description.strip()
+
+    if (
+        not 1 <= numero <= len(taches)
+        or not nouvelle_description
+    ):
+        return False
+
+    taches[numero - 1]["description"] = nouvelle_description
+    return True

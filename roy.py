@@ -7,7 +7,8 @@ from taches import (
     ajouter_tache,
     formater_taches,
     terminer_tache,
-    supprimer_tache
+    supprimer_tache,
+    modifier_tache
 )
 
 from outils import (
@@ -888,6 +889,59 @@ class Roy:
             else:
                 self.taches[numero - 1]["terminee"] = ancien_etat
                 self.repondre("La modification de la tâche a été annulée.")
+            return True
+
+        if message.startswith("modifie la tâche "):
+            contenu = message.removeprefix(
+                "modifie la tâche "
+            ).strip()
+
+            texte_numero, separateur, nouvelle_description = (
+                contenu.partition(":")
+            )
+
+            texte_numero = texte_numero.strip()
+            nouvelle_description = nouvelle_description.strip()
+
+            if (
+                not separateur
+                or not texte_numero.isdecimal()
+                or not nouvelle_description
+            ):
+                self.repondre(
+                    "Utilise le format : "
+                    "modifie la tâche 1 : nouvelle description"
+                )
+                return True
+
+            numero = int(texte_numero)
+
+            if not 1 <= numero <= len(self.taches):
+                self.repondre(
+                    "Indique un numéro de tâche valide."
+                )
+                return True
+
+            ancienne_description = (
+                self.taches[numero - 1]["description"]
+            )
+
+            modifier_tache(
+                self.taches,
+                numero,
+                nouvelle_description
+            )
+
+            if self.sauvegarder_taches():
+                self.repondre("Tâche modifiée.")
+            else:
+                self.taches[numero - 1]["description"] = (
+                    ancienne_description
+                )
+                self.repondre(
+                    "La modification de la tâche a été annulée."
+                )
+
             return True
 
         if message.startswith("supprime la tâche "):

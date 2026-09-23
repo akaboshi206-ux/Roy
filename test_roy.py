@@ -407,6 +407,10 @@ def tester_aide_un_seul_message():
     assert "22. montre mes tâches" in roy.historique[0]["content"]
     assert "23. termine la tâche 1" in roy.historique[0]["content"]
     assert "24. supprime la tâche 1" in roy.historique[0]["content"]
+    assert (
+        "25. modifie la tâche 1 : nouvelle description"
+        in roy.historique[0]["content"]
+    )
 
 def tester_recherche_ignore_nouvelle_aide():
     roy = creer_roy_test(historique_actif=False)
@@ -492,6 +496,19 @@ def tester_gestion_taches():
 
     roy = recharger_roy_test(roy)
 
+    assert roy.taches[0]["terminee"] is True
+
+    assert roy.traiter_message(
+        "modifie la tâche 1 : travailler sur Python",
+        "modifie la tâche 1 : travailler sur Python"
+    ) is True
+
+    assert roy.taches[0]["description"] == "travailler sur Python"
+    assert roy.taches[0]["terminee"] is True
+
+    roy = recharger_roy_test(roy)
+
+    assert roy.taches[0]["description"] == "travailler sur Python"
     assert roy.taches[0]["terminee"] is True
 
     assert roy.traiter_message(
