@@ -483,10 +483,26 @@ def tester_gestion_taches():
         "terminee": False
     }
 
+    # Vérification de l'ajout après rechargement
     roy = recharger_roy_test(roy)
 
     assert len(roy.taches) == 1
+    assert roy.taches[0]["description"] == "travailler sur Roy"
 
+    # Modification de la priorité
+    assert roy.traiter_message(
+        "priorité tâche 1 : haute",
+        "priorité tâche 1 : haute"
+    ) is True
+
+    assert roy.taches[0]["priorite"] == "haute"
+
+    # Vérification de la priorité après rechargement
+    roy = recharger_roy_test(roy)
+
+    assert roy.taches[0]["priorite"] == "haute"
+
+    # Tâche terminée
     assert roy.traiter_message(
         "termine la tâche 1",
         "termine la tâche 1"
@@ -494,10 +510,13 @@ def tester_gestion_taches():
 
     assert roy.taches[0]["terminee"] is True
 
+    # Vérification de l'état terminé après rechargement
     roy = recharger_roy_test(roy)
 
     assert roy.taches[0]["terminee"] is True
+    assert roy.taches[0]["priorite"] == "haute"
 
+    # Modification de la description
     assert roy.traiter_message(
         "modifie la tâche 1 : travailler sur Python",
         "modifie la tâche 1 : travailler sur Python"
@@ -505,12 +524,16 @@ def tester_gestion_taches():
 
     assert roy.taches[0]["description"] == "travailler sur Python"
     assert roy.taches[0]["terminee"] is True
+    assert roy.taches[0]["priorite"] == "haute"
 
+    # Vérification de la description après rechargement
     roy = recharger_roy_test(roy)
 
     assert roy.taches[0]["description"] == "travailler sur Python"
     assert roy.taches[0]["terminee"] is True
+    assert roy.taches[0]["priorite"] == "haute"
 
+    # Suppression
     assert roy.traiter_message(
         "supprime la tâche 1",
         "supprime la tâche 1"
@@ -518,6 +541,7 @@ def tester_gestion_taches():
 
     assert roy.taches == []
 
+    # Vérification de la suppression après rechargement
     roy = recharger_roy_test(roy)
 
     assert roy.taches == []

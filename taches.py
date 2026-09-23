@@ -1,3 +1,5 @@
+PRIORITES_VALIDES = {"basse", "normale", "haute"}
+
 def ajouter_tache(taches: list[dict], description: str) -> bool:
     description = description.strip()
 
@@ -17,7 +19,11 @@ def formater_taches(taches: list[dict]) -> str:
     lignes = []
     for numero, tache in enumerate(taches, start=1):
         etat = "✓" if tache["terminee"] else "○"
-        lignes.append(f"{numero}. {etat} {tache['description']}")
+        priorite = tache.get("priorite", "normale")
+        lignes.append(
+            f"{numero}. {etat} [{priorite}] "
+            f"{tache['description']}"
+        )
 
     return "\n".join(lignes)
 
@@ -45,4 +51,16 @@ def modifier_tache(taches: list[dict], numero: int, nouvelle_description: str) -
         return False
 
     taches[numero - 1]["description"] = nouvelle_description
+    return True
+
+def changer_priorite(taches: list[dict], numero: int, priorite: str) -> bool:
+    priorite = priorite.strip().lower()
+
+    if (
+        not 1 <= numero <= len(taches)
+        or priorite not in PRIORITES_VALIDES
+    ):
+        return False
+
+    taches[numero - 1]["priorite"] = priorite
     return True

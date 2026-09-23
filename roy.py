@@ -8,7 +8,8 @@ from taches import (
     formater_taches,
     terminer_tache,
     supprimer_tache,
-    modifier_tache
+    modifier_tache,
+    changer_priorite
 )
 
 from outils import (
@@ -187,6 +188,19 @@ class Roy:
 
         print("Roy : Impossible de sauvegarder mes tâches.")
         return False
+
+    def obtenir_numero_tache(self, texte_numero: str) -> int | None:
+        texte_numero = texte_numero.strip()
+
+        if not texte_numero.isdecimal():
+            return None
+
+        numero = int(texte_numero)
+
+        if not 1 <= numero <= len(self.taches):
+            return None
+
+        return numero
 
     def charger_historique(self) -> None:
         try:
@@ -870,25 +884,30 @@ class Roy:
             return True
 
         if message.startswith("termine la tâche "):
-            texte_numero = message.removeprefix("termine la tâche ").strip()
+            numero = self.obtenir_numero_tache(
+                message.removeprefix(
+                    "termine la tâche "
+                )
+            )
 
-            if not texte_numero.isdecimal():
-                self.repondre("Indique un numéro de tâche valide.")
-                return True
-
-            numero = int(texte_numero)
-            if not 1 <= numero <= len(self.taches):
-                self.repondre("Indique un numéro de tâche valide.")
+            if numero is None:
+                self.repondre(
+                    "Indique un numéro de tâche valide."
+                )
                 return True
 
             ancien_etat = self.taches[numero - 1]["terminee"]
+
             terminer_tache(self.taches, numero)
 
             if self.sauvegarder_taches():
                 self.repondre("Tâche terminée.")
             else:
                 self.taches[numero - 1]["terminee"] = ancien_etat
-                self.repondre("La modification de la tâche a été annulée.")
+                self.repondre(
+                    "La modification de la tâche a été annulée."
+                )
+
             return True
 
         if message.startswith("modifie la tâche "):
@@ -900,23 +919,20 @@ class Roy:
                 contenu.partition(":")
             )
 
-            texte_numero = texte_numero.strip()
             nouvelle_description = nouvelle_description.strip()
 
-            if (
-                not separateur
-                or not texte_numero.isdecimal()
-                or not nouvelle_description
-            ):
+            if not separateur or not nouvelle_description:
                 self.repondre(
                     "Utilise le format : "
                     "modifie la tâche 1 : nouvelle description"
                 )
                 return True
 
-            numero = int(texte_numero)
+            numero = self.obtenir_numero_tache(
+                texte_numero
+            )
 
-            if not 1 <= numero <= len(self.taches):
+            if numero is None:
                 self.repondre(
                     "Indique un numéro de tâche valide."
                 )
@@ -944,26 +960,84 @@ class Roy:
 
             return True
 
-        if message.startswith("supprime la tâche "):
-            texte_numero = message.removeprefix(
-                "supprime la tâche "
+        if message.startswith("priorité tâche "):
+            contenu = message.removeprefix(
+                "priorité tâche "
             ).strip()
 
-            if not texte_numero.isdecimal():
+            texte_numero, separateur, priorite = (
+                contenu.partition(":")
+            )
+
+            priorite = priorite.strip()
+
+            if (
+                not separateur
+                or priorite not in {
+                    "basse",
+                    "normale",
+                    "haute"
+                }
+            ):
+                self.repondre(
+                    "Utilise le format : priorité tâche 1 : haute"
+                )
+                return True
+
+            numero = self.obtenir_numero_tache(
+                texte_numero
+            )
+
+            if numero is None:
                 self.repondre(
                     "Indique un numéro de tâche valide."
                 )
                 return True
 
-            numero = int(texte_numero)
+            ancienne_priorite = self.taches[numero - 1].get(
+                "priorite"
+            )
 
-            if not 1 <= numero <= len(self.taches):
+            changer_priorite(
+                self.taches,
+                numero,
+                priorite
+            )
+
+            if self.sauvegarder_taches():
+                self.repondre("Priorité modifiée.")
+            else:
+                if ancienne_priorite is None:
+                    self.taches[numero - 1].pop(
+                        "priorite",
+                        None
+                    )
+                else:
+                    self.taches[numero - 1]["priorite"] = (
+                        ancienne_priorite
+                    )
+
+                self.repondre(
+                    "La modification de la priorité a été annulée."
+                )
+
+            return True
+
+        if message.startswith("supprime la tâche "):
+            numero = self.obtenir_numero_tache(
+                message.removeprefix(
+                    "supprime la tâche "
+                )
+            )
+
+            if numero is None:
                 self.repondre(
                     "Indique un numéro de tâche valide."
                 )
                 return True
 
-            tache_supprimee = self.taches[numero - 1].copy()
+            ancienne_tache = self.taches[numero - 1].copy()
+
             supprimer_tache(self.taches, numero)
 
             if self.sauvegarder_taches():
@@ -971,7 +1045,7 @@ class Roy:
             else:
                 self.taches.insert(
                     numero - 1,
-                    tache_supprimee
+                    ancienne_tache
                 )
                 self.repondre(
                     "La suppression de la tâche a été annulée."

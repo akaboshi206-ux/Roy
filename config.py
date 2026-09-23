@@ -174,5 +174,6 @@ exemples_aide = [
     "montre mes tâches",
     "termine la tâche 1",
     "supprime la tâche 1",
-    "modifie la tâche 1 : nouvelle description"
+    "modifie la tâche 1 : nouvelle description",
+    "priorité tâche 1 : haute"
 ]
