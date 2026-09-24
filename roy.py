@@ -1,5 +1,4 @@
 import json
-from tempfile import NamedTemporaryFile
 from collections.abc import Callable, Collection
 from datetime import datetime
 
@@ -12,13 +11,16 @@ from commandes_historique import (
     traiter_commande_historique
 )
 
+from commandes_memoire import (
+    traiter_commande_memoire
+)
+
 from commandes_taches import (
     traiter_commande_tache
 )
 
 from outils import (
       nettoyer_texte,
-      extraire_cle,
       formater_message_historique,
       sauvegarder_json_atomiquement
 )
@@ -26,12 +28,6 @@ from outils import (
 from config import (
     salutations,
     commandes_memoire,
-    formes_connaitre,
-    formes_question,
-    formes_rappeler,
-    formes_oublie,
-    formes_apprendre,
-    mots_inutiles,
     cles_feminines,
     commandes_aide,
     commandes_statut,
@@ -885,6 +881,9 @@ class Roy:
                 
         if self.traiter_renommage(message):
             return True
+
+        if traiter_commande_memoire(self, message, message_original):
+            return True
               
         if message == "comment vas-tu":
             self.repondre("Je vais bien, merci !")
@@ -904,58 +903,5 @@ class Roy:
         elif message == "combien d'informations connais-tu":
             self.compter_memoire()
             return True
-
-        elif any(forme in message for forme in formes_rappeler):
-            cle = extraire_cle(message, formes_rappeler, mots_inutiles)
-
-            if cle is None:
-                self.repondre("Quelle information veux-tu que je te rappelle ?")
-            else:
-                self.rappeler(cle)
-
-            return True
-
-        elif any(forme in message for forme in formes_oublie):
-            cle = extraire_cle(message, formes_oublie, mots_inutiles)
-
-            if cle is None:
-                self.repondre("Quelle information veux-tu que j'oublie ?")
-            else:
-                self.oublier(cle)
-
-            return True
-
-        elif any(forme in message for forme in formes_connaitre):
-            cle = extraire_cle(message, formes_connaitre, mots_inutiles)
-
-            if cle is None:
-                self.repondre("Dis-moi ce que tu veux savoir si je connais.")
-                return True
-        
-            self.connaitre(cle)
-            return True
-
-        elif any(forme in message for forme in formes_question):
-            cle = extraire_cle(message, formes_question, mots_inutiles)
-
-            if cle is None:
-                self.repondre("Je n'ai pas trouvé ce que tu veux connaître.")
-                return True
-        
-            self.connaitre(cle)
-            return True
-
-        elif any(forme in message for forme in formes_apprendre):
-            if message_original.lower().startswith("roy "):
-                message_sans_roy = message_original[4:]
-            else:
-                message_sans_roy = message_original
-            for forme in formes_apprendre:
-                if forme in message:
-                    message_sans_roy = message_sans_roy.removeprefix(forme)
-                    break
-
-            self.traiter_apprentissage(message_sans_roy)
-            return True
-             
+       
         return False      
