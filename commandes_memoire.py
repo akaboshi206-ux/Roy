@@ -4,6 +4,7 @@ from config import (
     formes_rappeler,
     formes_oublie,
     formes_apprendre,
+    formes_renommer,
     mots_inutiles
 )
 
@@ -147,12 +148,51 @@ def traiter_apprentissage_memoire(
     )
     return True
 
+def traiter_renommage_memoire(
+    roy,
+    message: str
+) -> bool:
+    for forme in formes_renommer:
+        if message.startswith(forme):
+            contenu = message.removeprefix(forme).strip()
+
+            if " en " not in contenu:
+                roy.repondre(
+                    "Utilise le format : "
+                    "renomme ancienne_clé en nouvelle_clé"
+                )
+                return True
+
+            ancienne_cle, nouvelle_cle = contenu.split(
+                " en ",
+                1
+            )
+
+            ancienne_cle = ancienne_cle.strip()
+            nouvelle_cle = nouvelle_cle.strip()
+
+            if not ancienne_cle or not nouvelle_cle:
+                roy.repondre(
+                    "Utilise le format : "
+                    "renomme ancienne_clé en nouvelle_clé"
+                )
+                return True
+
+            roy.renommer_information(
+                ancienne_cle,
+                nouvelle_cle
+            )
+            return True
+
+    return False
+
 def traiter_commande_memoire(
     roy,
     message: str,
     message_original: str
 ) -> bool:
     gestionnaires = (
+        traiter_renommage_memoire,
         traiter_rappel_memoire,
         traiter_oubli_memoire,
         traiter_connaissance_memoire,
@@ -171,3 +211,4 @@ def traiter_commande_memoire(
         return True
 
     return False
+

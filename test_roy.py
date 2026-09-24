@@ -3,10 +3,16 @@ import json
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from roy import Roy
-from outils import formater_message_historique
+from outils import (
+    charger_json,
+    formater_message_historique
+)
 from config import (
     commandes_quitter,
     exemples_aide
+)
+from commandes_conversation import (
+    traiter_commande_conversation
 )
 from main import nettoyer_message
 from itertools import count
@@ -31,12 +37,16 @@ def creer_roy_test(**options):
     )
 
     options.setdefault(
+    "fichier_memoire",
+    str(chemin_memoire)
+)
+
+    options.setdefault(
         "fichier_taches",
         str(chemin_taches)
     )
 
     return Roy(
-        fichier_memoire=str(chemin_memoire),
         **options
     )
 
@@ -216,36 +226,6 @@ def tester_export_historique():
         )
 
         assert not chemin_vide.exists()
-
-def tester_executer_commande():
-    roy = creer_roy_test(historique_actif=False)
-    appels = []
-
-    def action_test():
-        appels.append("ok")
-
-    commandes = [
-        (
-            {"test"},
-            action_test
-        )
-    ]
-
-    resultat_connu = roy.executer_commande(
-        "test",
-        commandes
-    )
-
-    assert resultat_connu is True
-    assert appels == ["ok"]
-
-    resultat_inconnu = roy.executer_commande(
-        "inconnue",
-        commandes
-    )
-
-    assert resultat_inconnu is False
-    assert appels == ["ok"]
 
 def tester_commandes_centralisees():
     roy = creer_roy_test(historique_actif=False)
@@ -696,6 +676,200 @@ def tester_gestion_taches():
 
     assert roy.taches == []
 
+def tester_apprentissage_conserve_majuscules():
+    roy = creer_roy_test(
+        historique_actif=False
+    )
+
+    resultat = roy.traiter_message(
+        "retiens que ville = paris",
+        "retiens que ville = Paris"
+    )
+
+    assert resultat is True
+    assert roy.memoire["ville"] == "Paris"
+
+def tester_commande_generale():
+    roy = creer_roy_test(
+        historique_actif=False
+    )
+
+    resultat = roy.traiter_message(
+        "désactive ta mémoire",
+        "désactive ta mémoire"
+    )
+
+    assert resultat is True
+    assert roy.etat["memoire"]["active"] is False
+
+def tester_commande_conversation():
+    roy = creer_roy_test(
+        historique_actif=False
+    )
+
+    resultat_connu = traiter_commande_conversation(
+        roy,
+        "comment vas-tu"
+    )
+
+    resultat_inconnu = traiter_commande_conversation(
+        roy,
+        "commande inconnue"
+    )
+
+    assert resultat_connu is True
+    assert resultat_inconnu is False
+
+def tester_charger_json():
+    fichier_valide = Path(
+        dossier_tests.name
+    ) / "chargement_valide.json"
+
+    fichier_valide.write_text(
+        json.dumps(
+            {"nom": "Cyan"}
+        ),
+        encoding="utf-8"
+    )
+
+    donnees_valides, erreur_valide = charger_json(
+        str(fichier_valide),
+        {}
+    )
+
+    fichier_absent = Path(
+        dossier_tests.name
+    ) / "chargement_absent.json"
+
+    donnees_absentes, erreur_absente = charger_json(
+        str(fichier_absent),
+        {}
+    )
+
+    fichier_invalide = Path(
+        dossier_tests.name
+    ) / "chargement_invalide.json"
+
+    fichier_invalide.write_text(
+        "{json invalide",
+        encoding="utf-8"
+    )
+
+    donnees_invalides, erreur_invalide = charger_json(
+        str(fichier_invalide),
+        []
+    )
+
+    assert donnees_valides == {"nom": "Cyan"}
+    assert erreur_valide is None
+
+    assert donnees_absentes == {}
+    assert isinstance(
+        erreur_absente,
+        FileNotFoundError
+    )
+
+    assert donnees_invalides == []
+    assert isinstance(
+        erreur_invalide,
+        json.JSONDecodeError
+    )
+
+def tester_chargement_memoire_json():
+    fichier_memoire = Path(
+        dossier_tests.name
+    ) / "memoire_chargement.json"
+
+    fichier_memoire.write_text(
+        json.dumps(
+            {
+                "ville": "Paris",
+                "couleur": "cyan"
+            }
+        ),
+        encoding="utf-8"
+    )
+
+    roy = creer_roy_test(
+        historique_actif=False,
+        fichier_memoire=str(fichier_memoire)
+    )
+
+    assert roy.memoire == {
+        "ville": "Paris",
+        "couleur": "cyan"
+    }
+    assert roy.memoire_sauvegardable is True
+
+def tester_chargement_historique_json():
+    fichier_historique = Path(
+        dossier_tests.name
+    ) / "historique_chargement.json"
+
+    fichier_historique.write_text(
+        json.dumps(
+            [
+                {
+                    "role": "user",
+                    "content": "Bonjour Roy"
+                },
+                {
+                    "role": "assistant",
+                    "content": "Bonjour Cyan"
+                }
+            ]
+        ),
+        encoding="utf-8"
+    )
+
+    roy = creer_roy_test(
+        fichier_historique=str(fichier_historique)
+    )
+
+    assert roy.historique == [
+        {
+            "role": "user",
+            "content": "Bonjour Roy"
+        },
+        {
+            "role": "assistant",
+            "content": "Bonjour Cyan"
+        }
+    ]
+    assert roy.historique_sauvegardable is True
+
+
+def tester_chargement_taches_json():
+    fichier_taches = Path(
+        dossier_tests.name
+    ) / "taches_chargement.json"
+
+    fichier_taches.write_text(
+        json.dumps(
+            [
+                {
+                    "description": "Continuer Roy",
+                    "terminee": False
+                }
+            ]
+        ),
+        encoding="utf-8"
+    )
+
+    roy = creer_roy_test(
+        historique_actif=False,
+        fichier_taches=str(fichier_taches)
+    )
+
+    assert roy.taches == [
+        {
+            "description": "Continuer Roy",
+            "terminee": False,
+            "priorite": "normale"
+        }
+    ]
+    assert roy.taches_sauvegardables is True
+
 tester_commandes_quitter()
 tester_nettoyer_message()
 tester_historique()
@@ -704,7 +878,6 @@ tester_statistiques_historique()
 tester_chargement_historique_invalide()
 tester_commande_historique_avec_limite()
 tester_export_historique()
-tester_executer_commande()
 tester_commandes_centralisees()
 tester_reactivation_systeme()   
 tester_repondre()
@@ -719,5 +892,12 @@ tester_echec_sauvegarde_preserve_memoire()
 tester_chargement_priorites_taches()
 tester_filtrage_taches()
 tester_gestion_taches()
+tester_apprentissage_conserve_majuscules()
+tester_commande_generale()
+tester_commande_conversation()
+tester_charger_json()
+tester_chargement_memoire_json()
+tester_chargement_historique_json()
+tester_chargement_taches_json()
 
 print("Tous les tests ont réussi.")

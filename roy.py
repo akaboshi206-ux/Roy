@@ -1,5 +1,5 @@
 import json
-from collections.abc import Callable, Collection
+from collections.abc import Callable
 from datetime import datetime
 
 from taches import (
@@ -15,37 +15,34 @@ from commandes_memoire import (
     traiter_commande_memoire
 )
 
+from commandes_systeme import (
+    traiter_commande_systeme
+)
+
+from commandes_generales import (
+    traiter_commande_generale
+)
+
+from commandes_conversation import (
+    traiter_commande_conversation
+)
+
 from commandes_taches import (
     traiter_commande_tache
 )
 
 from outils import (
-      nettoyer_texte,
-      formater_message_historique,
-      sauvegarder_json_atomiquement
+    charger_json,
+    nettoyer_texte,
+    formater_message_historique,
+    sauvegarder_json_atomiquement
 )
 
 from config import (
-    salutations,
-    commandes_memoire,
     cles_feminines,
-    commandes_aide,
-    commandes_statut,
-    commandes_activer_memoire,
-    commandes_desactiver_memoire,
-    commandes_basculer_memoire,
-    commandes_desactiver_systeme,
-    commandes_activer_systeme,
-    commandes_basculer_systeme,
-    formes_renommer,    
     commandes_rechercher_historique,    
     exemples_aide
 )
-
-CommandeAction = tuple[
-    Collection[str],
-    Callable[[], object]
-]
 
 class Roy:
     def __init__(
@@ -78,50 +75,6 @@ class Roy:
         self.historique_sauvegardable = True
         if self.historique_actif:
             self.charger_historique()
-        self.commandes_systeme = [
-            (
-                commandes_activer_systeme,
-                self.activer_systeme
-            ),
-            (
-                commandes_desactiver_systeme,
-                self.desactiver_systeme
-            ),
-            (
-                commandes_basculer_systeme,
-                self.basculer_systeme
-            ),
-            (
-                commandes_statut,
-                self.afficher_statut
-            )
-        ]
-        self.commandes_simples = [
-            (
-                commandes_aide,
-                self.afficher_aide
-            ),
-            (
-                commandes_desactiver_memoire,
-                self.desactiver_memoire
-            ),
-            (
-                commandes_basculer_memoire,
-                self.basculer_memoire
-            ),
-            (
-                commandes_activer_memoire,
-                self.activer_memoire
-            ),            
-            (
-                salutations,
-                self.saluer
-            ),
-            (
-                commandes_memoire,
-                self.afficher_memoire
-            ),            
-        ]
 
     def ajouter_historique(self, role: str, contenu: str) -> None:
         date_message = datetime.now().isoformat(timespec="seconds")
@@ -140,56 +93,47 @@ class Roy:
         print(f"Roy : {contenu}")
 
     def charger_taches(self) -> None:
-        try:
-            with open(
-                self.fichier_taches,
-                "r",
-                encoding="utf-8"
-            ) as fichier:
-                donnees = json.load(fichier)
+        donnees, erreur = charger_json(
+            self.fichier_taches,
+            []
+        )
 
-            if not isinstance(donnees, list) or any(
-                not isinstance(tache, dict)
-                or not isinstance(
-                    tache.get("description"),
-                    str
-                )
-                or not isinstance(
-                    tache.get("terminee"),
-                    bool
-                )
-                or tache.get(
-                    "priorite",
-                    "normale"
-                ) not in PRIORITES_VALIDES
-                for tache in donnees
-            ):
-                print(
-                    "Roy : Le format des tâches est invalide."
-                )
-                self.taches_sauvegardables = False
-                return
+        if isinstance(erreur, FileNotFoundError):
+            return
 
-            for tache in donnees:
-                tache.setdefault(
-                    "priorite",
-                    "normale"
-                )
-
-            self.taches = donnees
-
-        except FileNotFoundError:
-            pass
-
-        except (
-            json.JSONDecodeError,
-            OSError
-        ) as erreur:
-            print(
-                "Roy : Impossible de charger mes tâches."
-            )
+        if erreur is not None:
+            print("Roy : Impossible de charger mes tâches.")
             print(erreur)
             self.taches_sauvegardables = False
+            return
+
+        if not isinstance(donnees, list) or any(
+            not isinstance(tache, dict)
+            or not isinstance(
+                tache.get("description"),
+                str
+            )
+            or not isinstance(
+                tache.get("terminee"),
+                bool
+            )
+            or tache.get(
+                "priorite",
+                "normale"
+            ) not in PRIORITES_VALIDES
+            for tache in donnees
+        ):
+            print("Roy : Le format des tâches est invalide.")
+            self.taches_sauvegardables = False
+            return
+
+        for tache in donnees:
+            tache.setdefault(
+                "priorite",
+                "normale"
+            )
+
+        self.taches = donnees
 
     def sauvegarder_taches(self) -> bool:
         if not self.taches_sauvegardables:
@@ -232,43 +176,45 @@ class Roy:
         return False
 
     def charger_historique(self) -> None:
-        try:
-            with open(self.fichier_historique, "r", encoding="utf-8") as fichier:
-                donnees = json.load(fichier)
+        donnees, erreur = charger_json(
+            self.fichier_historique,
+            []
+        )
 
-            if not isinstance(donnees, list):
-                print("Roy : Le format de l'historique est invalide.")
+        if isinstance(erreur, FileNotFoundError):
+            self.historique = []
+            return
+
+        if erreur is not None:
+            if isinstance(erreur, json.JSONDecodeError):
+                print("Roy : Mon historique semble endommagé.")
+            else:
+                print("Roy : Impossible de charger mon historique.")
+
+            print(erreur)
+            self.historique_sauvegardable = False
+            self.historique = []
+            return
+
+        if not isinstance(donnees, list):
+            print("Roy : Le format de l'historique est invalide.")
+            self.historique_sauvegardable = False
+            self.historique = []
+            return
+
+        historique_valide = []
+
+        for message in donnees:
+            if (
+                isinstance(message, dict)
+                and isinstance(message.get("role"), str)
+                and isinstance(message.get("content"), str)
+            ):
+                historique_valide.append(message)
+            else:
                 self.historique_sauvegardable = False
-                self.historique = []
-                return
 
-            historique_valide = []
-            for message in donnees:
-                if (
-                    isinstance(message, dict)
-                    and isinstance(message.get("role"), str)
-                    and isinstance(message.get("content"), str)
-                ):
-                    historique_valide.append(message)
-                else:
-                    self.historique_sauvegardable = False
-
-            self.historique = historique_valide
-
-        except FileNotFoundError:
-            self.historique = []
-
-        except json.JSONDecodeError as erreur:
-            print("Roy : Mon historique semble endommagé.")
-            print(erreur)
-            self.historique_sauvegardable = False
-            self.historique = []
-
-        except OSError as erreur:
-            print("Roy : Impossible de charger mon historique.")
-            print(erreur)
-            self.historique_sauvegardable = False
-            self.historique = []
+        self.historique = historique_valide
 
     def sauvegarder_historique(self) -> bool:
         if not self.historique_actif:
@@ -420,21 +366,33 @@ class Roy:
             raise ValueError("Le texte ne peut pas être vide.")
 
     def charger_memoire(self) -> None:
-        try:
-            with open(self.fichier_memoire, "r", encoding="utf-8") as fichier:
-                self.memoire = json.load(fichier)  
+        donnees, erreur = charger_json(
+            self.fichier_memoire,
+            {}
+        )
 
-            if not isinstance(self.memoire, dict):
-                print("Roy : Le format de ma mémoire est invalide.")
-                self.memoire_sauvegardable = False
-                self.memoire = {}              
-        except FileNotFoundError:
+        if isinstance(erreur, FileNotFoundError):
             self.memoire = {}
-        except json.JSONDecodeError as erreur:
-            print("Roy : Ma mémoire semble endommagée.")
-            self.memoire_sauvegardable = False
+            return
+
+        if erreur is not None:
+            if isinstance(erreur, json.JSONDecodeError):
+                print("Roy : Ma mémoire semble endommagée.")
+            else:
+                print("Roy : Impossible de charger ma mémoire.")
+
             print(erreur)
-            self.memoire = {}        
+            self.memoire_sauvegardable = False
+            self.memoire = {}
+            return
+
+        if not isinstance(donnees, dict):
+            print("Roy : Le format de ma mémoire est invalide.")
+            self.memoire_sauvegardable = False
+            self.memoire = {}
+            return
+
+        self.memoire = donnees        
 
     def saluer(self):
         self.repondre(f"Bonjour {self.memoire.get('nom', 'utilisateur')} !")
@@ -819,36 +777,6 @@ class Roy:
             else:
                 self.repondre("Système désactivé.")
 
-    def traiter_renommage(self, message: str):
-        information = None
-
-        for forme in formes_renommer:
-            if message.startswith(forme):
-                information = message.removeprefix(forme)
-                break
-        if information is not None:
-                    if " en " in information:
-                        ancienne_cle, nouvelle_cle = information.split(" en ", 1)
-                        ancienne_cle = ancienne_cle.strip()
-                        nouvelle_cle = nouvelle_cle.strip()
-                        if not ancienne_cle or not nouvelle_cle:
-                            self.repondre("Les deux noms doivent être renseignés.")
-                            return True
-                        self.renommer_information(ancienne_cle, nouvelle_cle)
-                        return True
-                    else:
-                        self.repondre("Utilise le format : renomme ancienne_clé en nouvelle_clé")
-                        return True
-        return False
-
-    def executer_commande(self, message: str, commandes_actions: list[CommandeAction]) -> bool:
-        for formulations, action in commandes_actions:
-            if message in formulations:
-                action()
-                return True
-
-        return False
-
     def traiter_message(self, message, message_original):
 
         try:
@@ -857,51 +785,26 @@ class Roy:
             self.repondre(str(erreur))
             return True
                 
-        if self.executer_commande(
-            message,
-            self.commandes_systeme
-        ):
+        if traiter_commande_systeme(self, message):
             return True
                 
         if not self.etat["systeme"]["actif"]:
             self.repondre("Le système est désactivé. Réactive-le pour continuer.")
             return True     
            
-        if self.executer_commande(
-            message,
-            self.commandes_simples
-        ):
+        if traiter_commande_generale(self, message):
             return True
 
         if traiter_commande_tache(self, message):
             return True
 
         if traiter_commande_historique(self, message):
-            return True 
-                
-        if self.traiter_renommage(message):
-            return True
+            return True                    
 
         if traiter_commande_memoire(self, message, message_original):
             return True
-              
-        if message == "comment vas-tu":
-            self.repondre("Je vais bien, merci !")
-            return True
 
-        elif "mon nom" in message:
-            self.repondre(f"Ton nom est {self.memoire.get('nom', 'utilisateur')}")
+        if traiter_commande_conversation(self, message):
             return True
-
-        elif "mon humeur" in message:
-            self.repondre(
-                f"Tu m'as dit que ton humeur était "
-                f"{self.memoire.get('humeur', 'inconnue')}"
-            )
-            return True     
-
-        elif message == "combien d'informations connais-tu":
-            self.compter_memoire()
-            return True
-       
+        
         return False      

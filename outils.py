@@ -64,3 +64,24 @@ def sauvegarder_json_atomiquement(chemin, donnees) -> bool:
                 pass
 
         return False
+
+def charger_json(
+    chemin: str,
+    valeur_par_defaut: object
+) -> tuple[object, Exception | None]:
+    try:
+        with open(
+            chemin,
+            "r",
+            encoding="utf-8"
+        ) as fichier:
+            donnees = json.load(fichier)
+
+        return donnees, None
+
+    except (
+        FileNotFoundError,
+        json.JSONDecodeError,
+        OSError
+    ) as erreur:
+        return valeur_par_defaut, erreur
