@@ -31,15 +31,24 @@ def creer_roy_test(**options):
         Path(dossier_tests.name)
         / f"memoire_{numero}.json"
     )
+    chemin_historique = (
+        Path(dossier_tests.name)
+        / f"historique_{numero}.json"
+    )
     chemin_taches = (
         Path(dossier_tests.name)
         / f"taches_{numero}.json"
     )
 
     options.setdefault(
-    "fichier_memoire",
-    str(chemin_memoire)
-)
+        "fichier_memoire",
+        str(chemin_memoire)
+    )
+
+    options.setdefault(
+        "fichier_historique",
+        str(chemin_historique)
+    )
 
     options.setdefault(
         "fichier_taches",
@@ -870,34 +879,137 @@ def tester_chargement_taches_json():
     ]
     assert roy.taches_sauvegardables is True
 
-tester_commandes_quitter()
-tester_nettoyer_message()
-tester_historique()
-tester_recherche_historique()
-tester_statistiques_historique()
-tester_chargement_historique_invalide()
-tester_commande_historique_avec_limite()
-tester_export_historique()
-tester_commandes_centralisees()
-tester_reactivation_systeme()   
-tester_repondre()
-tester_mise_a_jour_etat()
-tester_statut()
-tester_memoire_configurable()
-tester_formatage_message_historique()
-tester_aide_un_seul_message()
-tester_recherche_ignore_nouvelle_aide()
-tester_statut_un_seul_message()
-tester_echec_sauvegarde_preserve_memoire()
-tester_chargement_priorites_taches()
-tester_filtrage_taches()
-tester_gestion_taches()
-tester_apprentissage_conserve_majuscules()
-tester_commande_generale()
-tester_commande_conversation()
-tester_charger_json()
-tester_chargement_memoire_json()
-tester_chargement_historique_json()
-tester_chargement_taches_json()
+def tester_chargements_fichiers_absents():
+    with TemporaryDirectory() as dossier:
+        roy = Roy(
+            fichier_memoire=str(
+                Path(dossier) / "memoire_absente.json"
+            ),
+            fichier_historique=str(
+                Path(dossier) / "historique_absent.json"
+            ),
+            fichier_taches=str(
+                Path(dossier) / "taches_absentes.json"
+            )
+        )
 
-print("Tous les tests ont réussi.")
+        assert roy.memoire == {}
+        assert roy.historique == []
+        assert roy.taches == []
+
+        assert roy.memoire_sauvegardable is True
+        assert roy.historique_sauvegardable is True
+        assert roy.taches_sauvegardables is True
+
+def tester_chargements_json_endommages():
+    with TemporaryDirectory() as dossier:
+        fichier_memoire = (
+            Path(dossier) / "memoire_endommagee.json"
+        )
+        fichier_historique = (
+            Path(dossier) / "historique_endommage.json"
+        )
+        fichier_taches = (
+            Path(dossier) / "taches_endommagees.json"
+        )
+
+        fichier_memoire.write_text(
+            "{json invalide",
+            encoding="utf-8"
+        )
+        fichier_historique.write_text(
+            "{json invalide",
+            encoding="utf-8"
+        )
+        fichier_taches.write_text(
+            "{json invalide",
+            encoding="utf-8"
+        )
+
+        roy = Roy(
+            fichier_memoire=str(fichier_memoire),
+            fichier_historique=str(fichier_historique),
+            fichier_taches=str(fichier_taches)
+        )
+
+        assert roy.memoire == {}
+        assert roy.historique == []
+        assert roy.taches == []
+
+        assert roy.memoire_sauvegardable is False
+        assert roy.historique_sauvegardable is False
+        assert roy.taches_sauvegardables is False
+
+def tester_chargements_formats_invalides():
+    with TemporaryDirectory() as dossier:
+        fichier_memoire = (
+            Path(dossier) / "memoire_format_invalide.json"
+        )
+        fichier_historique = (
+            Path(dossier) / "historique_format_invalide.json"
+        )
+        fichier_taches = (
+            Path(dossier) / "taches_format_invalide.json"
+        )
+
+        fichier_memoire.write_text(
+            json.dumps([]),
+            encoding="utf-8"
+        )
+        fichier_historique.write_text(
+            json.dumps({}),
+            encoding="utf-8"
+        )
+        fichier_taches.write_text(
+            json.dumps({}),
+            encoding="utf-8"
+        )
+
+        roy = Roy(
+            fichier_memoire=str(fichier_memoire),
+            fichier_historique=str(fichier_historique),
+            fichier_taches=str(fichier_taches)
+        )
+
+        assert roy.memoire == {}
+        assert roy.historique == []
+        assert roy.taches == []
+
+        assert roy.memoire_sauvegardable is False
+        assert roy.historique_sauvegardable is False
+        assert roy.taches_sauvegardables is False
+
+def tester_charger_json_erreur_lecture():
+    with patch(
+        "builtins.open",
+        side_effect=PermissionError("accès refusé")
+    ):
+        donnees, erreur = charger_json(
+            "fichier_protege.json",
+            {}
+        )
+
+    assert donnees == {}
+    assert isinstance(
+        erreur,
+        PermissionError
+    )
+
+def lancer_tests():
+    tests = [
+        fonction
+        for nom, fonction in globals().copy().items()
+        if nom.startswith("tester_")
+        and callable(fonction)
+    ]
+
+    for test in tests:
+        test()
+
+    print(
+        f"{len(tests)} tests ont réussi."
+    )
+
+
+if __name__ == "__main__":
+    lancer_tests()
