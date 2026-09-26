@@ -1,6 +1,60 @@
 import json
 import os
 from tempfile import NamedTemporaryFile
+from typing import (
+    Literal,
+    NotRequired,
+    TypedDict
+)
+
+RoleHistorique = Literal[
+    "user",
+    "assistant"
+]
+
+class MessageHistorique(TypedDict):
+    role: RoleHistorique
+    content: str
+    timestamp: NotRequired[str]
+
+Memoire = dict[str, str]
+
+
+def est_memoire_valide(
+    donnees: object
+) -> bool:
+    if not isinstance(donnees, dict):
+        return False
+
+    return all(
+        isinstance(cle, str)
+        and isinstance(valeur, str)
+        for cle, valeur in donnees.items()
+    )
+
+def est_message_historique_valide(
+    message: object
+) -> bool:
+    if not isinstance(message, dict):
+        return False
+
+    timestamp_valide = (
+        "timestamp" not in message
+        or isinstance(
+            message.get("timestamp"),
+            str
+        )
+    )
+
+    return (
+        message.get("role")
+        in ("user", "assistant")
+        and isinstance(
+            message.get("content"),
+            str
+        )
+        and timestamp_valide
+    )
 
 def nettoyer_texte(texte, minuscules=True):
     texte_nettoye = texte.strip()
@@ -27,7 +81,7 @@ def extraire_cle(message, formes, mots_inutiles):
 
     return None
 
-def formater_message_historique(message):
+def formater_message_historique(message: MessageHistorique) -> str:
     auteur = "Toi" if message["role"] == "user" else "Roy"
     timestamp = message.get("timestamp")
 

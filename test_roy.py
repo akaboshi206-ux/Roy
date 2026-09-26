@@ -5,7 +5,9 @@ from tempfile import TemporaryDirectory
 from roy import Roy
 from outils import (
     charger_json,
-    formater_message_historique
+    formater_message_historique,
+    est_message_historique_valide,
+    est_memoire_valide
 )
 from config import (
     commandes_quitter,
@@ -19,6 +21,10 @@ from itertools import count
 from contextlib import redirect_stdout
 from io import StringIO
 from unittest.mock import patch
+from taches import (
+    est_tache_valide,
+    rechercher_taches
+)
 
 dossier_tests = TemporaryDirectory()
 numeros_tests = count()
@@ -605,9 +611,10 @@ def tester_gestion_taches():
     ) is True
 
     assert len(roy.taches) == 1
-    assert roy.taches[0] == {
-        "description": "travailler sur Roy",
-        "terminee": False
+    assert roy.taches[0] == { 
+        "description": "travailler sur Roy", 
+        "terminee": False,
+        "priorite": "normale"
     }
 
     roy = recharger_roy_test(roy)
@@ -617,6 +624,7 @@ def tester_gestion_taches():
         roy.taches[0]["description"]
         == "travailler sur Roy"
     )
+    assert roy.taches[0]["priorite"] == "normale"
 
     assert roy.traiter_message(
         "priorité tâche 1 : haute",
@@ -994,6 +1002,215 @@ def tester_charger_json_erreur_lecture():
         erreur,
         PermissionError
     )
+
+def tester_validation_tache():
+    assert est_tache_valide({
+        "description": "travailler sur Roy",
+        "terminee": False,
+        "priorite": "normale"
+    }) is True
+
+    assert est_tache_valide({
+        "description": "ancienne tâche",
+        "terminee": False
+    }) is True
+
+    assert est_tache_valide({
+        "description": 42,
+        "terminee": False
+    }) is False
+
+    assert est_tache_valide({
+        "description": "tâche invalide",
+        "terminee": "non"
+    }) is False
+
+    assert est_tache_valide({
+        "description": "tâche invalide",
+        "terminee": False,
+        "priorite": "urgente"
+    }) is False
+
+    assert est_tache_valide("pas une tâche") is False
+
+def tester_validation_message_historique():
+    assert est_message_historique_valide({
+        "role": "user",
+        "content": "Bonjour",
+        "timestamp": "2026-09-26T11:00:00"
+    }) is True
+
+    assert est_message_historique_valide({
+        "role": "assistant",
+        "content": "Bonjour Cyan"
+    }) is True
+
+    assert est_message_historique_valide({
+        "role": "inconnu",
+        "content": "Bonjour"
+    }) is False
+
+    assert est_message_historique_valide({
+        "role": "user",
+        "content": 42
+    }) is False
+
+    assert est_message_historique_valide({
+        "role": "user",
+        "content": "Bonjour",
+        "timestamp": 42
+    }) is False
+
+    assert est_message_historique_valide(
+        "pas un message"
+    ) is False
+
+def tester_validation_memoire():
+    assert est_memoire_valide({
+        "couleur": "cyan",
+        "ville": "Paris"
+    }) is True
+
+    assert est_memoire_valide({}) is True
+
+    assert est_memoire_valide({
+        42: "cyan"
+    }) is False
+
+    assert est_memoire_valide({
+        "age": 20
+    }) is False
+
+    assert est_memoire_valide(
+        ["cyan", "Paris"]
+    ) is False
+
+def tester_tri_taches_par_priorite():
+    roy = creer_roy_test(
+        historique_actif=False
+    )
+
+    roy.taches = [
+        {
+            "description": "tâche basse",
+            "terminee": False,
+            "priorite": "basse"
+        },
+        {
+            "description": "tâche haute",
+            "terminee": False,
+            "priorite": "haute"
+        },
+        {
+            "description": "tâche normale",
+            "terminee": False,
+            "priorite": "normale"
+        }
+    ]
+
+    assert roy.traiter_message(
+        "trie mes tâches par priorité",
+        "trie mes tâches par priorité"
+    ) is True
+
+    assert [
+        tache["priorite"]
+        for tache in roy.taches
+    ] == [
+        "haute",
+        "normale",
+        "basse"
+    ]
+
+    roy = recharger_roy_test(roy)
+
+    assert [
+        tache["priorite"]
+        for tache in roy.taches
+    ] == [
+        "haute",
+        "normale",
+        "basse"
+    ]
+
+def tester_recherche_taches():
+    taches = [
+        {
+            "description": "Apprendre Python",
+            "terminee": False,
+            "priorite": "haute"
+        },
+        {
+            "description": "Acheter du lait",
+            "terminee": False,
+            "priorite": "normale"
+        },
+        {
+            "description": "Continuer le projet Python",
+            "terminee": True,
+            "priorite": "basse"
+        }
+    ]
+
+    resultats = rechercher_taches(
+        taches,
+        "PYTHON"
+    )
+
+    assert len(resultats) == 2
+    assert resultats[0]["description"] == "Apprendre Python"
+    assert (
+        resultats[1]["description"]
+        == "Continuer le projet Python"
+    )
+
+    assert rechercher_taches(
+        taches,
+        "Java"
+    ) == []
+
+    assert rechercher_taches(
+        taches,
+        "   "
+    ) == []
+
+def tester_commande_recherche_tache():
+    roy = creer_roy_test(
+        historique_actif=False
+    )
+
+    roy.taches = [
+        {
+            "description": "Apprendre Python",
+            "terminee": False,
+            "priorite": "haute"
+        },
+        {
+            "description": "Acheter du lait",
+            "terminee": False,
+            "priorite": "normale"
+        },
+        {
+            "description": "Continuer Python",
+            "terminee": True,
+            "priorite": "basse"
+        }
+    ]
+
+    sortie = StringIO()
+
+    with redirect_stdout(sortie):
+        assert roy.traiter_message(
+            "recherche tâche python",
+            "recherche tâche python"
+        ) is True
+
+    texte = sortie.getvalue()
+
+    assert "2 tâche(s) trouvée(s)" in texte
+    assert "Apprendre Python" in texte
+    assert "Continuer Python" in texte
+    assert "Acheter du lait" not in texte
 
 def lancer_tests():
     tests = [

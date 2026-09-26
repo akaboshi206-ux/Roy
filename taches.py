@@ -1,6 +1,62 @@
-PRIORITES_VALIDES = {"basse", "normale", "haute"}
+from typing import (
+    Literal,
+    TypedDict,
+    cast
+)
 
-def ajouter_tache(taches: list[dict], description: str) -> bool:
+
+Priorite = Literal[
+    "basse",
+    "normale",
+    "haute"
+]
+
+
+class Tache(TypedDict):
+    description: str
+    terminee: bool
+    priorite: Priorite
+
+PRIORITES_VALIDES: set[Priorite] = {
+    "basse",
+    "normale",
+    "haute"
+}
+
+ORDRE_PRIORITES: dict[Priorite, int] = {
+    "haute": 0,
+    "normale": 1,
+    "basse": 2
+}
+
+
+def trier_taches_par_priorite(taches: list[Tache]) -> None:
+    taches.sort(
+        key=lambda tache: ORDRE_PRIORITES[
+            tache["priorite"]
+        ]
+    )
+
+def est_tache_valide(tache: object) -> bool:
+    if not isinstance(tache, dict):
+        return False
+
+    return (
+        isinstance(
+            tache.get("description"),
+            str
+        )
+        and isinstance(
+            tache.get("terminee"),
+            bool
+        )
+        and tache.get(
+            "priorite",
+            "normale"
+        ) in PRIORITES_VALIDES
+    )
+
+def ajouter_tache(taches: list[Tache], description: str) -> bool:
     description = description.strip()
 
     if not description:
@@ -8,11 +64,12 @@ def ajouter_tache(taches: list[dict], description: str) -> bool:
 
     taches.append({
         "description": description,
-        "terminee": False
+        "terminee": False,
+        "priorite": "normale"
     })
     return True
 
-def formater_taches(taches: list[dict], priorite: str | None = None, terminee: bool | None = None) -> str:
+def formater_taches(taches: list[Tache], priorite: str | None = None, terminee: bool | None = None) -> str:
     if not taches:
         return "Tu n'as aucune tâche."
 
@@ -46,7 +103,7 @@ def formater_taches(taches: list[dict], priorite: str | None = None, terminee: b
 
     return "Tu n'as aucune tâche à faire."
    
-def changer_etat_tache(taches: list[dict], numero: int, terminee: bool) -> bool:
+def changer_etat_tache(taches: list[Tache], numero: int, terminee: bool) -> bool:
     if (
         not 1 <= numero <= len(taches)
         or not isinstance(terminee, bool)
@@ -58,7 +115,7 @@ def changer_etat_tache(taches: list[dict], numero: int, terminee: bool) -> bool:
 
 
 def terminer_tache(
-    taches: list[dict],
+    taches: list[Tache],
     numero: int
 ) -> bool:
     return changer_etat_tache(
@@ -69,7 +126,7 @@ def terminer_tache(
 
 
 def rouvrir_tache(
-    taches: list[dict],
+    taches: list[Tache],
     numero: int
 ) -> bool:
     return changer_etat_tache(
@@ -78,14 +135,14 @@ def rouvrir_tache(
         False
     )
 
-def supprimer_tache(taches: list[dict], numero: int) -> bool:
+def supprimer_tache(taches: list[Tache], numero: int) -> bool:
     if not 1 <= numero <= len(taches):
         return False
 
     taches.pop(numero - 1)
     return True
 
-def modifier_tache(taches: list[dict], numero: int, nouvelle_description: str) -> bool:
+def modifier_tache(taches: list[Tache], numero: int, nouvelle_description: str) -> bool:
     nouvelle_description = nouvelle_description.strip()
 
     if (
@@ -97,7 +154,7 @@ def modifier_tache(taches: list[dict], numero: int, nouvelle_description: str) -
     taches[numero - 1]["description"] = nouvelle_description
     return True
 
-def changer_priorite(taches: list[dict], numero: int, priorite: str) -> bool:
+def changer_priorite(taches: list[Tache], numero: int, priorite: str) -> bool:
     priorite = priorite.strip().lower()
 
     if (
@@ -106,5 +163,25 @@ def changer_priorite(taches: list[dict], numero: int, priorite: str) -> bool:
     ):
         return False
 
-    taches[numero - 1]["priorite"] = priorite
+    taches[numero - 1]["priorite"] = cast(
+        Priorite,
+        priorite
+    )
     return True
+
+def rechercher_taches(
+    taches: list[Tache],
+    recherche: str
+) -> list[Tache]:
+    recherche = recherche.strip().lower()
+
+    if not recherche:
+        return []
+
+    resultats: list[Tache] = []
+
+    for tache in taches:
+        if recherche in tache["description"].lower():
+            resultats.append(tache)
+
+    return resultats

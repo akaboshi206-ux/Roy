@@ -179,5 +179,7 @@ exemples_aide = [
     "priorité tâche 1 : haute",
     "montre mes tâches de priorité haute",
     "montre mes tâches à faire",
-    "montre mes tâches terminées"
+    "montre mes tâches terminées",
+    "trie mes tâches par priorité",
+    "recherche tâche mot"
 ]

@@ -1,9 +1,11 @@
 import json
 from collections.abc import Callable
 from datetime import datetime
+from typing import cast
 
 from taches import (
-    PRIORITES_VALIDES
+    Tache,
+    est_tache_valide  
 )
 
 from commandes_historique import (
@@ -35,7 +37,12 @@ from outils import (
     charger_json,
     nettoyer_texte,
     formater_message_historique,
-    sauvegarder_json_atomiquement
+    sauvegarder_json_atomiquement,
+    MessageHistorique,
+    RoleHistorique,
+    est_message_historique_valide,
+    Memoire,
+    est_memoire_valide
 )
 
 from config import (
@@ -62,24 +69,27 @@ class Roy:
                 "actif": True
             }
         }
-        self.historique = []
-        self.taches = []
+        self.historique: list[MessageHistorique] = []
+        self.taches: list[Tache] = []
         self.fichier_taches = fichier_taches
         self.taches_sauvegardables = True
         self.charger_taches()
         self.fichier_historique = fichier_historique
         self.fichier_memoire = fichier_memoire
         self.memoire_sauvegardable = True
+        self.memoire: Memoire = {}
         self.charger_memoire()
 
         self.historique_sauvegardable = True
         if self.historique_actif:
             self.charger_historique()
 
-    def ajouter_historique(self, role: str, contenu: str) -> None:
-        date_message = datetime.now().isoformat(timespec="seconds")
+    def ajouter_historique(self, role: RoleHistorique, contenu: str) -> None:
+        date_message = datetime.now().isoformat(
+            timespec="seconds"
+        )
 
-        message = {
+        message: MessageHistorique = {
             "role": role,
             "content": contenu,
             "timestamp": date_message
@@ -107,21 +117,12 @@ class Roy:
             self.taches_sauvegardables = False
             return
 
-        if not isinstance(donnees, list) or any(
-            not isinstance(tache, dict)
-            or not isinstance(
-                tache.get("description"),
-                str
+        if (
+            not isinstance(donnees, list)
+            or not all(
+                est_tache_valide(tache)
+                for tache in donnees
             )
-            or not isinstance(
-                tache.get("terminee"),
-                bool
-            )
-            or tache.get(
-                "priorite",
-                "normale"
-            ) not in PRIORITES_VALIDES
-            for tache in donnees
         ):
             print("Roy : Le format des tâches est invalide.")
             self.taches_sauvegardables = False
@@ -133,7 +134,7 @@ class Roy:
                 "normale"
             )
 
-        self.taches = donnees
+        self.taches = cast(list[Tache], donnees)
 
     def sauvegarder_taches(self) -> bool:
         if not self.taches_sauvegardables:
@@ -202,15 +203,16 @@ class Roy:
             self.historique = []
             return
 
-        historique_valide = []
+        historique_valide: list[MessageHistorique] = []
 
         for message in donnees:
-            if (
-                isinstance(message, dict)
-                and isinstance(message.get("role"), str)
-                and isinstance(message.get("content"), str)
-            ):
-                historique_valide.append(message)
+            if est_message_historique_valide(message):
+                historique_valide.append(
+                    cast(
+                        MessageHistorique,
+                        message
+                    )
+                )
             else:
                 self.historique_sauvegardable = False
 
@@ -386,13 +388,16 @@ class Roy:
             self.memoire = {}
             return
 
-        if not isinstance(donnees, dict):
+        if not est_memoire_valide(donnees):
             print("Roy : Le format de ma mémoire est invalide.")
             self.memoire_sauvegardable = False
             self.memoire = {}
             return
 
-        self.memoire = donnees        
+        self.memoire = cast(
+            Memoire,
+            donnees
+        )
 
     def saluer(self):
         self.repondre(f"Bonjour {self.memoire.get('nom', 'utilisateur')} !")

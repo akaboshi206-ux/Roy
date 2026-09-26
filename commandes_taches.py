@@ -6,9 +6,10 @@ from taches import (
     rouvrir_tache,
     supprimer_tache,
     modifier_tache,
-    changer_priorite
+    changer_priorite,
+    trier_taches_par_priorite,
+    rechercher_taches
 )
-
 
 def traiter_affichage_taches(
     roy,
@@ -340,6 +341,63 @@ def traiter_suppression_tache(
 
     return True
 
+def traiter_tri_taches(
+    roy,
+    message: str
+) -> bool:
+    if message != "trie mes tâches par priorité":
+        return False
+
+    ancien_ordre = roy.taches.copy()
+
+    trier_taches_par_priorite(
+        roy.taches
+    )
+
+    if roy.sauvegarder_taches():
+        roy.repondre(
+            "Tâches triées par priorité.\n"
+            + formater_taches(roy.taches)
+        )
+    else:
+        roy.taches[:] = ancien_ordre
+        roy.repondre(
+            "Le tri des tâches a été annulé."
+        )
+
+    return True
+
+def traiter_recherche_tache(
+    roy,
+    message: str
+) -> bool:
+    if not message.startswith(
+        "recherche tâche "
+    ):
+        return False
+
+    recherche = message.removeprefix(
+        "recherche tâche "
+    ).strip()
+
+    resultats = rechercher_taches(
+        roy.taches,
+        recherche
+    )
+
+    if not resultats:
+        roy.repondre(
+            f"Aucune tâche trouvée pour : {recherche}"
+        )
+        return True
+
+    roy.repondre(
+        f"{len(resultats)} tâche(s) trouvée(s) "
+        f"pour : {recherche}\n"
+        f"{formater_taches(resultats)}"
+    )
+    return True
+
 def traiter_commande_tache(
     roy,
     message: str
@@ -351,6 +409,8 @@ def traiter_commande_tache(
         traiter_modification_tache,
         traiter_priorite_tache,
         traiter_suppression_tache,
+        traiter_tri_taches,
+        traiter_recherche_tache,
         traiter_affichage_taches
     )
 
