@@ -8,7 +8,8 @@ from taches import (
     modifier_tache,
     changer_priorite,
     trier_taches_par_priorite,
-    rechercher_taches
+    rechercher_taches,
+    calculer_statistiques_taches
 )
 
 def traiter_affichage_taches(
@@ -398,6 +399,28 @@ def traiter_recherche_tache(
     )
     return True
 
+def traiter_statistiques_taches(
+    roy,
+    message: str
+) -> bool:
+    if message != "statistiques tâches":
+        return False
+    statistiques = calculer_statistiques_taches(
+        roy.taches
+    )
+    roy.repondre(
+        "Statistiques des tâches\n"
+        f"Tâches totales : {statistiques['total']}\n"
+        f"À faire : {statistiques['a_faire']}\n"
+        f"Terminées : {statistiques['terminees']}\n"
+        f"Progression : {statistiques['pourcentage']} %\n"
+        f"Priorité haute : {statistiques['hautes']}\n"
+        f"Priorité normale : {statistiques['normales']}\n"
+        f"Priorité basse : {statistiques['basses']}"
+    )
+
+    return True
+
 def traiter_commande_tache(
     roy,
     message: str
@@ -410,6 +433,7 @@ def traiter_commande_tache(
         traiter_priorite_tache,
         traiter_suppression_tache,
         traiter_tri_taches,
+        traiter_statistiques_taches,
         traiter_recherche_tache,
         traiter_affichage_taches
     )

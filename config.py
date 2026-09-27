@@ -181,5 +181,6 @@ exemples_aide = [
     "montre mes tâches à faire",
     "montre mes tâches terminées",
     "trie mes tâches par priorité",
-    "recherche tâche mot"
+    "recherche tâche mot",
+    "statistiques tâches"
 ]

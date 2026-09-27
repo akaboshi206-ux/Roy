@@ -23,7 +23,8 @@ from io import StringIO
 from unittest.mock import patch
 from taches import (
     est_tache_valide,
-    rechercher_taches
+    rechercher_taches,
+    calculer_statistiques_taches
 )
 
 dossier_tests = TemporaryDirectory()
@@ -1211,6 +1212,91 @@ def tester_commande_recherche_tache():
     assert "Apprendre Python" in texte
     assert "Continuer Python" in texte
     assert "Acheter du lait" not in texte
+
+def tester_statistiques_taches():
+    taches = [
+        {
+            "description": "Apprendre Python",
+            "terminee": False,
+            "priorite": "haute"
+        },
+        {
+            "description": "Acheter du lait",
+            "terminee": True,
+            "priorite": "normale"
+        },
+        {
+            "description": "Faire du sport",
+            "terminee": False,
+            "priorite": "basse"
+        }
+    ]
+
+    statistiques = calculer_statistiques_taches(
+        taches
+    )
+
+    assert statistiques == {
+        "total": 3,
+        "a_faire": 2,
+        "terminees": 1,
+        "pourcentage": 33,
+        "hautes": 1,
+        "normales": 1,
+        "basses": 1
+    }
+
+    assert calculer_statistiques_taches([]) == {
+        "total": 0,
+        "a_faire": 0,
+        "terminees": 0,
+        "pourcentage": 0,
+        "hautes": 0,
+        "normales": 0,
+        "basses": 0
+    }
+
+def tester_commande_statistiques_taches():
+    roy = creer_roy_test(
+        historique_actif=False
+    )
+
+    roy.taches = [
+        {
+            "description": "Apprendre Python",
+            "terminee": False,
+            "priorite": "haute"
+        },
+        {
+            "description": "Acheter du lait",
+            "terminee": True,
+            "priorite": "normale"
+        },
+        {
+            "description": "Faire du sport",
+            "terminee": False,
+            "priorite": "basse"
+        }
+    ]
+
+    sortie = StringIO()
+
+    with redirect_stdout(sortie):
+        assert roy.traiter_message(
+            "statistiques tâches",
+            "statistiques tâches"
+        ) is True
+
+    texte = sortie.getvalue()
+
+    assert "Statistiques des tâches" in texte
+    assert "Tâches totales : 3" in texte
+    assert "À faire : 2" in texte
+    assert "Terminées : 1" in texte
+    assert "Progression : 33 %" in texte
+    assert "Priorité haute : 1" in texte
+    assert "Priorité normale : 1" in texte
+    assert "Priorité basse : 1" in texte
 
 def lancer_tests():
     tests = [

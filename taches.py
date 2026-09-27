@@ -185,3 +185,42 @@ def rechercher_taches(
             resultats.append(tache)
 
     return resultats
+
+def calculer_statistiques_taches(taches: list[Tache]) -> dict[str, int]:
+    total = len(taches)
+
+    terminees = sum(
+        1 for tache in taches
+        if tache["terminee"]
+    )
+
+    a_faire = total - terminees
+
+    pourcentage = round(
+        terminees / total * 100
+    ) if total > 0 else 0
+
+    hautes = sum(
+        1 for tache in taches
+        if tache["priorite"] == "haute"
+    )
+
+    normales = sum(
+        1 for tache in taches
+        if tache["priorite"] == "normale"
+    )
+
+    basses = sum(
+        1 for tache in taches
+        if tache["priorite"] == "basse"
+    )
+
+    return {
+        "total": total,
+        "a_faire": a_faire,
+        "terminees": terminees,
+        "hautes": hautes,
+        "pourcentage": pourcentage,
+        "normales": normales,
+        "basses": basses
+    }
