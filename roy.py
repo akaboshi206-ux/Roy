@@ -133,6 +133,10 @@ class Roy:
                 "priorite",
                 "normale"
             )
+            tache.setdefault(
+                "echeance",
+                None
+            )
 
         self.taches = cast(list[Tache], donnees)
 

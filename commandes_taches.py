@@ -7,6 +7,7 @@ from taches import (
     supprimer_tache,
     modifier_tache,
     changer_priorite,
+    changer_echeance,
     trier_taches_par_priorite,
     rechercher_taches,
     calculer_statistiques_taches
@@ -231,6 +232,70 @@ def traiter_modification_tache(
 
     return True
 
+def traiter_echeance_tache(
+    roy,
+    message: str
+) -> bool:
+    if not message.startswith(
+        "échéance tâche "
+    ):
+        return False
+
+    contenu = message.removeprefix(
+        "échéance tâche "
+    ).strip()
+
+    texte_numero, separateur, echeance = (
+        contenu.partition(":")
+    )
+
+    echeance = echeance.strip()
+
+    if not separateur or not echeance:
+        roy.repondre(
+            "Utilise le format : "
+            "échéance tâche 1 : 2026-10-05"
+        )
+        return True
+
+    numero = roy.obtenir_numero_tache(
+        texte_numero
+    )
+
+    if numero is None:
+        roy.repondre(
+            "Indique un numéro de tâche valide."
+        )
+        return True
+
+    ancienne_echeance = (
+        roy.taches[numero - 1].get("echeance")
+    )
+
+    if not changer_echeance(
+        roy.taches,
+        numero,
+        echeance
+    ):
+        roy.repondre(
+            "Utilise une date valide au format "
+            "année-mois-jour."
+        )
+
+    elif roy.sauvegarder_taches():
+        roy.repondre("Échéance modifiée.")
+
+    else:
+        roy.taches[numero - 1]["echeance"] = (
+            ancienne_echeance
+        )
+        roy.repondre(
+            "La modification de l'échéance "
+            "a été annulée."
+        )
+
+    return True
+
 def traiter_priorite_tache(
     roy,
     message: str
@@ -430,6 +495,7 @@ def traiter_commande_tache(
         traiter_fin_tache,
         traiter_reouverture_tache,
         traiter_modification_tache,
+        traiter_echeance_tache,
         traiter_priorite_tache,
         traiter_suppression_tache,
         traiter_tri_taches,

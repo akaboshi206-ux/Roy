@@ -24,7 +24,9 @@ from unittest.mock import patch
 from taches import (
     est_tache_valide,
     rechercher_taches,
-    calculer_statistiques_taches
+    calculer_statistiques_taches,
+    date_echeance_valide,
+    changer_echeance
 )
 
 dossier_tests = TemporaryDirectory()
@@ -615,7 +617,8 @@ def tester_gestion_taches():
     assert roy.taches[0] == { 
         "description": "travailler sur Roy", 
         "terminee": False,
-        "priorite": "normale"
+        "priorite": "normale",
+        "echeance": None
     }
 
     roy = recharger_roy_test(roy)
@@ -883,7 +886,8 @@ def tester_chargement_taches_json():
         {
             "description": "Continuer Roy",
             "terminee": False,
-            "priorite": "normale"
+            "priorite": "normale",
+            "echeance": None
         }
     ]
     assert roy.taches_sauvegardables is True
@@ -1297,6 +1301,108 @@ def tester_commande_statistiques_taches():
     assert "Priorité haute : 1" in texte
     assert "Priorité normale : 1" in texte
     assert "Priorité basse : 1" in texte
+
+def tester_echeances_taches():
+    assert date_echeance_valide(
+        "2026-10-05"
+    ) is True
+
+    assert date_echeance_valide(
+        "2026-02-30"
+    ) is False
+
+    assert date_echeance_valide(
+        "05-10-2026"
+    ) is False
+
+    taches = [
+        {
+            "description": "Apprendre Python",
+            "terminee": False,
+            "priorite": "haute",
+            "echeance": None
+        }
+    ]
+
+    assert changer_echeance(
+        taches,
+        1,
+        "2026-10-05"
+    ) is True
+
+    assert (
+        taches[0]["echeance"]
+        == "2026-10-05"
+    )
+
+    assert changer_echeance(
+        taches,
+        1,
+        "2026-02-30"
+    ) is False
+
+    assert (
+        taches[0]["echeance"]
+        == "2026-10-05"
+    )
+
+def tester_commande_echeance_tache():
+    roy = creer_roy_test(
+        historique_actif=False
+    )
+
+    assert roy.traiter_message(
+        "ajoute une tâche : Apprendre Python",
+        "ajoute une tâche : Apprendre Python"
+    ) is True
+
+    assert roy.traiter_message(
+        "échéance tâche 1 : 2026-10-05",
+        "échéance tâche 1 : 2026-10-05"
+    ) is True
+
+    assert (
+        roy.taches[0]["echeance"]
+        == "2026-10-05"
+    )
+
+    roy = recharger_roy_test(roy)
+
+    assert (
+        roy.taches[0]["echeance"]
+        == "2026-10-05"
+    )
+
+    assert roy.traiter_message(
+        "échéance tâche 1 : 2026-02-30",
+        "échéance tâche 1 : 2026-02-30"
+    ) is True
+
+    assert (
+        roy.taches[0]["echeance"]
+        == "2026-10-05"
+    )
+
+    assert est_tache_valide(
+        roy.taches[0]
+    ) is True
+
+    tache_invalide = roy.taches[0].copy()
+    tache_invalide["echeance"] = "2026-02-30"
+
+    assert est_tache_valide(
+        tache_invalide
+    ) is False
+
+    ancienne_tache = {
+        "description": "Ancienne tâche",
+        "terminee": False,
+        "priorite": "normale"
+    }
+
+    assert est_tache_valide(
+        ancienne_tache
+    ) is True
 
 def lancer_tests():
     tests = [

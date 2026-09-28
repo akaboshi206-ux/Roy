@@ -4,6 +4,7 @@ from typing import (
     cast
 )
 
+from datetime import datetime
 
 Priorite = Literal[
     "basse",
@@ -16,6 +17,7 @@ class Tache(TypedDict):
     description: str
     terminee: bool
     priorite: Priorite
+    echeance: str | None
 
 PRIORITES_VALIDES: set[Priorite] = {
     "basse",
@@ -29,6 +31,32 @@ ORDRE_PRIORITES: dict[Priorite, int] = {
     "basse": 2
 }
 
+def date_echeance_valide(echeance: str) -> bool:
+    try:
+        datetime.strptime(
+            echeance,
+            "%Y-%m-%d"
+        )
+        return True
+
+    except ValueError:
+        return False
+
+def changer_echeance(
+    taches: list[Tache],
+    numero: int,
+    echeance: str
+) -> bool:
+    echeance = echeance.strip()
+
+    if (
+        not 1 <= numero <= len(taches)
+        or not date_echeance_valide(echeance)
+    ):
+        return False
+
+    taches[numero - 1]["echeance"] = echeance
+    return True
 
 def trier_taches_par_priorite(taches: list[Tache]) -> None:
     taches.sort(
@@ -54,6 +82,18 @@ def est_tache_valide(tache: object) -> bool:
             "priorite",
             "normale"
         ) in PRIORITES_VALIDES
+        and (
+            tache.get("echeance") is None
+            or (
+                isinstance(
+                    tache.get("echeance"),
+                    str
+                )
+                and date_echeance_valide(
+                    tache["echeance"]
+                )
+            )
+        )
     )
 
 def ajouter_tache(taches: list[Tache], description: str) -> bool:
@@ -65,7 +105,8 @@ def ajouter_tache(taches: list[Tache], description: str) -> bool:
     taches.append({
         "description": description,
         "terminee": False,
-        "priorite": "normale"
+        "priorite": "normale",
+        "echeance": None
     })
     return True
 
@@ -86,9 +127,18 @@ def formater_taches(taches: list[Tache], priorite: str | None = None, terminee: 
 
         etat = "✓" if tache["terminee"] else "○"
 
+        echeance = tache.get("echeance")
+
+        texte_echeance = (
+            f" [échéance : {echeance}]"
+            if echeance
+            else ""
+        )
+
         lignes.append(
             f"{numero}. {etat} "
-            f"[{priorite_tache}] "
+            f"[{priorite_tache}]"
+            f"{texte_echeance} "
             f"{tache['description']}"
         )
 
