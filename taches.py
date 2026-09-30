@@ -4,7 +4,7 @@ from typing import (
     cast
 )
 
-from datetime import datetime
+from datetime import date, datetime
 
 Priorite = Literal[
     "basse",
@@ -41,6 +41,70 @@ def date_echeance_valide(echeance: str) -> bool:
 
     except ValueError:
         return False
+
+def tache_en_retard(
+    tache: Tache,
+    date_reference=None
+) -> bool:
+    if tache.get("terminee", False):
+        return False
+
+    echeance = tache.get("echeance")
+
+    if not echeance:
+        return False
+
+    try:
+        date_echeance = datetime.strptime(
+            echeance,
+            "%Y-%m-%d"
+        ).date()
+
+    except (TypeError, ValueError):
+        return False
+
+    if date_reference is None:
+        date_reference = date.today()
+
+    return date_echeance < date_reference
+
+def tache_pour_aujourdhui(
+    tache: Tache,
+    date_reference=None
+) -> bool:
+    if tache.get("terminee", False):
+        return False
+
+    echeance = tache.get("echeance")
+
+    if not echeance:
+        return False
+
+    try:
+        date_echeance = datetime.strptime(
+            echeance,
+            "%Y-%m-%d"
+        ).date()
+    except (TypeError, ValueError):
+        return False
+
+    if date_reference is None:
+        date_reference = date.today()
+
+    return date_echeance == date_reference
+
+def filtrer_taches_en_retard(
+    taches: list[Tache],
+    date_reference=None
+) -> list[Tache]:
+    return [
+        tache
+        for tache in taches
+        if tache_en_retard(
+            tache,
+            date_reference
+        )
+    ]
 
 def changer_echeance(
     taches: list[Tache],
@@ -110,7 +174,13 @@ def ajouter_tache(taches: list[Tache], description: str) -> bool:
     })
     return True
 
-def formater_taches(taches: list[Tache], priorite: str | None = None, terminee: bool | None = None) -> str:
+def formater_taches(
+        taches: list[Tache], 
+        priorite: str | None = None,
+        terminee: bool | None = None, 
+        en_retard: bool = False, 
+        pour_aujourdhui: bool = False
+    ) -> str:
     if not taches:
         return "Tu n'as aucune tâche."
 
@@ -119,11 +189,17 @@ def formater_taches(taches: list[Tache], priorite: str | None = None, terminee: 
     for numero, tache in enumerate(taches, start=1):
         priorite_tache = tache.get("priorite", "normale")
 
+        if (en_retard and not tache_en_retard(tache)):
+            continue
+
+        if (pour_aujourdhui and not tache_pour_aujourdhui(tache)):
+            continue
+
         if (priorite is not None and priorite_tache != priorite):
             continue
 
         if (terminee is not None and tache["terminee"] != terminee):
-            continue
+            continue    
 
         etat = "✓" if tache["terminee"] else "○"
 
@@ -144,6 +220,12 @@ def formater_taches(taches: list[Tache], priorite: str | None = None, terminee: 
 
     if lignes:
         return "\n".join(lignes)
+
+    if en_retard:
+        return "Tu n'as aucune tâche en retard."
+
+    if pour_aujourdhui:
+        return "Tu n'as aucune tâche prévue aujourd'hui."
 
     if priorite is not None:
         return ("Tu n'as aucune tâche de priorité " f"{priorite}.")

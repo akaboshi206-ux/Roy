@@ -183,5 +183,7 @@ exemples_aide = [
     "trie mes tâches par priorité",
     "recherche tâche mot",
     "statistiques tâches",
-    "échéance tâche 1 : 2026-10-05"
+    "échéance tâche 1 : 2026-10-05",
+    "montre mes tâches en retard",
+    "montre mes tâches pour aujourd'hui"
 ]

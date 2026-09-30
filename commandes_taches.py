@@ -10,7 +10,7 @@ from taches import (
     changer_echeance,
     trier_taches_par_priorite,
     rechercher_taches,
-    calculer_statistiques_taches
+    calculer_statistiques_taches,
 )
 
 def traiter_affichage_taches(
@@ -41,6 +41,24 @@ def traiter_affichage_taches(
         )
         return True
 
+    if message == "montre mes tâches en retard":
+        roy.repondre(
+            formater_taches(
+                roy.taches,
+                en_retard=True
+            )
+        )
+        return True
+
+    if message == "montre mes tâches pour aujourd'hui":
+        roy.repondre(
+            formater_taches(
+                roy.taches,
+                pour_aujourdhui=True
+            )
+        )
+        return True
+    
     if message.startswith(
         "montre mes tâches de priorité "
     ):
