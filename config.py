@@ -185,5 +185,9 @@ exemples_aide = [
     "statistiques tâches",
     "échéance tâche 1 : 2026-10-05",
     "montre mes tâches en retard",
-    "montre mes tâches pour aujourd'hui"
+    "montre mes tâches pour aujourd'hui",
+    "montre mes tâches à venir",
+    "trie mes tâches par échéance",
+    "retire l'échéance de la tâche 1",
+    "résumé tâches"
 ]

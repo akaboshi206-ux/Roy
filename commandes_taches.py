@@ -11,6 +11,8 @@ from taches import (
     trier_taches_par_priorite,
     rechercher_taches,
     calculer_statistiques_taches,
+    trier_taches_par_echeance,
+    retirer_echeance
 )
 
 def traiter_affichage_taches(
@@ -55,6 +57,15 @@ def traiter_affichage_taches(
             formater_taches(
                 roy.taches,
                 pour_aujourdhui=True
+            )
+        )
+        return True
+
+    if message == "montre mes tâches à venir":
+        roy.repondre(
+            formater_taches(
+                roy.taches,
+                a_venir=True
             )
         )
         return True
@@ -314,6 +325,62 @@ def traiter_echeance_tache(
 
     return True
 
+def traiter_retrait_echeance_tache(
+    roy,
+    message: str
+) -> bool:
+    prefixe = (
+        "retire l'échéance de la tâche "
+    )
+
+    if not message.startswith(prefixe):
+        return False
+
+    texte_numero = message.removeprefix(
+        prefixe
+    ).strip()
+
+    numero = roy.obtenir_numero_tache(
+        texte_numero
+    )
+
+    if numero is None:
+        roy.repondre(
+            "Indique un numéro de tâche valide."
+        )
+        return True
+
+    ancienne_echeance = (
+        roy.taches[numero - 1].get(
+            "echeance"
+        )
+    )
+
+    if not retirer_echeance(
+        roy.taches,
+        numero
+    ):
+        roy.repondre(
+            "Indique un numéro de tâche valide."
+        )
+
+    elif roy.sauvegarder_taches():
+        roy.repondre(
+            "Échéance retirée."
+        )
+
+    else:
+        roy.taches[numero - 1][
+            "echeance"
+        ] = ancienne_echeance
+
+        roy.repondre(
+            "Le retrait de l'échéance "
+            "a été annulé."
+        )
+
+    return True
+
 def traiter_priorite_tache(
     roy,
     message: str
@@ -429,20 +496,32 @@ def traiter_tri_taches(
     roy,
     message: str
 ) -> bool:
-    if message != "trie mes tâches par priorité":
+    if message not in (
+        "trie mes tâches par priorité",
+        "trie mes tâches par échéance"
+    ):
         return False
 
     ancien_ordre = roy.taches.copy()
 
-    trier_taches_par_priorite(
-        roy.taches
-    )
+    if message == "trie mes tâches par priorité":
+        trier_taches_par_priorite(
+            roy.taches
+        )
+        critere = "priorité"
+
+    else:
+        trier_taches_par_echeance(
+            roy.taches
+        )
+        critere = "échéance"
 
     if roy.sauvegarder_taches():
         roy.repondre(
-            "Tâches triées par priorité.\n"
+            f"Tâches triées par {critere}.\n"
             + formater_taches(roy.taches)
         )
+
     else:
         roy.taches[:] = ancien_ordre
         roy.repondre(
@@ -482,6 +561,41 @@ def traiter_recherche_tache(
     )
     return True
 
+def traiter_resume_taches(
+    roy,
+    message: str
+) -> bool:
+    if message != "résumé tâches":
+        return False
+
+    statistiques = calculer_statistiques_taches(
+        roy.taches
+    )
+
+    taches_en_retard = formater_taches(
+        roy.taches,
+        en_retard=True
+    )
+
+    taches_du_jour = formater_taches(
+        roy.taches,
+        pour_aujourdhui=True
+    )
+
+    roy.repondre(
+        "Résumé des tâches\n"
+        f"En retard : {statistiques['en_retard']}\n"
+        f"Pour aujourd'hui : "
+        f"{statistiques['pour_aujourdhui']}\n"
+        f"À venir : {statistiques['a_venir']}\n\n"
+        "Tâches en retard :\n"
+        f"{taches_en_retard}\n\n"
+        "Tâches pour aujourd'hui :\n"
+        f"{taches_du_jour}"
+    )
+
+    return True
+
 def traiter_statistiques_taches(
     roy,
     message: str
@@ -499,7 +613,11 @@ def traiter_statistiques_taches(
         f"Progression : {statistiques['pourcentage']} %\n"
         f"Priorité haute : {statistiques['hautes']}\n"
         f"Priorité normale : {statistiques['normales']}\n"
-        f"Priorité basse : {statistiques['basses']}"
+        f"Priorité basse : {statistiques['basses']}\n"
+        f"En retard : {statistiques['en_retard']}\n"
+        f"Pour aujourd'hui : "
+        f"{statistiques['pour_aujourdhui']}\n"
+        f"À venir : {statistiques['a_venir']}"
     )
 
     return True
@@ -514,12 +632,14 @@ def traiter_commande_tache(
         traiter_reouverture_tache,
         traiter_modification_tache,
         traiter_echeance_tache,
+        traiter_retrait_echeance_tache,
         traiter_priorite_tache,
         traiter_suppression_tache,
         traiter_tri_taches,
+        traiter_resume_taches,
         traiter_statistiques_taches,
         traiter_recherche_tache,
-        traiter_affichage_taches
+        traiter_affichage_taches,
     )
 
     for gestionnaire in gestionnaires:

@@ -22,7 +22,13 @@ from taches import (
     changer_echeance,
     tache_en_retard,
     tache_pour_aujourdhui,
-    filtrer_taches_en_retard
+    filtrer_taches_en_retard,
+    tache_a_venir,
+    formater_taches,
+    convertir_echeance_en_date,
+    trier_taches_par_echeance,
+    retirer_echeance,
+    Tache
 )
 
 def tester_validation_tache():
@@ -102,6 +108,19 @@ def tester_echeances_taches():
         == "2026-10-05"
     )
 
+def tester_conversion_echeance_en_date():
+    assert convertir_echeance_en_date(
+        "2026-10-05"
+    ) == date(2026, 10, 5)
+
+    assert convertir_echeance_en_date(
+        "date incorrecte"
+    ) is None
+
+    assert convertir_echeance_en_date(
+        None
+    ) is None
+
 def tester_recherche_taches():
     taches = [
         {
@@ -152,17 +171,20 @@ def tester_statistiques_taches():
         {
             "description": "Apprendre Python",
             "terminee": False,
-            "priorite": "haute"
+            "priorite": "haute",
+            "echeance": None
         },
         {
             "description": "Acheter du lait",
             "terminee": True,
-            "priorite": "normale"
+            "priorite": "normale",
+            "echeance": None
         },
         {
             "description": "Faire du sport",
             "terminee": False,
-            "priorite": "basse"
+            "priorite": "basse",
+            "echeance": None
         }
     ]
 
@@ -177,7 +199,10 @@ def tester_statistiques_taches():
         "pourcentage": 33,
         "hautes": 1,
         "normales": 1,
-        "basses": 1
+        "basses": 1,
+        "en_retard": 0,
+        "pour_aujourdhui": 0,
+        "a_venir": 0
     }
 
     assert calculer_statistiques_taches([]) == {
@@ -187,8 +212,42 @@ def tester_statistiques_taches():
         "pourcentage": 0,
         "hautes": 0,
         "normales": 0,
-        "basses": 0
+        "basses": 0,
+        "en_retard": 0,
+        "pour_aujourdhui": 0,
+        "a_venir": 0
     }
+
+def tester_statistiques_echeances():
+    taches = [
+        {
+            "description": "Tâche en retard",
+            "terminee": False,
+            "priorite": "haute",
+            "echeance": "2026-09-30"
+        },
+        {
+            "description": "Tâche du jour",
+            "terminee": False,
+            "priorite": "normale",
+            "echeance": "2026-10-01"
+        },
+        {
+            "description": "Tâche à venir",
+            "terminee": False,
+            "priorite": "basse",
+            "echeance": "2026-10-02"
+        }
+    ]
+
+    statistiques = calculer_statistiques_taches(
+        taches,
+        date(2026, 10, 1)
+    )
+
+    assert statistiques["en_retard"] == 1
+    assert statistiques["pour_aujourdhui"] == 1
+    assert statistiques["a_venir"] == 1
 
 def tester_commande_recherche_tache():
     roy = creer_roy_test(
@@ -319,6 +378,191 @@ def tester_tri_taches_par_priorite():
         "basse"
     ]
 
+def tester_tri_taches_par_echeance():
+    taches = [
+        {
+            "description": "Sans échéance",
+            "terminee": False,
+            "priorite": "normale",
+            "echeance": None
+        },
+        {
+            "description": "Tâche future",
+            "terminee": False,
+            "priorite": "haute",
+            "echeance": "2026-10-10"
+        },
+        {
+            "description": "Tâche proche",
+            "terminee": False,
+            "priorite": "basse",
+            "echeance": "2026-10-05"
+        }
+    ]
+
+    trier_taches_par_echeance(taches)
+
+    assert [
+        tache["description"]
+        for tache in taches
+    ] == [
+        "Tâche proche",
+        "Tâche future",
+        "Sans échéance"
+    ]
+
+def tester_commande_tri_taches_par_echeance():
+    roy = creer_roy_test(
+        historique_actif=False
+    )
+
+    roy.taches = [
+        {
+            "description": "Sans échéance",
+            "terminee": False,
+            "priorite": "normale",
+            "echeance": None
+        },
+        {
+            "description": "Tâche future",
+            "terminee": False,
+            "priorite": "haute",
+            "echeance": "2026-10-10"
+        },
+        {
+            "description": "Tâche proche",
+            "terminee": False,
+            "priorite": "basse",
+            "echeance": "2026-10-05"
+        }
+    ]
+
+    resultat = roy.traiter_message(
+        "trie mes tâches par échéance",
+        "trie mes tâches par échéance"
+    )
+
+    assert resultat is True
+
+    assert [
+        tache["description"]
+        for tache in roy.taches
+    ] == [
+        "Tâche proche",
+        "Tâche future",
+        "Sans échéance"
+    ]
+
+    reponse = roy.historique[-1]["content"]
+
+    assert "Tâches triées par échéance." in reponse
+
+def tester_annulation_tri_taches_par_echeance():
+    roy = creer_roy_test(
+        historique_actif=False
+    )
+
+    roy.taches = [
+        {
+            "description": "Sans échéance",
+            "terminee": False,
+            "priorite": "normale",
+            "echeance": None
+        },
+        {
+            "description": "Tâche future",
+            "terminee": False,
+            "priorite": "haute",
+            "echeance": "2026-10-10"
+        },
+        {
+            "description": "Tâche proche",
+            "terminee": False,
+            "priorite": "basse",
+            "echeance": "2026-10-05"
+        }
+    ]
+
+    ordre_initial = [
+        tache["description"]
+        for tache in roy.taches
+    ]
+
+    roy.sauvegarder_taches = lambda: False
+
+    resultat = roy.traiter_message(
+        "trie mes tâches par échéance",
+        "trie mes tâches par échéance"
+    )
+
+    assert resultat is True
+
+    nouvel_ordre = [
+        tache["description"]
+        for tache in roy.taches
+    ]
+
+    assert nouvel_ordre == ordre_initial
+
+    reponse = roy.historique[-1]["content"]
+
+    assert (
+        "Le tri des tâches a été annulé."
+        in reponse
+    )
+
+def tester_retrait_echeance():
+    taches: list[Tache] = [
+        {
+            "description": "Expérience",
+            "terminee": False,
+            "priorite": "haute",
+            "echeance": "2026-10-05"
+        }
+    ]
+
+    assert retirer_echeance(
+        taches,
+        1
+    ) is True
+
+    assert taches[0]["echeance"] is None
+
+    assert retirer_echeance(
+        taches,
+        0
+    ) is False
+
+    assert retirer_echeance(
+        taches,
+        2
+    ) is False
+
+def tester_commande_retrait_echeance():
+    roy = creer_roy_test(
+        historique_actif=False
+    )
+
+    roy.taches = [
+        {
+            "description": "Expérience",
+            "terminee": False,
+            "priorite": "haute",
+            "echeance": "2026-10-05"
+        }
+    ]
+
+    resultat = roy.traiter_message(
+        "retire l'échéance de la tâche 1",
+        "retire l'échéance de la tâche 1"
+    )
+
+    assert resultat is True
+    assert roy.taches[0]["echeance"] is None
+
+    reponse = roy.historique[-1]["content"]
+
+    assert "Échéance retirée." in reponse
 
 def tester_commande_echeance_tache():
     roy = creer_roy_test(
@@ -377,6 +621,120 @@ def tester_commande_echeance_tache():
     assert est_tache_valide(
         ancienne_tache
     ) is True
+
+def tester_tache_a_venir():
+    date_reference = date(2026, 10, 1)
+
+    assert tache_a_venir(
+        {
+            "description": "Tâche future",
+            "terminee": False,
+            "priorite": "haute",
+            "echeance": "2026-10-02"
+        },
+        date_reference
+    ) is True
+
+    assert tache_a_venir(
+        {
+            "description": "Tâche du jour",
+            "terminee": False,
+            "priorite": "normale",
+            "echeance": "2026-10-01"
+        },
+        date_reference
+    ) is False
+
+    assert tache_a_venir(
+        {
+            "description": "Tâche passée",
+            "terminee": False,
+            "priorite": "basse",
+            "echeance": "2026-09-30"
+        },
+        date_reference
+    ) is False
+
+def tester_formatage_taches_a_venir():
+    taches = [
+        {
+            "description": "Ancienne tâche",
+            "terminee": False,
+            "priorite": "normale",
+            "echeance": "2000-01-01"
+        },
+        {
+            "description": "Tâche future",
+            "terminee": False,
+            "priorite": "haute",
+            "echeance": "2999-01-01"
+        },
+        {
+            "description": "Tâche future terminée",
+            "terminee": True,
+            "priorite": "basse",
+            "echeance": "2999-01-01"
+        }
+    ]
+
+    resultat = formater_taches(
+        taches,
+        a_venir=True
+    )
+
+    assert "2." in resultat
+    assert "Tâche future" in resultat
+    assert "Ancienne tâche" not in resultat
+    assert "Tâche future terminée" not in resultat
+
+    resultat_vide = formater_taches(
+        [taches[0]],
+        a_venir=True
+    )
+
+    assert resultat_vide == (
+        "Tu n'as aucune tâche à venir."
+    )
+
+def tester_commande_taches_a_venir():
+    roy = creer_roy_test(
+        historique_actif=False
+    )
+
+    roy.taches = [
+        {
+            "description": "Ancienne tâche",
+            "terminee": False,
+            "priorite": "normale",
+            "echeance": "2000-01-01"
+        },
+        {
+            "description": "Tâche future",
+            "terminee": False,
+            "priorite": "haute",
+            "echeance": "2999-01-01"
+        },
+        {
+            "description": "Tâche future terminée",
+            "terminee": True,
+            "priorite": "basse",
+            "echeance": "2999-01-01"
+        }
+    ]
+
+    resultat = roy.traiter_message(
+        "montre mes tâches à venir",
+        "montre mes tâches à venir"
+    )
+
+    assert resultat is True
+
+    reponse = roy.historique[-1]["content"]
+
+    assert "2." in reponse
+    assert "Tâche future" in reponse
+    assert "Ancienne tâche" not in reponse
+    assert "Tâche future terminée" not in reponse
 
 def tester_chargement_priorites_taches():
     with TemporaryDirectory() as dossier:
@@ -915,3 +1273,45 @@ def tester_commande_taches_pour_aujourdhui():
     assert reponse == (
         "Tu n'as aucune tâche prévue aujourd'hui."
     )
+
+def tester_commande_resume_taches():
+    roy = creer_roy_test(
+        historique_actif=False
+    )
+
+    roy.taches = [
+        {
+            "description": "Tâche en retard",
+            "terminee": False,
+            "priorite": "haute",
+            "echeance": "2000-01-01"
+        },
+        {
+            "description": "Tâche du jour",
+            "terminee": False,
+            "priorite": "normale",
+            "echeance": date.today().isoformat()
+        },
+        {
+            "description": "Tâche future",
+            "terminee": False,
+            "priorite": "basse",
+            "echeance": "2999-01-01"
+        }
+    ]
+
+    resultat = roy.traiter_message(
+        "résumé tâches",
+        "résumé tâches"
+    )
+
+    assert resultat is True
+
+    reponse = roy.historique[-1]["content"]
+
+    assert "Résumé des tâches" in reponse
+    assert "En retard : 1" in reponse
+    assert "Pour aujourd'hui : 1" in reponse
+    assert "À venir : 1" in reponse
+    assert "Tâche en retard" in reponse
+    assert "Tâche du jour" in reponse

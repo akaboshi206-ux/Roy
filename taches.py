@@ -31,16 +31,28 @@ ORDRE_PRIORITES: dict[Priorite, int] = {
     "basse": 2
 }
 
-def date_echeance_valide(echeance: str) -> bool:
+def date_echeance_valide(
+    echeance: str
+) -> bool:
+    return (
+        convertir_echeance_en_date(echeance)
+        is not None
+    )
+
+def convertir_echeance_en_date(
+    echeance: object
+) -> date | None:
+    if not isinstance(echeance, str):
+        return None
+
     try:
-        datetime.strptime(
+        return datetime.strptime(
             echeance,
             "%Y-%m-%d"
-        )
-        return True
+        ).date()
 
     except ValueError:
-        return False
+        return None
 
 def tache_en_retard(
     tache: Tache,
@@ -49,18 +61,11 @@ def tache_en_retard(
     if tache.get("terminee", False):
         return False
 
-    echeance = tache.get("echeance")
+    date_echeance = convertir_echeance_en_date(
+        tache.get("echeance")
+    )
 
-    if not echeance:
-        return False
-
-    try:
-        date_echeance = datetime.strptime(
-            echeance,
-            "%Y-%m-%d"
-        ).date()
-
-    except (TypeError, ValueError):
+    if date_echeance is None:
         return False
 
     if date_reference is None:
@@ -75,23 +80,36 @@ def tache_pour_aujourdhui(
     if tache.get("terminee", False):
         return False
 
-    echeance = tache.get("echeance")
+    date_echeance = convertir_echeance_en_date(
+        tache.get("echeance")
+    )
 
-    if not echeance:
-        return False
-
-    try:
-        date_echeance = datetime.strptime(
-            echeance,
-            "%Y-%m-%d"
-        ).date()
-    except (TypeError, ValueError):
+    if date_echeance is None:
         return False
 
     if date_reference is None:
         date_reference = date.today()
 
     return date_echeance == date_reference
+
+def tache_a_venir(
+    tache: Tache,
+    date_reference=None
+) -> bool:
+    if tache.get("terminee", False):
+        return False
+
+    date_echeance = convertir_echeance_en_date(
+        tache.get("echeance")
+    )
+
+    if date_echeance is None:
+        return False
+
+    if date_reference is None:
+        date_reference = date.today()
+
+    return date_echeance > date_reference
 
 def filtrer_taches_en_retard(
     taches: list[Tache],
@@ -122,11 +140,33 @@ def changer_echeance(
     taches[numero - 1]["echeance"] = echeance
     return True
 
+def retirer_echeance(
+    taches: list[Tache],
+    numero: int
+) -> bool:
+    if not 1 <= numero <= len(taches):
+        return False
+
+    taches[numero - 1]["echeance"] = None
+    return True
+
 def trier_taches_par_priorite(taches: list[Tache]) -> None:
     taches.sort(
         key=lambda tache: ORDRE_PRIORITES[
             tache["priorite"]
         ]
+    )
+
+def trier_taches_par_echeance(
+    taches: list[Tache]
+) -> None:
+    taches.sort(
+        key=lambda tache: (
+            convertir_echeance_en_date(
+                tache.get("echeance")
+            )
+            or date.max
+        )
     )
 
 def est_tache_valide(tache: object) -> bool:
@@ -175,12 +215,13 @@ def ajouter_tache(taches: list[Tache], description: str) -> bool:
     return True
 
 def formater_taches(
-        taches: list[Tache], 
-        priorite: str | None = None,
-        terminee: bool | None = None, 
-        en_retard: bool = False, 
-        pour_aujourdhui: bool = False
-    ) -> str:
+    taches: list[Tache],
+    priorite: str | None = None,
+    terminee: bool | None = None,
+    en_retard: bool = False,
+    pour_aujourdhui: bool = False,
+    a_venir: bool = False
+) -> str:
     if not taches:
         return "Tu n'as aucune tâche."
 
@@ -193,6 +234,9 @@ def formater_taches(
             continue
 
         if (pour_aujourdhui and not tache_pour_aujourdhui(tache)):
+            continue
+
+        if a_venir and not tache_a_venir(tache):
             continue
 
         if (priorite is not None and priorite_tache != priorite):
@@ -226,6 +270,9 @@ def formater_taches(
 
     if pour_aujourdhui:
         return "Tu n'as aucune tâche prévue aujourd'hui."
+
+    if a_venir:
+        return "Tu n'as aucune tâche à venir."
 
     if priorite is not None:
         return ("Tu n'as aucune tâche de priorité " f"{priorite}.")
@@ -318,7 +365,10 @@ def rechercher_taches(
 
     return resultats
 
-def calculer_statistiques_taches(taches: list[Tache]) -> dict[str, int]:
+def calculer_statistiques_taches(
+    taches: list[Tache],
+    date_reference=None
+) -> dict[str, int]:
     total = len(taches)
 
     terminees = sum(
@@ -347,6 +397,30 @@ def calculer_statistiques_taches(taches: list[Tache]) -> dict[str, int]:
         if tache["priorite"] == "basse"
     )
 
+    en_retard = sum(
+        tache_en_retard(
+            tache,
+            date_reference
+        )
+        for tache in taches
+    )
+
+    pour_aujourdhui = sum(
+        tache_pour_aujourdhui(
+            tache,
+            date_reference
+        )
+        for tache in taches
+    )
+
+    a_venir = sum(
+        tache_a_venir(
+            tache,
+            date_reference
+        )
+        for tache in taches
+    )
+
     return {
         "total": total,
         "a_faire": a_faire,
@@ -354,5 +428,8 @@ def calculer_statistiques_taches(taches: list[Tache]) -> dict[str, int]:
         "hautes": hautes,
         "pourcentage": pourcentage,
         "normales": normales,
-        "basses": basses
+        "basses": basses,
+        "en_retard": en_retard,
+        "pour_aujourdhui": pour_aujourdhui,
+        "a_venir": a_venir
     }
