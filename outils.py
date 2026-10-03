@@ -1,3 +1,4 @@
+import shutil
 import json
 import os
 from tempfile import NamedTemporaryFile
@@ -107,6 +108,17 @@ def sauvegarder_json_atomiquement(chemin, donnees) -> bool:
             chemin_temporaire = fichier.name
             json.dump(donnees, fichier, ensure_ascii=False, indent=4)
 
+        chemin_sauvegarde = (
+            f"{chemin}.bak"
+        )
+
+        if os.path.exists(chemin):
+            shutil.copy2(
+                chemin,
+                chemin_sauvegarde
+            )
+
+
         os.replace(chemin_temporaire, chemin)
         return True
 
@@ -139,3 +151,45 @@ def charger_json(
         OSError
     ) as erreur:
         return valeur_par_defaut, erreur
+
+def charger_json_avec_sauvegarde(
+    chemin: str,
+    valeur_par_defaut: object
+) -> tuple[object, Exception | None, bool]:
+    donnees, erreur = charger_json(
+        chemin,
+        valeur_par_defaut
+    )
+
+    if erreur is None:
+        return donnees, None, False
+
+    chemin_sauvegarde = f"{chemin}.bak"
+
+    donnees_sauvegardees, erreur_sauvegarde = (
+        charger_json(
+            chemin_sauvegarde,
+            valeur_par_defaut
+        )
+    )
+
+    if erreur_sauvegarde is None:
+        try:
+            shutil.copy2(
+                chemin_sauvegarde,
+                chemin
+            )
+        except OSError:
+            pass
+
+        return (
+            donnees_sauvegardees,
+            None,
+            True
+        )
+
+    return (
+        valeur_par_defaut,
+        erreur,
+        False
+    )

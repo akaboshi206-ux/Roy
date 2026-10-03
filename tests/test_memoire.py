@@ -99,9 +99,28 @@ def tester_echec_sauvegarde_preserve_memoire():
             "couleur": "bleu"
         }
 
-        assert list(
+        chemin_sauvegarde = Path(
+            f"{chemin}.bak"
+        )
+
+        contenu_sauvegarde = (
+            chemin_sauvegarde.read_text(
+                encoding="utf-8"
+            )
+        )
+
+        assert json.loads(
+            contenu_sauvegarde
+        ) == {
+            "couleur": "bleu"
+        }
+
+        assert set(
             Path(dossier).iterdir()
-        ) == [chemin]
+        ) == {
+            chemin,
+            chemin_sauvegarde
+        }
 
 
 def tester_apprentissage_conserve_majuscules():
@@ -149,3 +168,40 @@ def tester_chargement_memoire_json():
     }
 
     assert roy.memoire_sauvegardable is True
+
+def tester_recuperation_memoire_depuis_copie_securite():
+    with TemporaryDirectory() as dossier:
+        chemin = (
+            Path(dossier)
+            / "memoire_test.json"
+        )
+
+        chemin.write_text(
+            "{json invalide",
+            encoding="utf-8"
+        )
+
+        chemin_sauvegarde = Path(
+            f"{chemin}.bak"
+        )
+
+        chemin_sauvegarde.write_text(
+            json.dumps({
+                "couleur": "cyan"
+            }),
+            encoding="utf-8"
+        )
+
+        roy = Roy(
+            historique_actif=False,
+            fichier_memoire=str(chemin)
+        )
+
+        assert roy.memoire == {
+            "couleur": "cyan"
+        }
+
+        assert (
+            roy.memoire_sauvegardable
+            is True
+        )

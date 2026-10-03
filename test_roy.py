@@ -5,7 +5,8 @@ from tests import (
     test_systeme,
     test_conversation,
     test_json,
-    test_general
+    test_general,
+    test_outils
 )
 
 def trouver_tests(espace_noms):
@@ -29,7 +30,8 @@ def lancer_tests():
         test_systeme,
         test_conversation,
         test_json,
-        test_general
+        test_general,
+        test_outils
     )
     for module in modules_tests:
         tests.extend(

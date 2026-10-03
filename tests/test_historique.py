@@ -378,3 +378,60 @@ def tester_chargement_historique_json():
         roy.historique_sauvegardable
         is True
     )
+
+def tester_recuperation_historique_depuis_copie_securite():
+    with TemporaryDirectory() as dossier:
+        chemin = (
+            Path(dossier)
+            / "historique_test.json"
+        )
+
+        chemin.write_text(
+            "{json invalide",
+            encoding="utf-8"
+        )
+
+        historique_sauvegarde = [
+            {
+                "role": "user",
+                "content": "Bonjour Roy",
+                "timestamp": (
+                    "2026-10-02T13:00:00"
+                )
+            }
+        ]
+
+        chemin_sauvegarde = Path(
+            f"{chemin}.bak"
+        )
+
+        chemin_sauvegarde.write_text(
+            json.dumps(
+                historique_sauvegarde
+            ),
+            encoding="utf-8"
+        )
+
+        roy = Roy(
+            historique_actif=True,
+            fichier_historique=str(chemin)
+        )
+
+        assert roy.historique == (
+            historique_sauvegarde
+        )
+
+        assert (
+            roy.historique_sauvegardable
+            is True
+        )
+
+        donnees_reparees = json.loads(
+            chemin.read_text(
+                encoding="utf-8"
+            )
+        )
+
+        assert donnees_reparees == (
+            historique_sauvegarde
+        )

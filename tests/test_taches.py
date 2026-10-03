@@ -1315,3 +1315,59 @@ def tester_commande_resume_taches():
     assert "À venir : 1" in reponse
     assert "Tâche en retard" in reponse
     assert "Tâche du jour" in reponse
+
+def tester_recuperation_taches_depuis_copie_securite():
+    with TemporaryDirectory() as dossier:
+        chemin = (
+            Path(dossier)
+            / "taches_test.json"
+        )
+
+        chemin.write_text(
+            "{json invalide",
+            encoding="utf-8"
+        )
+
+        taches_sauvegardees = [
+            {
+                "description": "Tâche récupérée",
+                "terminee": False,
+                "priorite": "haute",
+                "echeance": "2026-10-10"
+            }
+        ]
+
+        chemin_sauvegarde = Path(
+            f"{chemin}.bak"
+        )
+
+        chemin_sauvegarde.write_text(
+            json.dumps(
+                taches_sauvegardees
+            ),
+            encoding="utf-8"
+        )
+
+        roy = Roy(
+            historique_actif=False,
+            fichier_taches=str(chemin)
+        )
+
+        assert roy.taches == (
+            taches_sauvegardees
+        )
+
+        assert (
+            roy.taches_sauvegardables
+            is True
+        )
+
+        donnees_reparees = json.loads(
+            chemin.read_text(
+                encoding="utf-8"
+            )
+        )
+
+        assert donnees_reparees == (
+            taches_sauvegardees
+        )

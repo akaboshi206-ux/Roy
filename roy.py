@@ -34,7 +34,7 @@ from commandes_taches import (
 )
 
 from outils import (
-    charger_json,
+    charger_json_avec_sauvegarde,
     nettoyer_texte,
     formater_message_historique,
     sauvegarder_json_atomiquement,
@@ -103,9 +103,11 @@ class Roy:
         print(f"Roy : {contenu}")
 
     def charger_taches(self) -> None:
-        donnees, erreur = charger_json(
-            self.fichier_taches,
-            []
+        donnees, erreur, recuperation = (
+            charger_json_avec_sauvegarde(
+                self.fichier_taches,
+                []
+            )
         )
 
         if isinstance(erreur, FileNotFoundError):
@@ -139,6 +141,12 @@ class Roy:
             )
 
         self.taches = cast(list[Tache], donnees)
+
+        if recuperation:
+            print(
+                "Roy : Mes tâches ont été récupérées "
+                "depuis la copie de sécurité."
+            )
 
     def sauvegarder_taches(self) -> bool:
         if not self.taches_sauvegardables:
@@ -181,9 +189,11 @@ class Roy:
         return False
 
     def charger_historique(self) -> None:
-        donnees, erreur = charger_json(
-            self.fichier_historique,
-            []
+        donnees, erreur, recuperation = (
+            charger_json_avec_sauvegarde(
+                self.fichier_historique,
+                []
+            )
         )
 
         if isinstance(erreur, FileNotFoundError):
@@ -221,6 +231,12 @@ class Roy:
                 self.historique_sauvegardable = False
 
         self.historique = historique_valide
+
+        if recuperation:
+            print(
+                "Roy : Mon historique a été récupéré "
+                "depuis la copie de sécurité."
+            )
 
     def sauvegarder_historique(self) -> bool:
         if not self.historique_actif:
@@ -372,9 +388,11 @@ class Roy:
             raise ValueError("Le texte ne peut pas être vide.")
 
     def charger_memoire(self) -> None:
-        donnees, erreur = charger_json(
-            self.fichier_memoire,
-            {}
+        donnees, erreur, recuperation = (
+            charger_json_avec_sauvegarde(
+                self.fichier_memoire,
+                {}
+            )
         )
 
         if isinstance(erreur, FileNotFoundError):
@@ -402,6 +420,12 @@ class Roy:
             Memoire,
             donnees
         )
+
+        if recuperation:
+            print(
+                "Roy : Ma mémoire a été récupérée "
+                "depuis la copie de sécurité."
+            )
 
     def saluer(self):
         self.repondre(f"Bonjour {self.memoire.get('nom', 'utilisateur')} !")
