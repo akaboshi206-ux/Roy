@@ -2,6 +2,7 @@ import json
 
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from unittest.mock import patch
 
 from roy import Roy
 
@@ -166,6 +167,12 @@ def tester_chargement_historique_invalide():
             roy.historique[0]["content"]
             == "Bonjour"
         )
+
+        assert roy.historique_sauvegardable is False
+        assert roy.sauvegarder_historique() is False
+
+        with open(chemin, "r", encoding="utf-8") as fichier:
+            assert json.load(fichier) == donnees
 
 def tester_commande_historique_avec_limite():
     roy = creer_roy_test(
@@ -435,3 +442,78 @@ def tester_recuperation_historique_depuis_copie_securite():
         assert donnees_reparees == (
             historique_sauvegarde
         )
+
+def tester_recuperation_historique_format_invalide():
+    with TemporaryDirectory() as dossier:
+        chemin = Path(dossier) / "historique_test.json"
+
+        historique_valide = [
+            {"role": "user", "content": "Bonjour Cyan"}
+        ]
+
+        with open(chemin, "w", encoding="utf-8") as fichier:
+            json.dump(
+                [{"role": "user", "content": 123}],
+                fichier
+            )
+
+        with open(f"{chemin}.bak", "w", encoding="utf-8") as fichier:
+            json.dump(historique_valide, fichier)
+
+        roy = creer_roy_test(
+            fichier_historique=str(chemin)
+        )
+
+        assert roy.historique == historique_valide
+        assert roy.historique_sauvegardable is True
+
+        with open(chemin, "r", encoding="utf-8") as fichier:
+            assert json.load(fichier) == historique_valide
+
+def tester_reparation_historique_echouee_bloque_sauvegarde():
+    with TemporaryDirectory() as dossier:
+        chemin = Path(dossier) / "historique.json"
+        chemin_sauvegarde = Path(f"{chemin}.bak")
+
+        principale = [
+            {"role": "user", "content": 123}
+        ]
+        copie = [
+            {"role": "user", "content": "Bonjour Cyan"}
+        ]
+
+        chemin.write_text(
+            json.dumps(principale),
+            encoding="utf-8"
+        )
+        chemin_sauvegarde.write_text(
+            json.dumps(copie),
+            encoding="utf-8"
+        )
+
+        with patch(
+            "outils.shutil.copy2",
+            side_effect=OSError("Réparation impossible")
+        ):
+            roy = creer_roy_test(
+                fichier_historique=str(chemin)
+            )
+
+        assert roy.historique == copie
+        assert roy.historique_sauvegardable is False
+
+        roy.historique.append(
+            {"role": "assistant", "content": "Bonjour !"}
+        )
+        assert roy.sauvegarder_historique() is False
+
+        assert json.loads(
+            chemin.read_text(encoding="utf-8")
+        ) == principale
+
+        assert json.loads(
+            chemin_sauvegarde.read_text(encoding="utf-8")
+        ) == copie
+
+        assert len(roy.historique) == 2
+        assert roy.historique[-1]["content"] == "Bonjour !"

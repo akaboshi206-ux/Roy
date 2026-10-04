@@ -5,6 +5,7 @@ from io import StringIO
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from datetime import date
+from unittest.mock import patch
 
 from roy import Roy
 
@@ -1371,3 +1372,91 @@ def tester_recuperation_taches_depuis_copie_securite():
         assert donnees_reparees == (
             taches_sauvegardees
         )
+
+def tester_recuperation_taches_format_invalide():
+    with TemporaryDirectory() as dossier:
+        chemin = Path(dossier) / "taches_test.json"
+
+        taches_valides = [
+            {
+                "description": "Travailler sur Roy",
+                "terminee": False,
+                "priorite": "normale",
+                "echeance": None
+            }
+        ]
+
+        with open(chemin, "w", encoding="utf-8") as fichier:
+            json.dump(
+                [{"description": 123, "terminee": False}],
+                fichier
+            )
+
+        with open(f"{chemin}.bak", "w", encoding="utf-8") as fichier:
+            json.dump(taches_valides, fichier)
+
+        roy = creer_roy_test(
+            fichier_taches=str(chemin)
+        )
+
+        assert roy.taches == taches_valides
+        assert roy.taches_sauvegardables is True
+
+        with open(chemin, "r", encoding="utf-8") as fichier:
+            assert json.load(fichier) == taches_valides
+
+def tester_reparation_taches_echouee_bloque_sauvegarde():
+    with TemporaryDirectory() as dossier:
+        chemin = Path(dossier) / "taches.json"
+        chemin_sauvegarde = Path(f"{chemin}.bak")
+
+        principale = [
+            {
+                "description": 123,
+                "terminee": False,
+                "priorite": "normale",
+                "echeance": None
+            }
+        ]
+        copie = [
+            {
+                "description": "Travailler sur Roy",
+                "terminee": False,
+                "priorite": "normale",
+                "echeance": None
+            }
+        ]
+
+        chemin.write_text(
+            json.dumps(principale),
+            encoding="utf-8"
+        )
+        chemin_sauvegarde.write_text(
+            json.dumps(copie),
+            encoding="utf-8"
+        )
+
+        with patch(
+            "outils.shutil.copy2",
+            side_effect=OSError("Réparation impossible")
+        ):
+            roy = creer_roy_test(
+                historique_actif=False,
+                fichier_taches=str(chemin)
+            )
+
+        assert roy.taches == copie
+        assert roy.taches_sauvegardables is False
+
+        roy.taches[0]["description"] = "Continuer Roy"
+        assert roy.sauvegarder_taches() is False
+
+        assert json.loads(
+            chemin.read_text(encoding="utf-8")
+        ) == principale
+
+        assert json.loads(
+            chemin_sauvegarde.read_text(encoding="utf-8")
+        ) == copie
+
+        assert roy.taches[0]["description"] == "Continuer Roy"

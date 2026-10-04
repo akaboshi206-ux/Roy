@@ -200,6 +200,16 @@ def est_tache_valide(tache: object) -> bool:
         )
     )
 
+def est_liste_taches_valide(donnees: object) -> bool:
+    if not isinstance(donnees, list):
+        return False
+
+    for tache in donnees:
+        if not est_tache_valide(tache):
+            return False
+
+    return True
+
 def ajouter_tache(taches: list[Tache], description: str) -> bool:
     description = description.strip()
 

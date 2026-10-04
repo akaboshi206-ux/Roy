@@ -8,6 +8,8 @@ from typing import (
     TypedDict
 )
 
+from collections.abc import Callable
+
 RoleHistorique = Literal[
     "user",
     "assistant"
@@ -56,6 +58,16 @@ def est_message_historique_valide(
         )
         and timestamp_valide
     )
+
+def est_historique_valide(donnees: object) -> bool:
+    if not isinstance(donnees, list):
+        return False
+
+    for message in donnees:
+        if not est_message_historique_valide(message):
+            return False
+
+    return True
 
 def nettoyer_texte(texte, minuscules=True):
     texte_nettoye = texte.strip()
@@ -154,42 +166,53 @@ def charger_json(
 
 def charger_json_avec_sauvegarde(
     chemin: str,
-    valeur_par_defaut: object
-) -> tuple[object, Exception | None, bool]:
+    valeur_par_defaut: object,
+    validateur: Callable[[object], bool] | None = None
+) -> tuple[object, Exception | None, bool, OSError | None]:
     donnees, erreur = charger_json(
         chemin,
         valeur_par_defaut
     )
 
     if erreur is None:
-        return donnees, None, False
+        if validateur is None or validateur(donnees):
+            return donnees, None, False, None
+
+        erreur = ValueError(
+            "Le format des données est invalide."
+        )
 
     chemin_sauvegarde = f"{chemin}.bak"
 
-    donnees_sauvegardees, erreur_sauvegarde = (
-        charger_json(
-            chemin_sauvegarde,
-            valeur_par_defaut
-        )
+    donnees_sauvegardees, erreur_sauvegarde = charger_json(
+        chemin_sauvegarde,
+        valeur_par_defaut
     )
 
-    if erreur_sauvegarde is None:
+    if erreur_sauvegarde is None and (
+        validateur is None
+        or validateur(donnees_sauvegardees)
+    ):
+        erreur_reparation = None
+
         try:
             shutil.copy2(
                 chemin_sauvegarde,
                 chemin
             )
-        except OSError:
-            pass
+        except OSError as erreur_copie:
+            erreur_reparation = erreur_copie
 
         return (
             donnees_sauvegardees,
             None,
-            True
+            True,
+            erreur_reparation
         )
 
     return (
         valeur_par_defaut,
         erreur,
-        False
+        False,
+        None
     )

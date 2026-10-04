@@ -5,7 +5,8 @@ from typing import cast
 
 from taches import (
     Tache,
-    est_tache_valide  
+    est_tache_valide,
+    est_liste_taches_valide
 )
 
 from commandes_historique import (
@@ -42,7 +43,9 @@ from outils import (
     RoleHistorique,
     est_message_historique_valide,
     Memoire,
-    est_memoire_valide
+    est_memoire_valide,
+    est_historique_valide,
+    charger_json
 )
 
 from config import (
@@ -103,10 +106,11 @@ class Roy:
         print(f"Roy : {contenu}")
 
     def charger_taches(self) -> None:
-        donnees, erreur, recuperation = (
+        donnees, erreur, recuperation, erreur_reparation = (
             charger_json_avec_sauvegarde(
                 self.fichier_taches,
-                []
+                [],
+                validateur=est_liste_taches_valide
             )
         )
 
@@ -147,6 +151,14 @@ class Roy:
                 "Roy : Mes tâches ont été récupérées "
                 "depuis la copie de sécurité."
             )
+
+        if erreur_reparation is not None:
+            self.taches_sauvegardables = False
+            print(
+                "Roy : Tâches récupérées, mais réparation "
+                "du fichier impossible. Sauvegarde bloquée."
+            )
+            print(erreur_reparation)
 
     def sauvegarder_taches(self) -> bool:
         if not self.taches_sauvegardables:
@@ -189,16 +201,27 @@ class Roy:
         return False
 
     def charger_historique(self) -> None:
-        donnees, erreur, recuperation = (
+        donnees, erreur, recuperation, erreur_reparation = (
             charger_json_avec_sauvegarde(
                 self.fichier_historique,
-                []
+                [],
+                validateur=est_historique_valide
             )
         )
 
         if isinstance(erreur, FileNotFoundError):
             self.historique = []
             return
+
+        if isinstance(erreur, ValueError) and not isinstance(
+            erreur,
+            json.JSONDecodeError
+        ):
+            donnees, erreur = charger_json(
+                self.fichier_historique,
+                []
+            )
+            self.historique_sauvegardable = False
 
         if erreur is not None:
             if isinstance(erreur, json.JSONDecodeError):
@@ -237,6 +260,14 @@ class Roy:
                 "Roy : Mon historique a été récupéré "
                 "depuis la copie de sécurité."
             )
+
+        if erreur_reparation is not None:
+            self.historique_sauvegardable = False
+            print(
+                "Roy : Historique récupéré, mais réparation "
+                "du fichier impossible. Sauvegarde bloquée."
+            )
+            print(erreur_reparation)
 
     def sauvegarder_historique(self) -> bool:
         if not self.historique_actif:
@@ -388,10 +419,11 @@ class Roy:
             raise ValueError("Le texte ne peut pas être vide.")
 
     def charger_memoire(self) -> None:
-        donnees, erreur, recuperation = (
+        donnees, erreur, recuperation, erreur_reparation = (
             charger_json_avec_sauvegarde(
                 self.fichier_memoire,
-                {}
+                {},
+                validateur=est_memoire_valide
             )
         )
 
@@ -426,6 +458,14 @@ class Roy:
                 "Roy : Ma mémoire a été récupérée "
                 "depuis la copie de sécurité."
             )
+
+        if erreur_reparation is not None:
+            self.memoire_sauvegardable = False
+            print(
+                "Roy : Mémoire récupérée, mais réparation "
+                "du fichier impossible. Sauvegarde bloquée."
+            )
+            print(erreur_reparation)
 
     def saluer(self):
         self.repondre(f"Bonjour {self.memoire.get('nom', 'utilisateur')} !")

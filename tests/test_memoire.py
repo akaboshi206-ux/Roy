@@ -205,3 +205,66 @@ def tester_recuperation_memoire_depuis_copie_securite():
             roy.memoire_sauvegardable
             is True
         )
+
+def tester_recuperation_memoire_format_invalide():
+    with TemporaryDirectory() as dossier:
+        chemin = Path(dossier) / "memoire_test.json"
+        memoire_valide = {"couleur": "cyan"}
+
+        with open(chemin, "w", encoding="utf-8") as fichier:
+            json.dump({"couleur": 123}, fichier)
+
+        with open(f"{chemin}.bak", "w", encoding="utf-8") as fichier:
+            json.dump(memoire_valide, fichier)
+
+        roy = creer_roy_test(
+            fichier_memoire=str(chemin)
+        )
+
+        assert roy.memoire == memoire_valide
+        assert roy.memoire_sauvegardable is True
+
+        with open(chemin, "r", encoding="utf-8") as fichier:
+            assert json.load(fichier) == memoire_valide
+
+def tester_reparation_memoire_echouee_bloque_sauvegarde():
+    with TemporaryDirectory() as dossier:
+        chemin = Path(dossier) / "memoire.json"
+        chemin_sauvegarde = Path(f"{chemin}.bak")
+
+        principale = {"couleur": 123}
+        copie = {"couleur": "cyan"}
+
+        chemin.write_text(
+            json.dumps(principale),
+            encoding="utf-8"
+        )
+        chemin_sauvegarde.write_text(
+            json.dumps(copie),
+            encoding="utf-8"
+        )
+
+        with patch(
+            "outils.shutil.copy2",
+            side_effect=OSError("Réparation impossible")
+        ):
+            roy = creer_roy_test(
+                historique_actif=False,
+                fichier_memoire=str(chemin)
+            )
+
+        assert roy.memoire == copie
+        assert roy.memoire_sauvegardable is False
+
+        roy.memoire["ville"] = "Paris"
+        assert roy.sauvegarder_memoire() is False
+
+        assert json.loads(
+            chemin.read_text(encoding="utf-8")
+        ) == principale
+
+        assert json.loads(
+            chemin_sauvegarde.read_text(encoding="utf-8")
+        ) == copie
+
+        assert roy.memoire["ville"] == "Paris"
