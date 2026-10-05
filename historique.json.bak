@@ -1,0 +1,2157 @@
+[
+    {
+        "role": "user",
+        "content": "bonjour"
+    },
+    {
+        "role": "user",
+        "content": "statut"
+    },
+    {
+        "role": "user",
+        "content": "quitter"
+    },
+    {
+        "role": "user",
+        "content": "historique"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy."
+    },
+    {
+        "role": "user",
+        "content": "quitter"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy."
+    },
+    {
+        "role": "user",
+        "content": "historique"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy."
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy."
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !"
+    },
+    {
+        "role": "user",
+        "content": "bonjour"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour Cyan !"
+    },
+    {
+        "role": "user",
+        "content": "statut"
+    },
+    {
+        "role": "assistant",
+        "content": "Statut du système"
+    },
+    {
+        "role": "assistant",
+        "content": "Nom : Roy"
+    },
+    {
+        "role": "assistant",
+        "content": "Informations en mémoire : 31"
+    },
+    {
+        "role": "assistant",
+        "content": "Système actif."
+    },
+    {
+        "role": "assistant",
+        "content": "Mémoire activée."
+    },
+    {
+        "role": "user",
+        "content": "historique"
+    },
+    {
+        "role": "user",
+        "content": "quitter"
+    },
+    {
+        "role": "assistant",
+        "content": "À bientôt !"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy.",
+        "timestamp": "2026-09-19T13:41:23"
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !",
+        "timestamp": "2026-09-19T13:41:23"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !",
+        "timestamp": "2026-09-19T13:41:23"
+    },
+    {
+        "role": "user",
+        "content": "bonjour",
+        "timestamp": "2026-09-19T13:41:26"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour Cyan !",
+        "timestamp": "2026-09-19T13:41:26"
+    },
+    {
+        "role": "user",
+        "content": "historique",
+        "timestamp": "2026-09-19T13:41:29"
+    },
+    {
+        "role": "user",
+        "content": "quitter",
+        "timestamp": "2026-09-19T13:41:33"
+    },
+    {
+        "role": "assistant",
+        "content": "À bientôt !",
+        "timestamp": "2026-09-19T13:41:33"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy.",
+        "timestamp": "2026-09-19T13:55:22"
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !",
+        "timestamp": "2026-09-19T13:55:22"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !",
+        "timestamp": "2026-09-19T13:55:22"
+    },
+    {
+        "role": "user",
+        "content": "historique",
+        "timestamp": "2026-09-19T13:55:28"
+    },
+    {
+        "role": "user",
+        "content": "quitter",
+        "timestamp": "2026-09-19T13:55:46"
+    },
+    {
+        "role": "assistant",
+        "content": "À bientôt !",
+        "timestamp": "2026-09-19T13:55:46"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy.",
+        "timestamp": "2026-09-19T14:08:24"
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !",
+        "timestamp": "2026-09-19T14:08:24"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !",
+        "timestamp": "2026-09-19T14:08:24"
+    },
+    {
+        "role": "user",
+        "content": "recherche historique bonjour",
+        "timestamp": "2026-09-19T14:08:31"
+    },
+    {
+        "role": "user",
+        "content": "recherche l'historique sport",
+        "timestamp": "2026-09-19T14:08:40"
+    },
+    {
+        "role": "user",
+        "content": "cherche l'historique dans Cyan",
+        "timestamp": "2026-09-19T14:09:18"
+    },
+    {
+        "role": "assistant",
+        "content": "Je ne sais pas encore quoi répondre.",
+        "timestamp": "2026-09-19T14:09:18"
+    },
+    {
+        "role": "user",
+        "content": "cherche dans l'historique Cyan",
+        "timestamp": "2026-09-19T14:09:37"
+    },
+    {
+        "role": "user",
+        "content": "recherche dans l'historique mémoire",
+        "timestamp": "2026-09-19T14:10:06"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy.",
+        "timestamp": "2026-09-19T14:14:28"
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !",
+        "timestamp": "2026-09-19T14:14:28"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !",
+        "timestamp": "2026-09-19T14:14:28"
+    },
+    {
+        "role": "user",
+        "content": "cherche l'historique dans Cya,",
+        "timestamp": "2026-09-19T14:14:35"
+    },
+    {
+        "role": "user",
+        "content": "cherche l'historique dans Cyan",
+        "timestamp": "2026-09-19T14:14:43"
+    },
+    {
+        "role": "user",
+        "content": "recherche historique mémoire",
+        "timestamp": "2026-09-19T14:14:52"
+    },
+    {
+        "role": "user",
+        "content": "recherche historique",
+        "timestamp": "2026-09-19T14:15:00"
+    },
+    {
+        "role": "user",
+        "content": "quitter",
+        "timestamp": "2026-09-19T14:15:02"
+    },
+    {
+        "role": "assistant",
+        "content": "À bientôt !",
+        "timestamp": "2026-09-19T14:15:02"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy.",
+        "timestamp": "2026-09-19T14:30:10"
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !",
+        "timestamp": "2026-09-19T14:30:10"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !",
+        "timestamp": "2026-09-19T14:30:10"
+    },
+    {
+        "role": "user",
+        "content": "statistiques historique",
+        "timestamp": "2026-09-19T14:30:18"
+    },
+    {
+        "role": "user",
+        "content": "combien de messages",
+        "timestamp": "2026-09-19T14:30:23"
+    },
+    {
+        "role": "user",
+        "content": "taille historique",
+        "timestamp": "2026-09-19T14:30:29"
+    },
+    {
+        "role": "user",
+        "content": "statistique historique",
+        "timestamp": "2026-09-19T14:30:35"
+    },
+    {
+        "role": "user",
+        "content": "quitter",
+        "timestamp": "2026-09-19T14:30:40"
+    },
+    {
+        "role": "assistant",
+        "content": "À bientôt !",
+        "timestamp": "2026-09-19T14:30:40"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy.",
+        "timestamp": "2026-09-19T18:07:48"
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !",
+        "timestamp": "2026-09-19T18:07:48"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !",
+        "timestamp": "2026-09-19T18:07:48"
+    },
+    {
+        "role": "user",
+        "content": "statut",
+        "timestamp": "2026-09-19T18:07:53"
+    },
+    {
+        "role": "assistant",
+        "content": "Statut du système",
+        "timestamp": "2026-09-19T18:07:53"
+    },
+    {
+        "role": "assistant",
+        "content": "Nom : Roy",
+        "timestamp": "2026-09-19T18:07:53"
+    },
+    {
+        "role": "assistant",
+        "content": "Informations en mémoire : 31",
+        "timestamp": "2026-09-19T18:07:53"
+    },
+    {
+        "role": "assistant",
+        "content": "Système actif.",
+        "timestamp": "2026-09-19T18:07:53"
+    },
+    {
+        "role": "assistant",
+        "content": "Mémoire activée.",
+        "timestamp": "2026-09-19T18:07:53"
+    },
+    {
+        "role": "user",
+        "content": "historique",
+        "timestamp": "2026-09-19T18:07:56"
+    },
+    {
+        "role": "user",
+        "content": "quitter",
+        "timestamp": "2026-09-19T18:08:20"
+    },
+    {
+        "role": "assistant",
+        "content": "À bientôt !",
+        "timestamp": "2026-09-19T18:08:20"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy.",
+        "timestamp": "2026-09-19T21:29:33"
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !",
+        "timestamp": "2026-09-19T21:29:33"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !",
+        "timestamp": "2026-09-19T21:29:33"
+    },
+    {
+        "role": "user",
+        "content": "historique",
+        "timestamp": "2026-09-19T21:29:36"
+    },
+    {
+        "role": "user",
+        "content": "quitter",
+        "timestamp": "2026-09-19T21:29:38"
+    },
+    {
+        "role": "assistant",
+        "content": "À bientôt !",
+        "timestamp": "2026-09-19T21:29:38"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy.",
+        "timestamp": "2026-09-20T12:05:23"
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !",
+        "timestamp": "2026-09-20T12:05:23"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !",
+        "timestamp": "2026-09-20T12:05:23"
+    },
+    {
+        "role": "user",
+        "content": "bonjour",
+        "timestamp": "2026-09-20T12:05:29"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour Cyan !",
+        "timestamp": "2026-09-20T12:05:29"
+    },
+    {
+        "role": "user",
+        "content": "statut",
+        "timestamp": "2026-09-20T12:05:32"
+    },
+    {
+        "role": "assistant",
+        "content": "Statut du système",
+        "timestamp": "2026-09-20T12:05:32"
+    },
+    {
+        "role": "assistant",
+        "content": "Nom : Roy",
+        "timestamp": "2026-09-20T12:05:32"
+    },
+    {
+        "role": "assistant",
+        "content": "Informations en mémoire : 31",
+        "timestamp": "2026-09-20T12:05:32"
+    },
+    {
+        "role": "assistant",
+        "content": "Système actif.",
+        "timestamp": "2026-09-20T12:05:32"
+    },
+    {
+        "role": "assistant",
+        "content": "Mémoire activée.",
+        "timestamp": "2026-09-20T12:05:32"
+    },
+    {
+        "role": "user",
+        "content": "historique 3",
+        "timestamp": "2026-09-20T12:05:37"
+    },
+    {
+        "role": "user",
+        "content": "historique banane",
+        "timestamp": "2026-09-20T12:05:41"
+    },
+    {
+        "role": "assistant",
+        "content": "Utilise un nombre, par exemple : historique 5",
+        "timestamp": "2026-09-20T12:05:41"
+    },
+    {
+        "role": "user",
+        "content": "historique 0",
+        "timestamp": "2026-09-20T12:05:49"
+    },
+    {
+        "role": "assistant",
+        "content": "Le nombre de messages doit être supérieur à zéro.",
+        "timestamp": "2026-09-20T12:05:49"
+    },
+    {
+        "role": "user",
+        "content": "quitter",
+        "timestamp": "2026-09-20T12:05:53"
+    },
+    {
+        "role": "assistant",
+        "content": "À bientôt !",
+        "timestamp": "2026-09-20T12:05:53"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy.",
+        "timestamp": "2026-09-20T12:26:43"
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !",
+        "timestamp": "2026-09-20T12:26:43"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !",
+        "timestamp": "2026-09-20T12:26:43"
+    },
+    {
+        "role": "user",
+        "content": "exporte l'historique",
+        "timestamp": "2026-09-20T12:26:49"
+    },
+    {
+        "role": "assistant",
+        "content": "Historique exporté dans conversation.txt.",
+        "timestamp": "2026-09-20T12:26:49"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy.",
+        "timestamp": "2026-09-20T13:39:42"
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !",
+        "timestamp": "2026-09-20T13:39:42"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !",
+        "timestamp": "2026-09-20T13:39:42"
+    },
+    {
+        "role": "user",
+        "content": "bonjour",
+        "timestamp": "2026-09-20T13:39:46"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour Cyan !",
+        "timestamp": "2026-09-20T13:39:46"
+    },
+    {
+        "role": "user",
+        "content": "export historique",
+        "timestamp": "2026-09-20T13:39:53"
+    },
+    {
+        "role": "assistant",
+        "content": "Historique exporté dans conversation_2026-09-20_13-39-53.txt.",
+        "timestamp": "2026-09-20T13:39:53"
+    },
+    {
+        "role": "user",
+        "content": "quitter",
+        "timestamp": "2026-09-20T13:40:03"
+    },
+    {
+        "role": "assistant",
+        "content": "À bientôt !",
+        "timestamp": "2026-09-20T13:40:03"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy.",
+        "timestamp": "2026-09-21T14:06:44"
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !",
+        "timestamp": "2026-09-21T14:06:44"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !",
+        "timestamp": "2026-09-21T14:06:44"
+    },
+    {
+        "role": "user",
+        "content": "bonjour",
+        "timestamp": "2026-09-21T14:06:56"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour Cyan !",
+        "timestamp": "2026-09-21T14:06:56"
+    },
+    {
+        "role": "user",
+        "content": "statut",
+        "timestamp": "2026-09-21T14:06:59"
+    },
+    {
+        "role": "assistant",
+        "content": "Statut du système",
+        "timestamp": "2026-09-21T14:06:59"
+    },
+    {
+        "role": "assistant",
+        "content": "Nom : Roy",
+        "timestamp": "2026-09-21T14:06:59"
+    },
+    {
+        "role": "assistant",
+        "content": "Informations en mémoire : 31",
+        "timestamp": "2026-09-21T14:06:59"
+    },
+    {
+        "role": "assistant",
+        "content": "Système actif.",
+        "timestamp": "2026-09-21T14:06:59"
+    },
+    {
+        "role": "assistant",
+        "content": "Mémoire activée.",
+        "timestamp": "2026-09-21T14:06:59"
+    },
+    {
+        "role": "user",
+        "content": "désactive la mémoire",
+        "timestamp": "2026-09-21T14:07:13"
+    },
+    {
+        "role": "assistant",
+        "content": "Mémoire désactivée.",
+        "timestamp": "2026-09-21T14:07:13"
+    },
+    {
+        "role": "user",
+        "content": "active la mémoire",
+        "timestamp": "2026-09-21T14:07:19"
+    },
+    {
+        "role": "assistant",
+        "content": "Mémoire activée.",
+        "timestamp": "2026-09-21T14:07:19"
+    },
+    {
+        "role": "user",
+        "content": "statistiques historique",
+        "timestamp": "2026-09-21T14:07:30"
+    },
+    {
+        "role": "user",
+        "content": "export historique",
+        "timestamp": "2026-09-21T14:07:37"
+    },
+    {
+        "role": "assistant",
+        "content": "Historique exporté dans conversation_2026-09-21_14-07-37.txt.",
+        "timestamp": "2026-09-21T14:07:37"
+    },
+    {
+        "role": "user",
+        "content": "quitter",
+        "timestamp": "2026-09-21T14:07:47"
+    },
+    {
+        "role": "assistant",
+        "content": "À bientôt !",
+        "timestamp": "2026-09-21T14:07:47"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy.",
+        "timestamp": "2026-09-21T14:23:43"
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !",
+        "timestamp": "2026-09-21T14:23:43"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !",
+        "timestamp": "2026-09-21T14:23:43"
+    },
+    {
+        "role": "user",
+        "content": "désactive le système",
+        "timestamp": "2026-09-21T14:23:48"
+    },
+    {
+        "role": "assistant",
+        "content": "Système désactivé.",
+        "timestamp": "2026-09-21T14:23:48"
+    },
+    {
+        "role": "user",
+        "content": "active le système",
+        "timestamp": "2026-09-21T14:23:53"
+    },
+    {
+        "role": "assistant",
+        "content": "Système activé.",
+        "timestamp": "2026-09-21T14:23:53"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy.",
+        "timestamp": "2026-09-21T15:10:00"
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !",
+        "timestamp": "2026-09-21T15:10:00"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !",
+        "timestamp": "2026-09-21T15:10:00"
+    },
+    {
+        "role": "user",
+        "content": "aide",
+        "timestamp": "2026-09-21T15:10:01"
+    },
+    {
+        "role": "assistant",
+        "content": "Voici ce que je peux faire :",
+        "timestamp": "2026-09-21T15:10:01"
+    },
+    {
+        "role": "assistant",
+        "content": "1. bonjour",
+        "timestamp": "2026-09-21T15:10:01"
+    },
+    {
+        "role": "assistant",
+        "content": "2. retiens que clé = valeur",
+        "timestamp": "2026-09-21T15:10:01"
+    },
+    {
+        "role": "assistant",
+        "content": "3. rappelle-moi clé",
+        "timestamp": "2026-09-21T15:10:01"
+    },
+    {
+        "role": "assistant",
+        "content": "4. oublie clé",
+        "timestamp": "2026-09-21T15:10:01"
+    },
+    {
+        "role": "assistant",
+        "content": "5. renomme ancienne_clé en nouvelle_clé",
+        "timestamp": "2026-09-21T15:10:01"
+    },
+    {
+        "role": "assistant",
+        "content": "6. montre ta mémoire",
+        "timestamp": "2026-09-21T15:10:01"
+    },
+    {
+        "role": "assistant",
+        "content": "7. combien d'informations connais-tu",
+        "timestamp": "2026-09-21T15:10:01"
+    },
+    {
+        "role": "assistant",
+        "content": "8. historique",
+        "timestamp": "2026-09-21T15:10:01"
+    },
+    {
+        "role": "assistant",
+        "content": "9. historique 5",
+        "timestamp": "2026-09-21T15:10:01"
+    },
+    {
+        "role": "assistant",
+        "content": "10. recherche historique mot",
+        "timestamp": "2026-09-21T15:10:01"
+    },
+    {
+        "role": "assistant",
+        "content": "11. statistiques historique",
+        "timestamp": "2026-09-21T15:10:01"
+    },
+    {
+        "role": "assistant",
+        "content": "12. export historique",
+        "timestamp": "2026-09-21T15:10:01"
+    },
+    {
+        "role": "assistant",
+        "content": "13. statut",
+        "timestamp": "2026-09-21T15:10:01"
+    },
+    {
+        "role": "assistant",
+        "content": "14. active ta mémoire",
+        "timestamp": "2026-09-21T15:10:01"
+    },
+    {
+        "role": "assistant",
+        "content": "15. désactive ta mémoire",
+        "timestamp": "2026-09-21T15:10:01"
+    },
+    {
+        "role": "assistant",
+        "content": "16. bascule ta mémoire",
+        "timestamp": "2026-09-21T15:10:01"
+    },
+    {
+        "role": "assistant",
+        "content": "17. active le système",
+        "timestamp": "2026-09-21T15:10:01"
+    },
+    {
+        "role": "assistant",
+        "content": "18. désactive le système",
+        "timestamp": "2026-09-21T15:10:01"
+    },
+    {
+        "role": "assistant",
+        "content": "19. bascule le système",
+        "timestamp": "2026-09-21T15:10:01"
+    },
+    {
+        "role": "assistant",
+        "content": "20. quitter",
+        "timestamp": "2026-09-21T15:10:01"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy.",
+        "timestamp": "2026-09-22T08:36:48"
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !",
+        "timestamp": "2026-09-22T08:36:48"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !",
+        "timestamp": "2026-09-22T08:36:48"
+    },
+    {
+        "role": "user",
+        "content": "aide",
+        "timestamp": "2026-09-22T08:36:52"
+    },
+    {
+        "role": "assistant",
+        "content": "Voici ce que je peux faire :",
+        "timestamp": "2026-09-22T08:36:52"
+    },
+    {
+        "role": "assistant",
+        "content": "1. bonjour",
+        "timestamp": "2026-09-22T08:36:52"
+    },
+    {
+        "role": "assistant",
+        "content": "2. retiens que clé = valeur",
+        "timestamp": "2026-09-22T08:36:52"
+    },
+    {
+        "role": "assistant",
+        "content": "3. rappelle-moi clé",
+        "timestamp": "2026-09-22T08:36:52"
+    },
+    {
+        "role": "assistant",
+        "content": "4. oublie clé",
+        "timestamp": "2026-09-22T08:36:52"
+    },
+    {
+        "role": "assistant",
+        "content": "5. renomme ancienne_clé en nouvelle_clé",
+        "timestamp": "2026-09-22T08:36:52"
+    },
+    {
+        "role": "assistant",
+        "content": "6. montre ta mémoire",
+        "timestamp": "2026-09-22T08:36:52"
+    },
+    {
+        "role": "assistant",
+        "content": "7. combien d'informations connais-tu",
+        "timestamp": "2026-09-22T08:36:52"
+    },
+    {
+        "role": "assistant",
+        "content": "8. historique",
+        "timestamp": "2026-09-22T08:36:52"
+    },
+    {
+        "role": "assistant",
+        "content": "9. historique 5",
+        "timestamp": "2026-09-22T08:36:52"
+    },
+    {
+        "role": "assistant",
+        "content": "10. recherche historique mot",
+        "timestamp": "2026-09-22T08:36:52"
+    },
+    {
+        "role": "assistant",
+        "content": "11. statistiques historique",
+        "timestamp": "2026-09-22T08:36:52"
+    },
+    {
+        "role": "assistant",
+        "content": "12. export historique",
+        "timestamp": "2026-09-22T08:36:52"
+    },
+    {
+        "role": "assistant",
+        "content": "13. statut",
+        "timestamp": "2026-09-22T08:36:52"
+    },
+    {
+        "role": "assistant",
+        "content": "14. active ta mémoire",
+        "timestamp": "2026-09-22T08:36:52"
+    },
+    {
+        "role": "assistant",
+        "content": "15. désactive ta mémoire",
+        "timestamp": "2026-09-22T08:36:52"
+    },
+    {
+        "role": "assistant",
+        "content": "16. bascule ta mémoire",
+        "timestamp": "2026-09-22T08:36:52"
+    },
+    {
+        "role": "assistant",
+        "content": "17. active le système",
+        "timestamp": "2026-09-22T08:36:52"
+    },
+    {
+        "role": "assistant",
+        "content": "18. désactive le système",
+        "timestamp": "2026-09-22T08:36:52"
+    },
+    {
+        "role": "assistant",
+        "content": "19. bascule le système",
+        "timestamp": "2026-09-22T08:36:52"
+    },
+    {
+        "role": "assistant",
+        "content": "20. quitter",
+        "timestamp": "2026-09-22T08:36:52"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy.",
+        "timestamp": "2026-09-22T08:46:25"
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !",
+        "timestamp": "2026-09-22T08:46:25"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !",
+        "timestamp": "2026-09-22T08:46:25"
+    },
+    {
+        "role": "user",
+        "content": "bonjour",
+        "timestamp": "2026-09-22T08:46:28"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour Cyan !",
+        "timestamp": "2026-09-22T08:46:28"
+    },
+    {
+        "role": "user",
+        "content": "historique",
+        "timestamp": "2026-09-22T08:46:31"
+    },
+    {
+        "role": "user",
+        "content": "recherche historique bonjour",
+        "timestamp": "2026-09-22T08:46:42"
+    },
+    {
+        "role": "user",
+        "content": "quitter",
+        "timestamp": "2026-09-22T08:46:46"
+    },
+    {
+        "role": "assistant",
+        "content": "À bientôt !",
+        "timestamp": "2026-09-22T08:46:46"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy.",
+        "timestamp": "2026-09-22T08:55:52"
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !",
+        "timestamp": "2026-09-22T08:55:52"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !",
+        "timestamp": "2026-09-22T08:55:52"
+    },
+    {
+        "role": "user",
+        "content": "aide",
+        "timestamp": "2026-09-22T08:55:55"
+    },
+    {
+        "role": "assistant",
+        "content": "Voici ce que je peux faire :\n1. bonjour\n2. retiens que clé = valeur\n3. rappelle-moi clé\n4. oublie clé\n5. renomme ancienne_clé en nouvelle_clé\n6. montre ta mémoire\n7. combien d'informations connais-tu\n8. historique\n9. historique 5\n10. recherche historique mot\n11. statistiques historique\n12. export historique\n13. statut\n14. active ta mémoire\n15. désactive ta mémoire\n16. bascule ta mémoire\n17. active le système\n18. désactive le système\n19. bascule le système\n20. quitter",
+        "timestamp": "2026-09-22T08:55:55"
+    },
+    {
+        "role": "user",
+        "content": "historique",
+        "timestamp": "2026-09-22T08:55:58"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy.",
+        "timestamp": "2026-09-22T09:43:39"
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !",
+        "timestamp": "2026-09-22T09:43:39"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !",
+        "timestamp": "2026-09-22T09:43:39"
+    },
+    {
+        "role": "user",
+        "content": "aide",
+        "timestamp": "2026-09-22T09:43:42"
+    },
+    {
+        "role": "assistant",
+        "content": "Voici ce que je peux faire :\n1. bonjour\n2. retiens que clé = valeur\n3. rappelle-moi clé\n4. oublie clé\n5. renomme ancienne_clé en nouvelle_clé\n6. montre ta mémoire\n7. combien d'informations connais-tu\n8. historique\n9. historique 5\n10. recherche historique mot\n11. statistiques historique\n12. export historique\n13. statut\n14. active ta mémoire\n15. désactive ta mémoire\n16. bascule ta mémoire\n17. active le système\n18. désactive le système\n19. bascule le système\n20. quitter",
+        "timestamp": "2026-09-22T09:43:42"
+    },
+    {
+        "role": "user",
+        "content": "recherche historique 20",
+        "timestamp": "2026-09-22T09:43:50"
+    },
+    {
+        "role": "user",
+        "content": "quitter",
+        "timestamp": "2026-09-22T09:43:52"
+    },
+    {
+        "role": "assistant",
+        "content": "À bientôt !",
+        "timestamp": "2026-09-22T09:43:52"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy.",
+        "timestamp": "2026-09-22T09:44:35"
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !",
+        "timestamp": "2026-09-22T09:44:35"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !",
+        "timestamp": "2026-09-22T09:44:35"
+    },
+    {
+        "role": "user",
+        "content": "recherche historique 20. quitter",
+        "timestamp": "2026-09-22T09:44:43"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy.",
+        "timestamp": "2026-09-22T13:15:25"
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !",
+        "timestamp": "2026-09-22T13:15:25"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !",
+        "timestamp": "2026-09-22T13:15:25"
+    },
+    {
+        "role": "user",
+        "content": "ajoute une tâche : travailler sur Roy",
+        "timestamp": "2026-09-22T13:15:40"
+    },
+    {
+        "role": "assistant",
+        "content": "Tâche ajoutée.",
+        "timestamp": "2026-09-22T13:15:40"
+    },
+    {
+        "role": "user",
+        "content": "montre mes tâches",
+        "timestamp": "2026-09-22T13:15:46"
+    },
+    {
+        "role": "assistant",
+        "content": "1. ○ travailler sur roy",
+        "timestamp": "2026-09-22T13:15:46"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy.",
+        "timestamp": "2026-09-22T14:30:30"
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !",
+        "timestamp": "2026-09-22T14:30:30"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !",
+        "timestamp": "2026-09-22T14:30:30"
+    },
+    {
+        "role": "user",
+        "content": "ajoute une tâche : travailler sur Roy",
+        "timestamp": "2026-09-22T14:30:47"
+    },
+    {
+        "role": "assistant",
+        "content": "Tâche ajoutée.",
+        "timestamp": "2026-09-22T14:30:47"
+    },
+    {
+        "role": "user",
+        "content": "termine la tâche 1",
+        "timestamp": "2026-09-22T14:30:53"
+    },
+    {
+        "role": "assistant",
+        "content": "Tâche terminée.",
+        "timestamp": "2026-09-22T14:30:53"
+    },
+    {
+        "role": "user",
+        "content": "montre mes tâches",
+        "timestamp": "2026-09-22T14:31:00"
+    },
+    {
+        "role": "assistant",
+        "content": "1. ✓ travailler sur roy",
+        "timestamp": "2026-09-22T14:31:00"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy.",
+        "timestamp": "2026-09-22T14:36:39"
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !",
+        "timestamp": "2026-09-22T14:36:39"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !",
+        "timestamp": "2026-09-22T14:36:39"
+    },
+    {
+        "role": "user",
+        "content": "montre mes tâches",
+        "timestamp": "2026-09-22T14:36:46"
+    },
+    {
+        "role": "assistant",
+        "content": "Tu n'as aucune tâche.",
+        "timestamp": "2026-09-22T14:36:46"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy.",
+        "timestamp": "2026-09-22T14:38:21"
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !",
+        "timestamp": "2026-09-22T14:38:21"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !",
+        "timestamp": "2026-09-22T14:38:21"
+    },
+    {
+        "role": "user",
+        "content": "ajoute une tâche : travailler sur Roy",
+        "timestamp": "2026-09-22T14:38:28"
+    },
+    {
+        "role": "assistant",
+        "content": "Tâche ajoutée.",
+        "timestamp": "2026-09-22T14:38:28"
+    },
+    {
+        "role": "user",
+        "content": "montre mes tâches",
+        "timestamp": "2026-09-22T14:38:33"
+    },
+    {
+        "role": "assistant",
+        "content": "1. ○ travailler sur roy",
+        "timestamp": "2026-09-22T14:38:33"
+    },
+    {
+        "role": "user",
+        "content": "quitter",
+        "timestamp": "2026-09-22T14:38:36"
+    },
+    {
+        "role": "assistant",
+        "content": "À bientôt !",
+        "timestamp": "2026-09-22T14:38:36"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy.",
+        "timestamp": "2026-09-22T14:38:40"
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !",
+        "timestamp": "2026-09-22T14:38:40"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !",
+        "timestamp": "2026-09-22T14:38:40"
+    },
+    {
+        "role": "user",
+        "content": "montre mes tâches",
+        "timestamp": "2026-09-22T14:38:45"
+    },
+    {
+        "role": "assistant",
+        "content": "1. ○ travailler sur roy",
+        "timestamp": "2026-09-22T14:38:45"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy.",
+        "timestamp": "2026-09-22T14:41:07"
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !",
+        "timestamp": "2026-09-22T14:41:07"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !",
+        "timestamp": "2026-09-22T14:41:07"
+    },
+    {
+        "role": "user",
+        "content": "termine la tâche 1",
+        "timestamp": "2026-09-22T14:41:15"
+    },
+    {
+        "role": "assistant",
+        "content": "Tâche terminée.",
+        "timestamp": "2026-09-22T14:41:15"
+    },
+    {
+        "role": "user",
+        "content": "montre mes tâches",
+        "timestamp": "2026-09-22T14:41:22"
+    },
+    {
+        "role": "assistant",
+        "content": "1. ✓ travailler sur roy",
+        "timestamp": "2026-09-22T14:41:22"
+    },
+    {
+        "role": "user",
+        "content": "quitter",
+        "timestamp": "2026-09-22T14:41:26"
+    },
+    {
+        "role": "assistant",
+        "content": "À bientôt !",
+        "timestamp": "2026-09-22T14:41:26"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy.",
+        "timestamp": "2026-09-22T14:41:29"
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !",
+        "timestamp": "2026-09-22T14:41:29"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !",
+        "timestamp": "2026-09-22T14:41:29"
+    },
+    {
+        "role": "user",
+        "content": "montre mes tâches",
+        "timestamp": "2026-09-22T14:41:44"
+    },
+    {
+        "role": "assistant",
+        "content": "1. ✓ travailler sur roy",
+        "timestamp": "2026-09-22T14:41:44"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy.",
+        "timestamp": "2026-09-24T11:17:08"
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !",
+        "timestamp": "2026-09-24T11:17:08"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !",
+        "timestamp": "2026-09-24T11:17:08"
+    },
+    {
+        "role": "user",
+        "content": "rappelle-moi ville",
+        "timestamp": "2026-09-24T11:17:14"
+    },
+    {
+        "role": "assistant",
+        "content": "Tokyo",
+        "timestamp": "2026-09-24T11:17:14"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy.",
+        "timestamp": "2026-09-26T11:44:13"
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !",
+        "timestamp": "2026-09-26T11:44:13"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !",
+        "timestamp": "2026-09-26T11:44:13"
+    },
+    {
+        "role": "user",
+        "content": "aide",
+        "timestamp": "2026-09-26T11:44:14"
+    },
+    {
+        "role": "assistant",
+        "content": "Voici ce que je peux faire :\n1. bonjour\n2. retiens que clé = valeur\n3. rappelle-moi clé\n4. oublie clé\n5. renomme ancienne_clé en nouvelle_clé\n6. montre ta mémoire\n7. combien d'informations connais-tu\n8. historique\n9. historique 5\n10. recherche historique mot\n11. statistiques historique\n12. export historique\n13. statut\n14. active ta mémoire\n15. désactive ta mémoire\n16. bascule ta mémoire\n17. active le système\n18. désactive le système\n19. bascule le système\n20. quitter\n21. ajoute une tâche : description\n22. montre mes tâches\n23. termine la tâche 1\n24. rouvre la tâche 1\n25. supprime la tâche 1\n26. modifie la tâche 1 : nouvelle description\n27. priorité tâche 1 : haute\n28. montre mes tâches de priorité haute\n29. montre mes tâches à faire\n30. montre mes tâches terminées",
+        "timestamp": "2026-09-26T11:44:14"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy.",
+        "timestamp": "2026-09-26T11:45:22"
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !",
+        "timestamp": "2026-09-26T11:45:22"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !",
+        "timestamp": "2026-09-26T11:45:22"
+    },
+    {
+        "role": "user",
+        "content": "aide",
+        "timestamp": "2026-09-26T11:45:23"
+    },
+    {
+        "role": "assistant",
+        "content": "Voici ce que je peux faire :\n1. bonjour\n2. retiens que clé = valeur\n3. rappelle-moi clé\n4. oublie clé\n5. renomme ancienne_clé en nouvelle_clé\n6. montre ta mémoire\n7. combien d'informations connais-tu\n8. historique\n9. historique 5\n10. recherche historique mot\n11. statistiques historique\n12. export historique\n13. statut\n14. active ta mémoire\n15. désactive ta mémoire\n16. bascule ta mémoire\n17. active le système\n18. désactive le système\n19. bascule le système\n20. quitter\n21. ajoute une tâche : description\n22. montre mes tâches\n23. termine la tâche 1\n24. rouvre la tâche 1\n25. supprime la tâche 1\n26. modifie la tâche 1 : nouvelle description\n27. priorité tâche 1 : haute\n28. montre mes tâches de priorité haute\n29. montre mes tâches à faire\n30. montre mes tâches terminées\n31. trie mes tâches par priorité",
+        "timestamp": "2026-09-26T11:45:23"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy.",
+        "timestamp": "2026-09-26T13:23:03"
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !",
+        "timestamp": "2026-09-26T13:23:03"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !",
+        "timestamp": "2026-09-26T13:23:03"
+    },
+    {
+        "role": "user",
+        "content": "aide",
+        "timestamp": "2026-09-26T13:23:04"
+    },
+    {
+        "role": "assistant",
+        "content": "Voici ce que je peux faire :\n1. bonjour\n2. retiens que clé = valeur\n3. rappelle-moi clé\n4. oublie clé\n5. renomme ancienne_clé en nouvelle_clé\n6. montre ta mémoire\n7. combien d'informations connais-tu\n8. historique\n9. historique 5\n10. recherche historique mot\n11. statistiques historique\n12. export historique\n13. statut\n14. active ta mémoire\n15. désactive ta mémoire\n16. bascule ta mémoire\n17. active le système\n18. désactive le système\n19. bascule le système\n20. quitter\n21. ajoute une tâche : description\n22. montre mes tâches\n23. termine la tâche 1\n24. rouvre la tâche 1\n25. supprime la tâche 1\n26. modifie la tâche 1 : nouvelle description\n27. priorité tâche 1 : haute\n28. montre mes tâches de priorité haute\n29. montre mes tâches à faire\n30. montre mes tâches terminées\n31. trie mes tâches par priorité\n32. recherche tâche mot",
+        "timestamp": "2026-09-26T13:23:04"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy.",
+        "timestamp": "2026-09-26T13:23:48"
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !",
+        "timestamp": "2026-09-26T13:23:48"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !",
+        "timestamp": "2026-09-26T13:23:48"
+    },
+    {
+        "role": "user",
+        "content": "ajoute une tâche : tester la recherche Python",
+        "timestamp": "2026-09-26T13:23:53"
+    },
+    {
+        "role": "assistant",
+        "content": "Tâche ajoutée.",
+        "timestamp": "2026-09-26T13:23:53"
+    },
+    {
+        "role": "user",
+        "content": "recherche tâche python",
+        "timestamp": "2026-09-26T13:23:56"
+    },
+    {
+        "role": "assistant",
+        "content": "1 tâche(s) trouvée(s) pour : python\n1. ○ [normale] tester la recherche python",
+        "timestamp": "2026-09-26T13:23:56"
+    },
+    {
+        "role": "user",
+        "content": "montre mes tâches",
+        "timestamp": "2026-09-26T13:24:04"
+    },
+    {
+        "role": "assistant",
+        "content": "1. ✓ [normale] travailler sur roy\n2. ○ [normale] tester la recherche python",
+        "timestamp": "2026-09-26T13:24:04"
+    },
+    {
+        "role": "user",
+        "content": "supprime la tâche NUMERO",
+        "timestamp": "2026-09-26T13:24:12"
+    },
+    {
+        "role": "assistant",
+        "content": "Indique un numéro de tâche valide.",
+        "timestamp": "2026-09-26T13:24:12"
+    },
+    {
+        "role": "user",
+        "content": "supprime la tâche NUMERO 2",
+        "timestamp": "2026-09-26T13:24:25"
+    },
+    {
+        "role": "assistant",
+        "content": "Indique un numéro de tâche valide.",
+        "timestamp": "2026-09-26T13:24:25"
+    },
+    {
+        "role": "user",
+        "content": "supprime la tâche NUMERO 2.",
+        "timestamp": "2026-09-26T13:24:41"
+    },
+    {
+        "role": "assistant",
+        "content": "Indique un numéro de tâche valide.",
+        "timestamp": "2026-09-26T13:24:41"
+    },
+    {
+        "role": "user",
+        "content": "supprime la tâche 2",
+        "timestamp": "2026-09-26T13:25:20"
+    },
+    {
+        "role": "assistant",
+        "content": "Tâche supprimée.",
+        "timestamp": "2026-09-26T13:25:20"
+    },
+    {
+        "role": "user",
+        "content": "quitter",
+        "timestamp": "2026-09-26T13:25:22"
+    },
+    {
+        "role": "assistant",
+        "content": "À bientôt !",
+        "timestamp": "2026-09-26T13:25:22"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy.",
+        "timestamp": "2026-09-27T15:20:25"
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !",
+        "timestamp": "2026-09-27T15:20:25"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !",
+        "timestamp": "2026-09-27T15:20:25"
+    },
+    {
+        "role": "user",
+        "content": "aide",
+        "timestamp": "2026-09-27T15:20:25"
+    },
+    {
+        "role": "assistant",
+        "content": "Voici ce que je peux faire :\n1. bonjour\n2. retiens que clé = valeur\n3. rappelle-moi clé\n4. oublie clé\n5. renomme ancienne_clé en nouvelle_clé\n6. montre ta mémoire\n7. combien d'informations connais-tu\n8. historique\n9. historique 5\n10. recherche historique mot\n11. statistiques historique\n12. export historique\n13. statut\n14. active ta mémoire\n15. désactive ta mémoire\n16. bascule ta mémoire\n17. active le système\n18. désactive le système\n19. bascule le système\n20. quitter\n21. ajoute une tâche : description\n22. montre mes tâches\n23. termine la tâche 1\n24. rouvre la tâche 1\n25. supprime la tâche 1\n26. modifie la tâche 1 : nouvelle description\n27. priorité tâche 1 : haute\n28. montre mes tâches de priorité haute\n29. montre mes tâches à faire\n30. montre mes tâches terminées\n31. trie mes tâches par priorité\n32. recherche tâche mot\n33. statistiques tâches",
+        "timestamp": "2026-09-27T15:20:25"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy.",
+        "timestamp": "2026-09-27T15:32:01"
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !",
+        "timestamp": "2026-09-27T15:32:01"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !",
+        "timestamp": "2026-09-27T15:32:01"
+    },
+    {
+        "role": "user",
+        "content": "statistiques tâches",
+        "timestamp": "2026-09-27T15:32:07"
+    },
+    {
+        "role": "assistant",
+        "content": "Statistiques des tâches\nTâches totales : 1\nÀ faire : 0\nTerminées : 1\nProgression : 100 %\nPriorité haute : 0\nPriorité normale : 1\nPriorité basse : 0",
+        "timestamp": "2026-09-27T15:32:07"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy.",
+        "timestamp": "2026-09-28T14:00:37"
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !",
+        "timestamp": "2026-09-28T14:00:37"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !",
+        "timestamp": "2026-09-28T14:00:37"
+    },
+    {
+        "role": "user",
+        "content": "ajoute une tâche : terminer le jour 29",
+        "timestamp": "2026-09-28T14:00:43"
+    },
+    {
+        "role": "assistant",
+        "content": "Tâche ajoutée.",
+        "timestamp": "2026-09-28T14:00:43"
+    },
+    {
+        "role": "user",
+        "content": "ajoute une tâche : terminer le jour 29",
+        "timestamp": "2026-09-28T14:00:46"
+    },
+    {
+        "role": "assistant",
+        "content": "Tâche ajoutée.",
+        "timestamp": "2026-09-28T14:00:46"
+    },
+    {
+        "role": "user",
+        "content": "montre mes tâches",
+        "timestamp": "2026-09-28T14:00:53"
+    },
+    {
+        "role": "assistant",
+        "content": "1. ✓ [normale] travailler sur roy\n2. ○ [normale] terminer le jour 29\n3. ○ [normale] terminer le jour 29",
+        "timestamp": "2026-09-28T14:00:53"
+    },
+    {
+        "role": "user",
+        "content": "échéance tâche 3 : 2026-10-05",
+        "timestamp": "2026-09-28T14:01:16"
+    },
+    {
+        "role": "assistant",
+        "content": "Échéance modifiée.",
+        "timestamp": "2026-09-28T14:01:16"
+    },
+    {
+        "role": "user",
+        "content": "montre mes tâches",
+        "timestamp": "2026-09-28T14:01:27"
+    },
+    {
+        "role": "assistant",
+        "content": "1. ✓ [normale] travailler sur roy\n2. ○ [normale] terminer le jour 29\n3. ○ [normale] [échéance : 2026-10-05] terminer le jour 29",
+        "timestamp": "2026-09-28T14:01:27"
+    },
+    {
+        "role": "user",
+        "content": "supprime mes tâches",
+        "timestamp": "2026-09-28T14:01:41"
+    },
+    {
+        "role": "assistant",
+        "content": "Je ne sais pas encore quoi répondre.",
+        "timestamp": "2026-09-28T14:01:41"
+    },
+    {
+        "role": "user",
+        "content": "quitter",
+        "timestamp": "2026-09-28T14:01:49"
+    },
+    {
+        "role": "assistant",
+        "content": "À bientôt !",
+        "timestamp": "2026-09-28T14:01:49"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy.",
+        "timestamp": "2026-09-30T10:55:43"
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !",
+        "timestamp": "2026-09-30T10:55:43"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !",
+        "timestamp": "2026-09-30T10:55:43"
+    },
+    {
+        "role": "user",
+        "content": "ajoute une tâche : Tester les retards",
+        "timestamp": "2026-09-30T10:55:46"
+    },
+    {
+        "role": "assistant",
+        "content": "Tâche ajoutée.",
+        "timestamp": "2026-09-30T10:55:46"
+    },
+    {
+        "role": "user",
+        "content": "montre mes tâches",
+        "timestamp": "2026-09-30T10:55:50"
+    },
+    {
+        "role": "assistant",
+        "content": "1. ✓ [normale] travailler sur roy\n2. ○ [normale] terminer le jour 29\n3. ○ [normale] [échéance : 2026-10-05] terminer le jour 29\n4. ○ [normale] tester les retards",
+        "timestamp": "2026-09-30T10:55:50"
+    },
+    {
+        "role": "user",
+        "content": "montre mes tâches en retard",
+        "timestamp": "2026-09-30T10:56:01"
+    },
+    {
+        "role": "assistant",
+        "content": "Tu n'as aucune tâche.",
+        "timestamp": "2026-09-30T10:56:01"
+    },
+    {
+        "role": "user",
+        "content": "échéance tâche 1 : 2026-09-29",
+        "timestamp": "2026-09-30T10:56:19"
+    },
+    {
+        "role": "assistant",
+        "content": "Échéance modifiée.",
+        "timestamp": "2026-09-30T10:56:19"
+    },
+    {
+        "role": "user",
+        "content": "montre mes tâches en retard",
+        "timestamp": "2026-09-30T10:56:22"
+    },
+    {
+        "role": "assistant",
+        "content": "Tu n'as aucune tâche.",
+        "timestamp": "2026-09-30T10:56:22"
+    },
+    {
+        "role": "user",
+        "content": "échéance tâche 4 : 2026-09-29",
+        "timestamp": "2026-09-30T10:57:33"
+    },
+    {
+        "role": "assistant",
+        "content": "Échéance modifiée.",
+        "timestamp": "2026-09-30T10:57:33"
+    },
+    {
+        "role": "user",
+        "content": "montre mes tâches en retard",
+        "timestamp": "2026-09-30T10:57:36"
+    },
+    {
+        "role": "assistant",
+        "content": "1. ○ [normale] [échéance : 2026-09-29] tester les retards",
+        "timestamp": "2026-09-30T10:57:36"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy.",
+        "timestamp": "2026-09-30T11:30:56"
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !",
+        "timestamp": "2026-09-30T11:30:56"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !",
+        "timestamp": "2026-09-30T11:30:56"
+    },
+    {
+        "role": "user",
+        "content": "montre mes tâches en retard",
+        "timestamp": "2026-09-30T11:31:00"
+    },
+    {
+        "role": "assistant",
+        "content": "4. ○ [normale] [échéance : 2026-09-29] tester les retards",
+        "timestamp": "2026-09-30T11:31:00"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy.",
+        "timestamp": "2026-09-30T11:40:43"
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !",
+        "timestamp": "2026-09-30T11:40:43"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !",
+        "timestamp": "2026-09-30T11:40:43"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy.",
+        "timestamp": "2026-10-01T11:13:17"
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !",
+        "timestamp": "2026-10-01T11:13:17"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !",
+        "timestamp": "2026-10-01T11:13:17"
+    },
+    {
+        "role": "user",
+        "content": "aide",
+        "timestamp": "2026-10-01T11:13:19"
+    },
+    {
+        "role": "assistant",
+        "content": "Voici ce que je peux faire :\n1. bonjour\n2. retiens que clé = valeur\n3. rappelle-moi clé\n4. oublie clé\n5. renomme ancienne_clé en nouvelle_clé\n6. montre ta mémoire\n7. combien d'informations connais-tu\n8. historique\n9. historique 5\n10. recherche historique mot\n11. statistiques historique\n12. export historique\n13. statut\n14. active ta mémoire\n15. désactive ta mémoire\n16. bascule ta mémoire\n17. active le système\n18. désactive le système\n19. bascule le système\n20. quitter\n21. ajoute une tâche : description\n22. montre mes tâches\n23. termine la tâche 1\n24. rouvre la tâche 1\n25. supprime la tâche 1\n26. modifie la tâche 1 : nouvelle description\n27. priorité tâche 1 : haute\n28. montre mes tâches de priorité haute\n29. montre mes tâches à faire\n30. montre mes tâches terminées\n31. trie mes tâches par priorité\n32. recherche tâche mot\n33. statistiques tâches\n34. échéance tâche 1 : 2026-10-05\n35. montre mes tâches en retard\n36. montre mes tâches pour aujourd'hui\n37. montre mes tâches à venir",
+        "timestamp": "2026-10-01T11:13:19"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy.",
+        "timestamp": "2026-10-01T11:15:04"
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !",
+        "timestamp": "2026-10-01T11:15:04"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !",
+        "timestamp": "2026-10-01T11:15:04"
+    },
+    {
+        "role": "user",
+        "content": "montre mes tâches à venir",
+        "timestamp": "2026-10-01T11:15:08"
+    },
+    {
+        "role": "assistant",
+        "content": "3. ○ [normale] [échéance : 2026-10-05] terminer le jour 29",
+        "timestamp": "2026-10-01T11:15:08"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy.",
+        "timestamp": "2026-10-01T12:26:39"
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !",
+        "timestamp": "2026-10-01T12:26:39"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !",
+        "timestamp": "2026-10-01T12:26:39"
+    },
+    {
+        "role": "user",
+        "content": "aude",
+        "timestamp": "2026-10-01T12:26:39"
+    },
+    {
+        "role": "assistant",
+        "content": "Je ne sais pas encore quoi répondre.",
+        "timestamp": "2026-10-01T12:26:39"
+    },
+    {
+        "role": "user",
+        "content": "aide",
+        "timestamp": "2026-10-01T12:26:42"
+    },
+    {
+        "role": "assistant",
+        "content": "Voici ce que je peux faire :\n1. bonjour\n2. retiens que clé = valeur\n3. rappelle-moi clé\n4. oublie clé\n5. renomme ancienne_clé en nouvelle_clé\n6. montre ta mémoire\n7. combien d'informations connais-tu\n8. historique\n9. historique 5\n10. recherche historique mot\n11. statistiques historique\n12. export historique\n13. statut\n14. active ta mémoire\n15. désactive ta mémoire\n16. bascule ta mémoire\n17. active le système\n18. désactive le système\n19. bascule le système\n20. quitter\n21. ajoute une tâche : description\n22. montre mes tâches\n23. termine la tâche 1\n24. rouvre la tâche 1\n25. supprime la tâche 1\n26. modifie la tâche 1 : nouvelle description\n27. priorité tâche 1 : haute\n28. montre mes tâches de priorité haute\n29. montre mes tâches à faire\n30. montre mes tâches terminées\n31. trie mes tâches par priorité\n32. recherche tâche mot\n33. statistiques tâches\n34. échéance tâche 1 : 2026-10-05\n35. montre mes tâches en retard\n36. montre mes tâches pour aujourd'hui\n37. montre mes tâches à venir\n38. trie mes tâches par échéance",
+        "timestamp": "2026-10-01T12:26:42"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy.",
+        "timestamp": "2026-10-05T14:12:31"
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !",
+        "timestamp": "2026-10-05T14:12:31"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !",
+        "timestamp": "2026-10-05T14:12:31"
+    },
+    {
+        "role": "user",
+        "content": "statut sauvegarde",
+        "timestamp": "2026-10-05T14:12:36"
+    },
+    {
+        "role": "assistant",
+        "content": "Je ne sais pas encore quoi répondre.",
+        "timestamp": "2026-10-05T14:12:36"
+    },
+    {
+        "role": "user",
+        "content": "statut sauvegardes",
+        "timestamp": "2026-10-05T14:12:40"
+    },
+    {
+        "role": "user",
+        "content": "réâre ta mémoire",
+        "timestamp": "2026-10-05T14:12:47"
+    },
+    {
+        "role": "assistant",
+        "content": "Je ne sais pas encore quoi répondre.",
+        "timestamp": "2026-10-05T14:12:47"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy.",
+        "timestamp": "2026-10-05T14:12:55"
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !",
+        "timestamp": "2026-10-05T14:12:56"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !",
+        "timestamp": "2026-10-05T14:12:56"
+    },
+    {
+        "role": "user",
+        "content": "statut sauvegardes",
+        "timestamp": "2026-10-05T14:13:00"
+    },
+    {
+        "role": "user",
+        "content": "répare ta mémoire",
+        "timestamp": "2026-10-05T14:13:04"
+    },
+    {
+        "role": "user",
+        "content": "répare ton historique",
+        "timestamp": "2026-10-05T14:13:12"
+    },
+    {
+        "role": "user",
+        "content": "répare mes tâches",
+        "timestamp": "2026-10-05T14:13:17"
+    },
+    {
+        "role": "user",
+        "content": "statut sauvegardes",
+        "timestamp": "2026-10-05T14:13:24"
+    },
+    {
+        "role": "user",
+        "content": "quitter",
+        "timestamp": "2026-10-05T14:13:26"
+    },
+    {
+        "role": "assistant",
+        "content": "À bientôt !",
+        "timestamp": "2026-10-05T14:13:26"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy.",
+        "timestamp": "2026-10-05T14:14:06"
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !",
+        "timestamp": "2026-10-05T14:14:06"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !",
+        "timestamp": "2026-10-05T14:14:06"
+    },
+    {
+        "role": "user",
+        "content": "retiens que verification_redemarrage = jour36",
+        "timestamp": "2026-10-05T14:14:34"
+    },
+    {
+        "role": "assistant",
+        "content": "J'ai appris une nouvelle information.",
+        "timestamp": "2026-10-05T14:14:34"
+    },
+    {
+        "role": "assistant",
+        "content": "Mémoire sauvegardée",
+        "timestamp": "2026-10-05T14:14:34"
+    },
+    {
+        "role": "user",
+        "content": "quitter",
+        "timestamp": "2026-10-05T14:14:36"
+    },
+    {
+        "role": "assistant",
+        "content": "À bientôt !",
+        "timestamp": "2026-10-05T14:14:36"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy.",
+        "timestamp": "2026-10-05T14:14:40"
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !",
+        "timestamp": "2026-10-05T14:14:40"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !",
+        "timestamp": "2026-10-05T14:14:40"
+    },
+    {
+        "role": "user",
+        "content": "rappelle-moi verificiation_redemarrage",
+        "timestamp": "2026-10-05T14:14:55"
+    },
+    {
+        "role": "assistant",
+        "content": "Je n'ai aucune information sur verificiation_redemarrage",
+        "timestamp": "2026-10-05T14:14:55"
+    },
+    {
+        "role": "user",
+        "content": "rappelle-moi verification_redemarrage",
+        "timestamp": "2026-10-05T14:15:13"
+    },
+    {
+        "role": "assistant",
+        "content": "jour36",
+        "timestamp": "2026-10-05T14:15:13"
+    },
+    {
+        "role": "user",
+        "content": "oublie verification_redemarrage",
+        "timestamp": "2026-10-05T14:15:25"
+    },
+    {
+        "role": "assistant",
+        "content": "Es-tu sûr de vouloir oublier verification_redemarrage ?",
+        "timestamp": "2026-10-05T14:15:25"
+    },
+    {
+        "role": "assistant",
+        "content": "J'ai oublié verification_redemarrage",
+        "timestamp": "2026-10-05T14:15:27"
+    },
+    {
+        "role": "user",
+        "content": "quitter",
+        "timestamp": "2026-10-05T14:15:28"
+    },
+    {
+        "role": "assistant",
+        "content": "À bientôt !",
+        "timestamp": "2026-10-05T14:15:28"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy.",
+        "timestamp": "2026-10-05T14:21:13"
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !",
+        "timestamp": "2026-10-05T14:21:13"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !",
+        "timestamp": "2026-10-05T14:21:13"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy.",
+        "timestamp": "2026-10-05T14:48:06"
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !",
+        "timestamp": "2026-10-05T14:48:06"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !",
+        "timestamp": "2026-10-05T14:48:06"
+    },
+    {
+        "role": "user",
+        "content": "quel est mon nom",
+        "timestamp": "2026-10-05T14:48:12"
+    },
+    {
+        "role": "assistant",
+        "content": "Oui, ton nom est Cyan.",
+        "timestamp": "2026-10-05T14:48:12"
+    },
+    {
+        "role": "user",
+        "content": "quelle est mon humeur",
+        "timestamp": "2026-10-05T14:48:17"
+    },
+    {
+        "role": "assistant",
+        "content": "Tu m'as dit que ton humeur était bien",
+        "timestamp": "2026-10-05T14:48:17"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy.",
+        "timestamp": "2026-10-05T19:57:01"
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !",
+        "timestamp": "2026-10-05T19:57:01"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !",
+        "timestamp": "2026-10-05T19:57:01"
+    },
+    {
+        "role": "user",
+        "content": "quitter",
+        "timestamp": "2026-10-05T19:57:04"
+    },
+    {
+        "role": "assistant",
+        "content": "À bientôt !",
+        "timestamp": "2026-10-05T19:57:04"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy.",
+        "timestamp": "2026-10-05T20:04:06"
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !",
+        "timestamp": "2026-10-05T20:04:06"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !",
+        "timestamp": "2026-10-05T20:04:06"
+    },
+    {
+        "role": "user",
+        "content": "quel est mon verification_inconnue_j36",
+        "timestamp": "2026-10-05T20:04:32"
+    },
+    {
+        "role": "assistant",
+        "content": "Je ne connais encore aucune information sur verification_inconnue_j36. Tu peux me dire : retiens que verification_inconnue_j36 = valeur",
+        "timestamp": "2026-10-05T20:04:32"
+    },
+    {
+        "role": "user",
+        "content": "statut",
+        "timestamp": "2026-10-05T20:04:36"
+    }
+]

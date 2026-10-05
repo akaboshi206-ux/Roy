@@ -1460,3 +1460,266 @@ def tester_reparation_taches_echouee_bloque_sauvegarde():
         ) == copie
 
         assert roy.taches[0]["description"] == "Continuer Roy"
+
+def tester_reparation_taches_conserve_donnees_actuelles():
+    with TemporaryDirectory() as dossier:
+        chemin = Path(dossier) / "taches.json"
+        chemin_sauvegarde = Path(f"{chemin}.bak")
+
+        copie = [
+            {
+                "description": "Travailler sur Roy",
+                "terminee": False,
+                "priorite": "normale",
+                "echeance": None
+            }
+        ]
+
+        chemin.write_text(
+            "{json invalide",
+            encoding="utf-8"
+        )
+        chemin_sauvegarde.write_text(
+            json.dumps(copie),
+            encoding="utf-8"
+        )
+        contenu_copie = chemin_sauvegarde.read_bytes()
+
+        with patch(
+            "outils.shutil.copy2",
+            side_effect=OSError("Réparation impossible")
+        ):
+            roy = creer_roy_test(
+                historique_actif=False,
+                fichier_taches=str(chemin)
+            )
+
+        assert roy.taches_sauvegardables is False
+
+        roy.taches[0]["description"] = "Continuer Roy"
+        taches_actuelles = [
+            tache.copy()
+            for tache in roy.taches
+        ]
+
+        assert roy.reparer_taches() is True
+        assert roy.taches_sauvegardables is True
+        assert roy.taches == taches_actuelles
+
+        assert json.loads(
+            chemin.read_text(encoding="utf-8")
+        ) == copie
+
+        assert chemin_sauvegarde.read_bytes() == contenu_copie
+
+        assert set(Path(dossier).iterdir()) == {
+            chemin,
+            chemin_sauvegarde
+        }
+
+        assert roy.sauvegarder_taches() is True
+
+        assert json.loads(
+            chemin.read_text(encoding="utf-8")
+        ) == taches_actuelles
+
+        assert json.loads(
+            chemin_sauvegarde.read_text(encoding="utf-8")
+        ) == copie
+
+def tester_echec_reparation_taches_preserve_donnees():
+    with TemporaryDirectory() as dossier:
+        chemin = Path(dossier) / "taches.json"
+        chemin_sauvegarde = Path(f"{chemin}.bak")
+
+        principale = "{json invalide"
+        copie = [
+            {
+                "description": "Travailler sur Roy",
+                "terminee": False,
+                "priorite": "normale",
+                "echeance": None
+            }
+        ]
+
+        chemin.write_text(
+            principale,
+            encoding="utf-8"
+        )
+        chemin_sauvegarde.write_text(
+            json.dumps(copie),
+            encoding="utf-8"
+        )
+        contenu_copie = chemin_sauvegarde.read_bytes()
+
+        with patch(
+            "outils.shutil.copy2",
+            side_effect=OSError("Réparation impossible")
+        ):
+            roy = creer_roy_test(
+                historique_actif=False,
+                fichier_taches=str(chemin)
+            )
+
+        roy.taches[0]["description"] = "Continuer Roy"
+        taches_actuelles = [
+            tache.copy()
+            for tache in roy.taches
+        ]
+
+        with patch(
+            "outils.os.replace",
+            side_effect=OSError("Fichier inaccessible")
+        ):
+            assert roy.reparer_taches() is False
+
+        assert roy.taches_sauvegardables is False
+        assert roy.taches == taches_actuelles
+        assert roy.sauvegarder_taches() is False
+
+        assert chemin.read_text(
+            encoding="utf-8"
+        ) == principale
+
+        assert chemin_sauvegarde.read_bytes() == contenu_copie
+
+        assert set(Path(dossier).iterdir()) == {
+            chemin,
+            chemin_sauvegarde
+        }
+
+def tester_commande_reparation_taches():
+    roy = creer_roy_test(
+        historique_actif=False
+    )
+
+    for commande in (
+        "répare mes tâches",
+        "repare mes taches"
+    ):
+        for resultat_reparation in (True, False):
+            with patch.object(
+                roy,
+                "reparer_taches",
+                return_value=resultat_reparation
+            ) as reparation:
+                resultat = roy.traiter_message(
+                    commande,
+                    commande
+                )
+
+            assert resultat is True
+            reparation.assert_called_once_with()
+
+    with patch.object(
+        roy,
+        "reparer_taches"
+    ) as reparation:
+        resultat = roy.traiter_message(
+            "commande inconnue",
+            "commande inconnue"
+        )
+
+    assert resultat is False
+    reparation.assert_not_called()
+
+def tester_echecs_modifications_taches_preservent_donnees():
+    cas = (
+        (
+            "ajoute une tâche : Nouvelle tâche",
+            "L'ajout de la tâche a été annulé."
+        ),
+        (
+            "modifie la tâche 1 : Nouvelle description",
+            "La modification de la tâche a été annulée."
+        ),
+        (
+            "supprime la tâche 1",
+            "La suppression de la tâche a été annulée."
+        )
+    )
+
+    for commande, message_attendu in cas:
+        roy = creer_roy_test(historique_actif=False)
+        roy.taches = [
+            {
+                "description": "Travailler sur Roy",
+                "terminee": False,
+                "priorite": "haute",
+                "echeance": None
+            },
+            {
+                "description": "Réviser Python",
+                "terminee": False,
+                "priorite": "normale",
+                "echeance": None
+            }
+        ]
+        taches_avant = [tache.copy() for tache in roy.taches]
+
+        with patch.object(
+            roy, "sauvegarder_taches", return_value=False
+        ) as sauvegarde:
+            with patch.object(roy, "repondre") as reponse:
+                resultat = roy.traiter_message(
+                    commande, commande
+                )
+
+        assert resultat is True, commande
+        assert roy.taches == taches_avant, commande
+        sauvegarde.assert_called_once_with()
+        reponse.assert_called_once_with(message_attendu)
+
+def tester_echecs_changements_tache_preservent_donnees():
+    cas = (
+        (
+            "termine la tâche 1",
+            False,
+            "La modification de la tâche a été annulée."
+        ),
+        (
+            "rouvre la tâche 1",
+            True,
+            "La modification de la tâche a été annulée."
+        ),
+        (
+            "priorité tâche 1 : basse",
+            False,
+            "La modification de la priorité a été annulée."
+        ),
+        (
+            "échéance tâche 1 : 2026-10-10",
+            False,
+            "La modification de l'échéance a été annulée."
+        ),
+        (
+            "retire l'échéance de la tâche 1",
+            False,
+            "Le retrait de l'échéance a été annulé."
+        )
+    )
+
+    for commande, terminee, message_attendu in cas:
+        roy = creer_roy_test(historique_actif=False)
+        roy.taches = [
+            {
+                "description": "Travailler sur Roy",
+                "terminee": terminee,
+                "priorite": "haute",
+                "echeance": "2026-10-05"
+            }
+        ]
+        taches_avant = [tache.copy() for tache in roy.taches]
+
+        with patch.object(
+            roy, "sauvegarder_taches", return_value=False
+        ) as sauvegarde:
+            with patch.object(roy, "repondre") as reponse:
+                resultat = roy.traiter_message(
+                    commande, commande
+                )
+
+        assert resultat is True, commande
+        assert roy.taches == taches_avant, commande
+        sauvegarde.assert_called_once_with()
+        reponse.assert_called_once_with(message_attendu)

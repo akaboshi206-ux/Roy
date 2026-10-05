@@ -216,3 +216,53 @@ def charger_json_avec_sauvegarde(
         False,
         None
     )
+
+def reparer_json_depuis_sauvegarde(
+    chemin: str,
+    validateur: Callable[[object], bool]
+) -> Exception | None:
+    donnees, erreur = charger_json(
+        f"{chemin}.bak",
+        None
+    )
+
+    if erreur is not None:
+        return erreur
+
+    if not validateur(donnees):
+        return ValueError(
+            "Le format de la copie de sécurité est invalide."
+        )
+
+    chemin_temporaire = None
+
+    try:
+        dossier = os.path.dirname(os.path.abspath(chemin))
+
+        with NamedTemporaryFile(
+            mode="w",
+            encoding="utf-8",
+            dir=dossier,
+            suffix=".tmp",
+            delete=False
+        ) as fichier:
+            chemin_temporaire = fichier.name
+            json.dump(
+                donnees,
+                fichier,
+                ensure_ascii=False,
+                indent=4
+            )
+
+        os.replace(chemin_temporaire, chemin)
+        return None
+
+    except (OSError, TypeError) as erreur_reparation:
+        return erreur_reparation
+
+    finally:
+        if chemin_temporaire is not None:
+            try:
+                os.unlink(chemin_temporaire)
+            except OSError:
+                pass

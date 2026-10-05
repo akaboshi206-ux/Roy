@@ -517,3 +517,151 @@ def tester_reparation_historique_echouee_bloque_sauvegarde():
 
         assert len(roy.historique) == 2
         assert roy.historique[-1]["content"] == "Bonjour !"
+
+def tester_reparation_historique_conserve_messages_actuels():
+    with TemporaryDirectory() as dossier:
+        chemin = Path(dossier) / "historique.json"
+        chemin_sauvegarde = Path(f"{chemin}.bak")
+
+        copie = [
+            {"role": "user", "content": "Bonjour Cyan"}
+        ]
+
+        chemin.write_text(
+            "{json invalide",
+            encoding="utf-8"
+        )
+        chemin_sauvegarde.write_text(
+            json.dumps(copie),
+            encoding="utf-8"
+        )
+        contenu_copie = chemin_sauvegarde.read_bytes()
+
+        with patch(
+            "outils.shutil.copy2",
+            side_effect=OSError("Réparation impossible")
+        ):
+            roy = creer_roy_test(
+                fichier_historique=str(chemin)
+            )
+
+        assert roy.historique_sauvegardable is False
+
+        roy.ajouter_historique(
+            "assistant",
+            "Bonjour !"
+        )
+        historique_actuel = roy.historique.copy()
+
+        assert roy.reparer_historique() is True
+        assert roy.historique_sauvegardable is True
+        assert roy.historique == historique_actuel
+
+        assert json.loads(
+            chemin.read_text(encoding="utf-8")
+        ) == copie
+
+        assert chemin_sauvegarde.read_bytes() == contenu_copie
+
+        assert set(Path(dossier).iterdir()) == {
+            chemin,
+            chemin_sauvegarde
+        }
+
+        assert roy.sauvegarder_historique() is True
+
+        assert json.loads(
+            chemin.read_text(encoding="utf-8")
+        ) == historique_actuel
+
+        assert json.loads(
+            chemin_sauvegarde.read_text(encoding="utf-8")
+        ) == copie
+
+def tester_echec_reparation_historique_preserve_messages():
+    with TemporaryDirectory() as dossier:
+        chemin = Path(dossier) / "historique.json"
+        chemin_sauvegarde = Path(f"{chemin}.bak")
+
+        principale = "{json invalide"
+        copie = [
+            {"role": "user", "content": "Bonjour Cyan"}
+        ]
+
+        chemin.write_text(
+            principale,
+            encoding="utf-8"
+        )
+        chemin_sauvegarde.write_text(
+            json.dumps(copie),
+            encoding="utf-8"
+        )
+        contenu_copie = chemin_sauvegarde.read_bytes()
+
+        with patch(
+            "outils.shutil.copy2",
+            side_effect=OSError("Réparation impossible")
+        ):
+            roy = creer_roy_test(
+                fichier_historique=str(chemin)
+            )
+
+        roy.ajouter_historique(
+            "assistant",
+            "Bonjour !"
+        )
+        historique_actuel = roy.historique.copy()
+
+        with patch(
+            "outils.os.replace",
+            side_effect=OSError("Fichier inaccessible")
+        ):
+            assert roy.reparer_historique() is False
+
+        assert roy.historique_sauvegardable is False
+        assert roy.historique == historique_actuel
+        assert roy.sauvegarder_historique() is False
+
+        assert chemin.read_text(
+            encoding="utf-8"
+        ) == principale
+
+        assert chemin_sauvegarde.read_bytes() == contenu_copie
+
+        assert set(Path(dossier).iterdir()) == {
+            chemin,
+            chemin_sauvegarde
+        }
+
+def tester_commande_reparation_historique():
+    roy = creer_roy_test()
+
+    for commande in (
+        "répare ton historique",
+        "repare ton historique"
+    ):
+        for resultat_reparation in (True, False):
+            with patch.object(
+                roy,
+                "reparer_historique",
+                return_value=resultat_reparation
+            ) as reparation:
+                resultat = roy.traiter_message(
+                    commande,
+                    commande
+                )
+
+            assert resultat is True
+            reparation.assert_called_once_with()
+
+    with patch.object(
+        roy,
+        "reparer_historique"
+    ) as reparation:
+        resultat = roy.traiter_message(
+            "commande inconnue",
+            "commande inconnue"
+        )
+
+    assert resultat is False
+    reparation.assert_not_called()

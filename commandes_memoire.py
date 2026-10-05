@@ -5,7 +5,8 @@ from config import (
     formes_oublie,
     formes_apprendre,
     formes_renommer,
-    mots_inutiles
+    mots_inutiles,
+    commandes_reparer_memoire
 )
 
 from outils import (
@@ -28,7 +29,7 @@ def traiter_rappel_memoire(
         mots_inutiles
     )
 
-    if cle is None:
+    if not cle:
         roy.repondre(
             "Quelle information veux-tu "
             "que je te rappelle ?"
@@ -54,7 +55,7 @@ def traiter_oubli_memoire(
         mots_inutiles
     )
 
-    if cle is None:
+    if not cle:
         roy.repondre(
             "Quelle information veux-tu "
             "que j'oublie ?"
@@ -80,7 +81,7 @@ def traiter_connaissance_memoire(
         mots_inutiles
     )
 
-    if cle is None:
+    if not cle:
         roy.repondre(
             "Dis-moi ce que tu veux savoir "
             "si je connais."
@@ -106,7 +107,7 @@ def traiter_question_memoire(
         mots_inutiles
     )
 
-    if cle is None:
+    if not cle:
         roy.repondre(
             "Je n'ai pas trouvé ce que "
             "tu veux connaître."
@@ -186,12 +187,23 @@ def traiter_renommage_memoire(
 
     return False
 
+def traiter_reparation_memoire(
+    roy,
+    message: str
+) -> bool:
+    if message not in commandes_reparer_memoire:
+        return False
+
+    roy.reparer_memoire()
+    return True
+
 def traiter_commande_memoire(
     roy,
     message: str,
     message_original: str
 ) -> bool:
     gestionnaires = (
+        traiter_reparation_memoire,
         traiter_renommage_memoire,
         traiter_rappel_memoire,
         traiter_oubli_memoire,

@@ -7,21 +7,31 @@ def traiter_commande_conversation(
         return True
 
     if "mon nom" in message:
-        nom = roy.memoire.get(
-            "nom",
-            "utilisateur"
-        )
-        roy.repondre(f"Ton nom est {nom}")
+        nom = roy.memoire.get("nom")
+
+        if nom is None:
+            roy.repondre(
+                "Je ne connais pas encore ton nom. "
+                "Tu peux me dire : retiens que nom = Cyan"
+            )
+        else:
+            roy.repondre(f"Ton nom est {nom}")
+
         return True
 
     if "mon humeur" in message:
-        humeur = roy.memoire.get(
-            "humeur",
-            "inconnue"
-        )
-        roy.repondre(
-            f"Tu m'as dit que ton humeur était {humeur}"
-        )
+        humeur = roy.memoire.get("humeur")
+
+        if humeur is None:
+            roy.repondre(
+                "Je ne connais pas encore ton humeur. "
+                "Tu peux me dire : retiens que humeur = heureux"
+            )
+        else:
+            roy.repondre(
+                f"Tu m'as dit que ton humeur était {humeur}"
+            )
+
         return True
 
     if message == "combien d'informations connais-tu":

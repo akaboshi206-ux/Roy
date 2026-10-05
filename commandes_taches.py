@@ -15,6 +15,8 @@ from taches import (
     retirer_echeance
 )
 
+from config import commandes_reparer_taches
+
 def traiter_affichage_taches(
     roy,
     message: str
@@ -622,11 +624,22 @@ def traiter_statistiques_taches(
 
     return True
 
+def traiter_reparation_taches(
+    roy,
+    message: str
+) -> bool:
+    if message not in commandes_reparer_taches:
+        return False
+
+    roy.reparer_taches()
+    return True
+
 def traiter_commande_tache(
     roy,
     message: str
 ) -> bool:
     gestionnaires = (
+        traiter_reparation_taches,
         traiter_ajout_tache,
         traiter_fin_tache,
         traiter_reouverture_tache,

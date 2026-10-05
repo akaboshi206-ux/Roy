@@ -45,7 +45,8 @@ from outils import (
     Memoire,
     est_memoire_valide,
     est_historique_valide,
-    charger_json
+    charger_json,
+    reparer_json_depuis_sauvegarde
 )
 
 from config import (
@@ -104,6 +105,25 @@ class Roy:
         self.ajouter_historique("assistant", contenu)
         self.sauvegarder_historique()
         print(f"Roy : {contenu}")
+
+    def reparer_taches(self) -> bool:
+        if self.taches_sauvegardables:
+            print("Roy : Mes tâches ne nécessitent pas de réparation.")
+            return True
+
+        erreur = reparer_json_depuis_sauvegarde(
+            self.fichier_taches,
+            est_liste_taches_valide
+        )
+
+        if erreur is not None:
+            print("Roy : Impossible de réparer mes tâches.")
+            print(erreur)
+            return False
+
+        self.taches_sauvegardables = True
+        print("Roy : Fichier des tâches réparé. Sauvegarde autorisée.")
+        return True
 
     def charger_taches(self) -> None:
         donnees, erreur, recuperation, erreur_reparation = (
@@ -199,6 +219,29 @@ class Roy:
             ancien_etat
         )
         return False
+
+    def reparer_historique(self) -> bool:
+        if not self.historique_actif:
+            print("Roy : Active mon historique avant de le réparer.")
+            return False
+
+        if self.historique_sauvegardable:
+            print("Roy : Mon historique ne nécessite pas de réparation.")
+            return True
+
+        erreur = reparer_json_depuis_sauvegarde(
+            self.fichier_historique,
+            est_historique_valide
+        )
+
+        if erreur is not None:
+            print("Roy : Impossible de réparer mon historique.")
+            print(erreur)
+            return False
+
+        self.historique_sauvegardable = True
+        print("Roy : Fichier historique réparé. Sauvegarde autorisée.")
+        return True
 
     def charger_historique(self) -> None:
         donnees, erreur, recuperation, erreur_reparation = (
@@ -417,6 +460,25 @@ class Roy:
             raise ValueError("Le texte doit être une chaîne de caractères.")
         if not texte.strip():
             raise ValueError("Le texte ne peut pas être vide.")
+
+    def reparer_memoire(self) -> bool:
+        if self.memoire_sauvegardable:
+            print("Roy : Ma mémoire ne nécessite pas de réparation.")
+            return True
+
+        erreur = reparer_json_depuis_sauvegarde(
+            self.fichier_memoire,
+            est_memoire_valide
+        )
+
+        if erreur is not None:
+            print("Roy : Impossible de réparer ma mémoire.")
+            print(erreur)
+            return False
+
+        self.memoire_sauvegardable = True
+        print("Roy : Fichier mémoire réparé. Sauvegarde autorisée.")
+        return True
 
     def charger_memoire(self) -> None:
         donnees, erreur, recuperation, erreur_reparation = (
@@ -719,37 +781,25 @@ class Roy:
         return len(self.memoire)
 
     def connaitre(self, cle: str) -> None:
+        if not cle:
+            self.repondre(
+                "Quelle information veux-tu connaître ?"
+            )
+            return
+
         if cle in self.memoire:
             valeur = self.memoire[cle]
+            possessif = "ta" if cle in cles_feminines else "ton"
 
-            if cle in cles_feminines:
-                possessif = "ta"
-            else:
-                possessif = "ton"
-            
-            self.repondre(f"Oui, {possessif} {cle} est {valeur}.")
-        else:
-            self.repondre(f"Non, je ne connais encore aucune information sur {cle}.")
-            self.repondre("Veux-tu me l'apprendre ?")
-            
-            while True:
-               reponse = nettoyer_texte(input("Toi : "))
-            
-               if reponse == "oui":
-                   self.repondre("Quelle est l'information ?")
-                   valeur = nettoyer_texte(
-                        input("Toi : "),
-                        False
-                   )
-                   self.apprendre(cle, valeur)
-                   break
-            
-               elif reponse == "non":
-                   self.repondre("D'accord, je n'apprendrai pas cette information.")
-                   break
-            
-               else:
-                   self.repondre("Je n'ai pas compris. Réponds par oui ou non.")
+            self.repondre(
+                f"Oui, {possessif} {cle} est {valeur}."
+            )
+            return
+
+        self.repondre(
+            f"Je ne connais encore aucune information sur {cle}. "
+            f"Tu peux me dire : retiens que {cle} = valeur"
+        )
 
     def traiter_apprentissage(self, information):
         if "=" not in information:
@@ -780,6 +830,43 @@ class Roy:
                 return "active"
             else:
                 return "désactivée"
+
+    def obtenir_statut_sauvegardes(self) -> list[str]:
+        lignes = ["Statut des sauvegardes"]
+
+        if self.memoire_sauvegardable:
+            lignes.append("Mémoire : sauvegarde autorisée.")
+        else:
+            lignes.append(
+                "Mémoire : sauvegarde bloquée. "
+                "Utilise : répare ta mémoire."
+            )
+
+        if not self.historique_actif:
+            lignes.append("Historique : désactivé.")
+        elif self.historique_sauvegardable:
+            lignes.append("Historique : sauvegarde autorisée.")
+        else:
+            lignes.append(
+                "Historique : sauvegarde bloquée. "
+                "Utilise : répare ton historique."
+            )
+
+        if self.taches_sauvegardables:
+            lignes.append("Tâches : sauvegarde autorisée.")
+        else:
+            lignes.append(
+                "Tâches : sauvegarde bloquée. "
+                "Utilise : répare mes tâches."
+            )
+
+        return lignes
+
+    def afficher_statut_sauvegardes(self) -> None:
+        print(
+            "Roy : "
+            + "\n".join(self.obtenir_statut_sauvegardes())
+        )
 
     def afficher_statut(self) -> None:
         lignes = [

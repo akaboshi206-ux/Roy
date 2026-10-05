@@ -1,3 +1,6 @@
+from contextlib import redirect_stdout
+from io import StringIO
+
 from tests import (
     test_taches,
     test_historique,
@@ -33,13 +36,30 @@ def lancer_tests():
         test_general,
         test_outils
     )
+
     for module in modules_tests:
         tests.extend(
             trouver_tests(vars(module))
         )
 
     for test in tests:
-        test()
+        sortie = StringIO()
+
+        try:
+            with redirect_stdout(sortie):
+                test()
+
+        except Exception:
+            print(
+                f"Échec : {test.__module__}.{test.__name__}"
+            )
+
+            messages = sortie.getvalue()
+
+            if messages:
+                print(messages, end="")
+
+            raise
 
     print(
         f"{len(tests)} tests ont réussi."

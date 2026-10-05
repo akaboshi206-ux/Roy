@@ -2,6 +2,7 @@ from config import (
     commandes_historique,
     commandes_rechercher_historique,
     commandes_statistiques_historique,
+    commandes_reparer_historique,
     commandes_exporter_historique
 )
 
@@ -83,11 +84,22 @@ def traiter_export_historique(
 
     return False
 
+def traiter_reparation_historique(
+    roy,
+    message: str
+) -> bool:
+    if message not in commandes_reparer_historique:
+        return False
+
+    roy.reparer_historique()
+    return True
+
 def traiter_commande_historique(
     roy,
     message: str
 ) -> bool:
     gestionnaires = (
+        traiter_reparation_historique,
         traiter_recherche_historique,
         traiter_affichage_historique,
         traiter_statistiques_historique,

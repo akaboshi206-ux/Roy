@@ -88,6 +88,11 @@ commandes_basculer_memoire = {
     "inverse la mémoire"
 }
 
+commandes_reparer_memoire = [
+    "répare ta mémoire",
+    "repare ta memoire"
+]
+
 commandes_desactiver_systeme = {
     "désactive le système",
     "coupe le système",
@@ -149,6 +154,21 @@ commandes_exporter_historique = {
     "exporte la conversation"
 }
 
+commandes_reparer_historique = [
+    "répare ton historique",
+    "repare ton historique"
+]
+
+commandes_reparer_taches = [
+    "répare mes tâches",
+    "repare mes taches"
+]
+
+commandes_statut_sauvegardes = [
+    "statut sauvegardes",
+    "statut des sauvegardes"
+]
+
 exemples_aide = [
     "bonjour",
     "retiens que clé = valeur",
@@ -189,5 +209,9 @@ exemples_aide = [
     "montre mes tâches à venir",
     "trie mes tâches par échéance",
     "retire l'échéance de la tâche 1",
-    "résumé tâches"
+    "résumé tâches",
+    "répare ta mémoire",
+    "répare ton historique",
+    "répare mes tâches",
+    "statut sauvegardes"
 ]

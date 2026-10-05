@@ -4,7 +4,8 @@ from config import (
     commandes_memoire,
     commandes_activer_memoire,
     commandes_desactiver_memoire,
-    commandes_basculer_memoire
+    commandes_basculer_memoire,
+    commandes_statut_sauvegardes
 )
 
 def traiter_commande_generale(
@@ -12,6 +13,10 @@ def traiter_commande_generale(
     message: str
 ) -> bool:
     commandes_actions = (
+        (
+            commandes_statut_sauvegardes,
+            roy.afficher_statut_sauvegardes
+        ),
         (
             commandes_aide,
             roy.afficher_aide
