@@ -665,3 +665,27 @@ def tester_commande_reparation_historique():
 
     assert resultat is False
     reparation.assert_not_called()
+
+def tester_reponse_avec_sortie_remplacable():
+    from unittest.mock import patch
+
+    roy = creer_roy_test(historique_actif=True)
+    roy.historique = []
+
+    with patch.object(
+        roy,
+        "sauvegarder_historique",
+        return_value=True
+    ) as sauvegarde:
+        with patch.object(roy, "afficher_sortie") as sortie:
+            with patch(
+                "builtins.print",
+                side_effect=AssertionError("Affichage direct inattendu")
+            ):
+                roy.repondre("Bonjour Cyan")
+
+    sortie.assert_called_once_with("Bonjour Cyan")
+    sauvegarde.assert_called_once_with()
+    assert len(roy.historique) == 1
+    assert roy.historique[0]["role"] == "assistant"
+    assert roy.historique[0]["content"] == "Bonjour Cyan"

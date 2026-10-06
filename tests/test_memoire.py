@@ -742,3 +742,33 @@ def tester_commandes_memoire_refusent_cle_vide():
         assert resultat is True, commande
         action.assert_not_called()
         reponse.assert_called_once()
+
+def tester_confirmation_sans_clavier():
+    from unittest.mock import patch
+
+    roy = creer_roy_test(historique_actif=False)
+
+    with patch(
+        "builtins.input",
+        side_effect=AssertionError("Saisie clavier inattendue")
+    ):
+        with patch.object(roy, "repondre") as reponse:
+            with patch.object(
+                roy,
+                "lire_entree",
+                side_effect=["peut-être", " OUI "]
+            ) as lecture:
+                resultat = roy.demander_confirmation("Confirmer ?")
+
+            assert resultat is True
+            assert lecture.call_count == 2
+            reponse.assert_any_call("Réponds par oui ou non.")
+
+            with patch.object(
+                roy,
+                "lire_entree",
+                return_value=" NON "
+            ):
+                resultat = roy.demander_confirmation("Confirmer ?")
+
+            assert resultat is False

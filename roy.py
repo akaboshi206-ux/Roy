@@ -101,14 +101,19 @@ class Roy:
 
         self.historique.append(message)
 
+    def afficher_sortie(self, contenu: str, prefixe: bool = True) -> None:
+        print(f"Roy : {contenu}" if prefixe else contenu)
+
     def repondre(self, contenu: str) -> None:
         self.ajouter_historique("assistant", contenu)
         self.sauvegarder_historique()
-        print(f"Roy : {contenu}")
+        self.afficher_sortie(contenu)
 
     def reparer_taches(self) -> bool:
         if self.taches_sauvegardables:
-            print("Roy : Mes tâches ne nécessitent pas de réparation.")
+            self.afficher_sortie(
+                "Mes tâches ne nécessitent pas de réparation."
+            )
             return True
 
         erreur = reparer_json_depuis_sauvegarde(
@@ -117,14 +122,17 @@ class Roy:
         )
 
         if erreur is not None:
-            print("Roy : Impossible de réparer mes tâches.")
-            print(erreur)
+            self.afficher_sortie(
+                f"Impossible de réparer mes tâches.\n{erreur}"
+            )
             return False
 
         self.taches_sauvegardables = True
-        print("Roy : Fichier des tâches réparé. Sauvegarde autorisée.")
+        self.afficher_sortie(
+            "Fichier des tâches réparé. Sauvegarde autorisée."
+        )
         return True
-
+    
     def charger_taches(self) -> None:
         donnees, erreur, recuperation, erreur_reparation = (
             charger_json_avec_sauvegarde(
@@ -138,8 +146,8 @@ class Roy:
             return
 
         if erreur is not None:
-            print("Roy : Impossible de charger mes tâches.")
-            print(erreur)
+            self.afficher_sortie("Impossible de charger mes tâches.")
+            self.afficher_sortie(str(erreur), prefixe=False)
             self.taches_sauvegardables = False
             return
 
@@ -150,7 +158,7 @@ class Roy:
                 for tache in donnees
             )
         ):
-            print("Roy : Le format des tâches est invalide.")
+            self.afficher_sortie("Le format des tâches est invalide.")
             self.taches_sauvegardables = False
             return
 
@@ -167,28 +175,28 @@ class Roy:
         self.taches = cast(list[Tache], donnees)
 
         if recuperation:
-            print(
-                "Roy : Mes tâches ont été récupérées "
+            self.afficher_sortie(
+                "Mes tâches ont été récupérées "
                 "depuis la copie de sécurité."
             )
 
         if erreur_reparation is not None:
             self.taches_sauvegardables = False
-            print(
-                "Roy : Tâches récupérées, mais réparation "
+            self.afficher_sortie(
+                "Tâches récupérées, mais réparation "
                 "du fichier impossible. Sauvegarde bloquée."
             )
-            print(erreur_reparation)
+            self.afficher_sortie(str(erreur_reparation), prefixe=False)
 
     def sauvegarder_taches(self) -> bool:
         if not self.taches_sauvegardables:
-            print("Roy : Sauvegarde bloquée : le fichier des tâches est endommagé.")
+            self.afficher_sortie("Sauvegarde bloquée : le fichier des tâches est endommagé.")
             return False
 
         if sauvegarder_json_atomiquement(self.fichier_taches, self.taches):
             return True
 
-        print("Roy : Impossible de sauvegarder mes tâches.")
+        self.afficher_sortie("Impossible de sauvegarder mes tâches.")
         return False
 
     def obtenir_numero_tache(self, texte_numero: str) -> int | None:
@@ -222,11 +230,15 @@ class Roy:
 
     def reparer_historique(self) -> bool:
         if not self.historique_actif:
-            print("Roy : Active mon historique avant de le réparer.")
+            self.afficher_sortie(
+                "Active mon historique avant de le réparer."
+            )
             return False
 
         if self.historique_sauvegardable:
-            print("Roy : Mon historique ne nécessite pas de réparation.")
+            self.afficher_sortie(
+                "Mon historique ne nécessite pas de réparation."
+            )
             return True
 
         erreur = reparer_json_depuis_sauvegarde(
@@ -235,12 +247,15 @@ class Roy:
         )
 
         if erreur is not None:
-            print("Roy : Impossible de réparer mon historique.")
-            print(erreur)
+            self.afficher_sortie(
+                f"Impossible de réparer mon historique.\n{erreur}"
+            )
             return False
 
         self.historique_sauvegardable = True
-        print("Roy : Fichier historique réparé. Sauvegarde autorisée.")
+        self.afficher_sortie(
+            "Fichier historique réparé. Sauvegarde autorisée."
+        )
         return True
 
     def charger_historique(self) -> None:
@@ -268,17 +283,17 @@ class Roy:
 
         if erreur is not None:
             if isinstance(erreur, json.JSONDecodeError):
-                print("Roy : Mon historique semble endommagé.")
+                self.afficher_sortie("Mon historique semble endommagé.")
             else:
-                print("Roy : Impossible de charger mon historique.")
+                self.afficher_sortie("Impossible de charger mon historique.")
 
-            print(erreur)
+            self.afficher_sortie(str(erreur), prefixe=False)
             self.historique_sauvegardable = False
             self.historique = []
             return
 
         if not isinstance(donnees, list):
-            print("Roy : Le format de l'historique est invalide.")
+            self.afficher_sortie("Le format de l'historique est invalide.")
             self.historique_sauvegardable = False
             self.historique = []
             return
@@ -299,25 +314,25 @@ class Roy:
         self.historique = historique_valide
 
         if recuperation:
-            print(
-                "Roy : Mon historique a été récupéré "
+            self.afficher_sortie(
+                "Mon historique a été récupéré "
                 "depuis la copie de sécurité."
             )
 
         if erreur_reparation is not None:
             self.historique_sauvegardable = False
-            print(
-                "Roy : Historique récupéré, mais réparation "
+            self.afficher_sortie(
+                "Historique récupéré, mais réparation "
                 "du fichier impossible. Sauvegarde bloquée."
             )
-            print(erreur_reparation)
+            self.afficher_sortie(str(erreur_reparation), prefixe=False)
 
     def sauvegarder_historique(self) -> bool:
         if not self.historique_actif:
             return True
 
         if not self.historique_sauvegardable:
-            print("Roy : Sauvegarde bloquée : le fichier historique est endommagé.")
+            self.afficher_sortie("Sauvegarde bloquée : le fichier historique est endommagé.")
             return False
 
         if sauvegarder_json_atomiquement(
@@ -326,20 +341,20 @@ class Roy:
         ):
             return True
 
-        print("Roy : Impossible de sauvegarder mon historique.")
+        self.afficher_sortie("Impossible de sauvegarder mon historique.")
         return False    
 
     def afficher_historique(self, limite: int = 20) -> None:
         if not self.historique:
-            print("Roy : L'historique est vide.")
+            self.afficher_sortie("L'historique est vide.")
             return
 
-        print("Roy : Historique de la conversation :")
+        self.afficher_sortie("Historique de la conversation :")
 
         messages_a_afficher = self.historique[-limite:]
 
         for message in messages_a_afficher:
-            print(formater_message_historique(message))
+            self.afficher_sortie(str(formater_message_historique(message)), prefixe=False)
 
     def traiter_historique(self, message: str) -> bool:
         return traiter_affichage_historique(self, message)
@@ -398,7 +413,7 @@ class Roy:
         mot_cle = mot_cle.strip()
 
         if not mot_cle:
-            print("Roy : Indique un mot à rechercher.")
+            self.afficher_sortie("Indique un mot à rechercher.")
             return
 
         resultats = []
@@ -427,13 +442,13 @@ class Roy:
                 resultats.append(message)
 
         if not resultats:
-            print(f"Roy : Aucun message trouvé pour : {mot_cle}")
+            self.afficher_sortie(f"Aucun message trouvé pour : {mot_cle}")
             return
 
-        print(f"Roy : {len(resultats)} message(s) trouvé(s) pour : {mot_cle}")
+        self.afficher_sortie(f"{len(resultats)} message(s) trouvé(s) pour : {mot_cle}")
 
         for message in resultats[-20:]:
-            print(formater_message_historique(message))
+            self.afficher_sortie(str(formater_message_historique(message)), prefixe=False)
 
     def afficher_statistiques_historique(self) -> None:
         total_messages = len(self.historique)
@@ -447,10 +462,10 @@ class Roy:
             if message["role"] == "assistant":
                 messages_roy += 1
 
-        print("Roy : Statistiques de l'historique")
-        print(f"Messages totaux : {total_messages}")
-        print(f"Messages de Cyan : {messages_cyan}")
-        print(f"Messages de Roy : {messages_roy}")
+        self.afficher_sortie("Statistiques de l'historique")
+        self.afficher_sortie(str(f"Messages totaux : {total_messages}"), prefixe=False)
+        self.afficher_sortie(str(f"Messages de Cyan : {messages_cyan}"), prefixe=False)
+        self.afficher_sortie(str(f"Messages de Roy : {messages_roy}"), prefixe=False)
 
     def se_presenter(self):
         self.repondre(f"Bonjour ! Je m'appelle {self.nom}.")
@@ -463,7 +478,9 @@ class Roy:
 
     def reparer_memoire(self) -> bool:
         if self.memoire_sauvegardable:
-            print("Roy : Ma mémoire ne nécessite pas de réparation.")
+            self.afficher_sortie(
+                "Ma mémoire ne nécessite pas de réparation."
+            )
             return True
 
         erreur = reparer_json_depuis_sauvegarde(
@@ -472,12 +489,15 @@ class Roy:
         )
 
         if erreur is not None:
-            print("Roy : Impossible de réparer ma mémoire.")
-            print(erreur)
+            self.afficher_sortie(
+                f"Impossible de réparer ma mémoire.\n{erreur}"
+            )
             return False
 
         self.memoire_sauvegardable = True
-        print("Roy : Fichier mémoire réparé. Sauvegarde autorisée.")
+        self.afficher_sortie(
+            "Fichier mémoire réparé. Sauvegarde autorisée."
+        )
         return True
 
     def charger_memoire(self) -> None:
@@ -495,17 +515,17 @@ class Roy:
 
         if erreur is not None:
             if isinstance(erreur, json.JSONDecodeError):
-                print("Roy : Ma mémoire semble endommagée.")
+                self.afficher_sortie("Ma mémoire semble endommagée.")
             else:
-                print("Roy : Impossible de charger ma mémoire.")
+                self.afficher_sortie("Impossible de charger ma mémoire.")
 
-            print(erreur)
+            self.afficher_sortie(str(erreur), prefixe=False)
             self.memoire_sauvegardable = False
             self.memoire = {}
             return
 
         if not est_memoire_valide(donnees):
-            print("Roy : Le format de ma mémoire est invalide.")
+            self.afficher_sortie("Le format de ma mémoire est invalide.")
             self.memoire_sauvegardable = False
             self.memoire = {}
             return
@@ -516,18 +536,18 @@ class Roy:
         )
 
         if recuperation:
-            print(
-                "Roy : Ma mémoire a été récupérée "
+            self.afficher_sortie(
+                "Ma mémoire a été récupérée "
                 "depuis la copie de sécurité."
             )
 
         if erreur_reparation is not None:
             self.memoire_sauvegardable = False
-            print(
-                "Roy : Mémoire récupérée, mais réparation "
+            self.afficher_sortie(
+                "Mémoire récupérée, mais réparation "
                 "du fichier impossible. Sauvegarde bloquée."
             )
-            print(erreur_reparation)
+            self.afficher_sortie(str(erreur_reparation), prefixe=False)
 
     def saluer(self):
         self.repondre(f"Bonjour {self.memoire.get('nom', 'utilisateur')} !")
@@ -551,13 +571,13 @@ class Roy:
 
     def sauvegarder_memoire(self) -> bool:
         if not self.memoire_sauvegardable:
-            print("Roy : Sauvegarde bloquée : le fichier mémoire est endommagé.")
+            self.afficher_sortie("Sauvegarde bloquée : le fichier mémoire est endommagé.")
             return False
         
         if sauvegarder_json_atomiquement(self.fichier_memoire, self.memoire):
             return True
 
-        print("Roy : Impossible de sauvegarder ma mémoire.")
+        self.afficher_sortie("Impossible de sauvegarder ma mémoire.")
         return False
         
     def apprendre(self, cle: str, valeur: str):
@@ -625,11 +645,14 @@ class Roy:
         else:
             self.repondre("Je ne connais aucune information portant ce nom.")
 
+    def lire_entree(self, invite: str) -> str:
+        return input(invite)
+
     def demander_confirmation(self, question: str) -> bool:
         self.repondre(question)
 
         while True:
-            reponse = nettoyer_texte(input("Toi : "))
+            reponse = nettoyer_texte(self.lire_entree("Toi : "))
             if reponse == "oui":
                 return True
             elif reponse == "non":
@@ -863,9 +886,8 @@ class Roy:
         return lignes
 
     def afficher_statut_sauvegardes(self) -> None:
-        print(
-            "Roy : "
-            + "\n".join(self.obtenir_statut_sauvegardes())
+        self.afficher_sortie(
+            "\n".join(self.obtenir_statut_sauvegardes())
         )
 
     def afficher_statut(self) -> None:

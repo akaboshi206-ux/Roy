@@ -9,7 +9,8 @@ from tests import (
     test_conversation,
     test_json,
     test_general,
-    test_outils
+    test_outils,
+    test_recherches
 )
 
 def trouver_tests(espace_noms):
@@ -34,7 +35,8 @@ def lancer_tests():
         test_conversation,
         test_json,
         test_general,
-        test_outils
+        test_outils,
+        test_recherches
     )
 
     for module in modules_tests:

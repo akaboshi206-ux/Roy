@@ -19,7 +19,7 @@ if __name__ == "__main__":
     roy.se_presenter_utilisateur()
 
     while True:
-        message_original = input("Toi : ")
+        message_original = roy.lire_entree("Toi : ")
         message = nettoyer_message(message_original)
         if not message:
            roy.repondre("Écris-moi quelque chose.")

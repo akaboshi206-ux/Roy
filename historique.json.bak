@@ -2153,5 +2153,85 @@
         "role": "user",
         "content": "statut",
         "timestamp": "2026-10-05T20:04:36"
+    },
+    {
+        "role": "assistant",
+        "content": "Statut du système\nNom : Roy\nInformations en mémoire : 31\nSystème actif.\nMémoire activée.",
+        "timestamp": "2026-10-05T20:04:36"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy.",
+        "timestamp": "2026-10-06T13:13:59"
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !",
+        "timestamp": "2026-10-06T13:13:59"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !",
+        "timestamp": "2026-10-06T13:13:59"
+    },
+    {
+        "role": "user",
+        "content": "statut",
+        "timestamp": "2026-10-06T13:20:01"
+    },
+    {
+        "role": "assistant",
+        "content": "Statut du système\nNom : Roy\nInformations en mémoire : 31\nSystème actif.\nMémoire activée.",
+        "timestamp": "2026-10-06T13:20:01"
+    },
+    {
+        "role": "user",
+        "content": "quitter",
+        "timestamp": "2026-10-06T13:20:02"
+    },
+    {
+        "role": "assistant",
+        "content": "À bientôt !",
+        "timestamp": "2026-10-06T13:20:02"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy.",
+        "timestamp": "2026-10-06T14:46:06"
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !",
+        "timestamp": "2026-10-06T14:46:06"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !",
+        "timestamp": "2026-10-06T14:46:06"
+    },
+    {
+        "role": "user",
+        "content": "bonjour",
+        "timestamp": "2026-10-06T14:46:08"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour Cyan !",
+        "timestamp": "2026-10-06T14:46:08"
+    },
+    {
+        "role": "user",
+        "content": "historique 5",
+        "timestamp": "2026-10-06T14:46:13"
+    },
+    {
+        "role": "user",
+        "content": "statistiques historique",
+        "timestamp": "2026-10-06T14:46:20"
+    },
+    {
+        "role": "user",
+        "content": "quitter",
+        "timestamp": "2026-10-06T14:46:23"
     }
 ]
