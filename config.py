@@ -213,5 +213,6 @@ exemples_aide = [
     "répare ta mémoire",
     "répare ton historique",
     "répare mes tâches",
-    "statut sauvegardes"
+    "statut sauvegardes",
+    "crée une recherche : titre"
 ]

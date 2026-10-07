@@ -34,6 +34,8 @@ from commandes_taches import (
     traiter_commande_tache
 )
 
+from commandes_recherches import traiter_commande_recherche
+
 from outils import (
     charger_json_avec_sauvegarde,
     nettoyer_texte,
@@ -55,13 +57,21 @@ from config import (
     exemples_aide
 )
 
+from recherches import (
+    Recherche,
+    charger_recherches as charger_carnet,
+    sauvegarder_recherches as sauvegarder_carnet,
+    creer_recherche
+)
+
 class Roy:
     def __init__(
         self,
         historique_actif: bool = True,
         fichier_historique: str = "historique.json",
         fichier_memoire: str = "memoire.json",
-        fichier_taches: str = "taches.json"
+        fichier_taches: str = "taches.json",
+        fichier_recherches: str = "recherches.json"
     ):
         self.nom = "Roy"        
         self.historique_actif = historique_actif
@@ -87,6 +97,86 @@ class Roy:
         self.historique_sauvegardable = True
         if self.historique_actif:
             self.charger_historique()
+        self.recherches: list[Recherche] = []
+        self.fichier_recherches = fichier_recherches
+        self.recherches_sauvegardables = True
+        self.charger_recherches()
+
+    def ajouter_recherche(self, titre: str) -> bool:
+        try:
+            recherche = creer_recherche(titre)
+        except ValueError as erreur:
+            self.repondre(str(erreur))
+            return False
+
+        self.recherches.append(recherche)
+
+        if not self.sauvegarder_recherches():
+            self.recherches.pop()
+            self.repondre(
+                "L'ajout de la recherche a été annulé."
+            )
+            return False
+
+        self.repondre("Recherche créée.")
+        return True
+
+    def charger_recherches(self) -> None:
+        donnees, erreur, recuperation, erreur_reparation = (
+            charger_carnet(self.fichier_recherches)
+        )
+
+        if isinstance(erreur, FileNotFoundError):
+            return
+
+        if erreur is not None:
+            self.recherches_sauvegardables = False
+            self.afficher_sortie(
+                "Impossible de charger mes recherches."
+            )
+            self.afficher_sortie(str(erreur), prefixe=False)
+            return
+
+        self.recherches = cast(list[Recherche], donnees)
+        self.recherches_sauvegardables = (
+            erreur_reparation is None
+        )
+
+        if recuperation:
+            self.afficher_sortie(
+                "Mes recherches ont été récupérées "
+                "depuis la copie de sécurité."
+            )
+
+        if erreur_reparation is not None:
+            self.afficher_sortie(
+                "Recherches récupérées, mais réparation "
+                "du fichier impossible. Sauvegarde bloquée."
+            )
+            self.afficher_sortie(
+                str(erreur_reparation),
+                prefixe=False
+            )
+
+    def sauvegarder_recherches(self) -> bool:
+        if not self.recherches_sauvegardables:
+            self.afficher_sortie(
+                "Sauvegarde bloquée : "
+                "le fichier des recherches est inaccessible "
+                "ou endommagé."
+            )
+            return False
+
+        if sauvegarder_carnet(
+            self.fichier_recherches,
+            self.recherches
+        ):
+            return True
+
+        self.afficher_sortie(
+            "Impossible de sauvegarder mes recherches."
+        )
+        return False
 
     def ajouter_historique(self, role: RoleHistorique, contenu: str) -> None:
         date_message = datetime.now().isoformat(
@@ -973,7 +1063,10 @@ class Roy:
         if not self.etat["systeme"]["actif"]:
             self.repondre("Le système est désactivé. Réactive-le pour continuer.")
             return True     
-           
+
+        if traiter_commande_recherche(self, message, message_original):
+            return True
+         
         if traiter_commande_generale(self, message):
             return True
 

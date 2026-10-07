@@ -171,3 +171,47 @@ def tester_commande_generale():
         roy.etat["memoire"]["active"]
         is False
     )
+
+def tester_annulation_ajout_recherche_roy():
+    from pathlib import Path
+    from tempfile import TemporaryDirectory
+    from unittest.mock import patch
+    from roy import Roy
+
+    with TemporaryDirectory() as dossier:
+        dossier_test = Path(dossier)
+        chemin = dossier_test / "recherches.json"
+
+        roy = Roy(
+            historique_actif=False,
+            fichier_historique=str(
+                dossier_test / "historique.json"
+            ),
+            fichier_memoire=str(
+                dossier_test / "memoire.json"
+            ),
+            fichier_taches=str(
+                dossier_test / "taches.json"
+            ),
+            fichier_recherches=str(chemin)
+        )
+
+        assert roy.ajouter_recherche("Énergie") is True
+
+        recherches_initiales = roy.recherches.copy()
+        contenu_initial = chemin.read_text(
+            encoding="utf-8"
+        )
+
+        with patch(
+            "roy.sauvegarder_carnet",
+            return_value=False
+        ):
+            assert roy.ajouter_recherche(
+                "Matériaux"
+            ) is False
+
+        assert roy.recherches == recherches_initiales
+        assert chemin.read_text(
+            encoding="utf-8"
+        ) == contenu_initial
