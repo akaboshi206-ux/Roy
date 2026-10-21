@@ -2233,5 +2233,1175 @@
         "role": "user",
         "content": "quitter",
         "timestamp": "2026-10-06T14:46:23"
+    },
+    {
+        "role": "assistant",
+        "content": "À bientôt !",
+        "timestamp": "2026-10-06T14:46:23"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy.",
+        "timestamp": "2026-10-08T14:07:37"
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !",
+        "timestamp": "2026-10-08T14:07:37"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !",
+        "timestamp": "2026-10-08T14:07:37"
+    },
+    {
+        "role": "user",
+        "content": "crée une recherche : Stockage d'énergie",
+        "timestamp": "2026-10-08T14:07:57"
+    },
+    {
+        "role": "assistant",
+        "content": "Recherche créée.",
+        "timestamp": "2026-10-08T14:07:57"
+    },
+    {
+        "role": "user",
+        "content": "montre mes recherches",
+        "timestamp": "2026-10-08T14:08:04"
+    },
+    {
+        "role": "assistant",
+        "content": "Tes recherches :\n1. Stockage d'énergie",
+        "timestamp": "2026-10-08T14:08:04"
+    },
+    {
+        "role": "user",
+        "content": "note recherche 1 : Hypothèse : comparer plusieurs moyens de stockage.",
+        "timestamp": "2026-10-08T14:08:20"
+    },
+    {
+        "role": "assistant",
+        "content": "Note ajoutée.",
+        "timestamp": "2026-10-08T14:08:20"
+    },
+    {
+        "role": "user",
+        "content": "source recherche 1 : Référence de démonstration",
+        "timestamp": "2026-10-08T14:08:28"
+    },
+    {
+        "role": "assistant",
+        "content": "Source ajoutée.",
+        "timestamp": "2026-10-08T14:08:28"
+    },
+    {
+        "role": "user",
+        "content": "montre la recherche 1",
+        "timestamp": "2026-10-08T14:08:34"
+    },
+    {
+        "role": "assistant",
+        "content": "Recherche : Stockage d'énergie\n\nNotes :\n1. Hypothèse : comparer plusieurs moyens de stockage.\n\nSources :\n1. Référence de démonstration",
+        "timestamp": "2026-10-08T14:08:34"
+    },
+    {
+        "role": "user",
+        "content": "quitter",
+        "timestamp": "2026-10-08T14:08:39"
+    },
+    {
+        "role": "assistant",
+        "content": "À bientôt !",
+        "timestamp": "2026-10-08T14:08:39"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy.",
+        "timestamp": "2026-10-08T14:08:54"
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !",
+        "timestamp": "2026-10-08T14:08:54"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !",
+        "timestamp": "2026-10-08T14:08:54"
+    },
+    {
+        "role": "user",
+        "content": "montre la recherche 1",
+        "timestamp": "2026-10-08T14:09:08"
+    },
+    {
+        "role": "assistant",
+        "content": "Recherche : Stockage d'énergie\n\nNotes :\n1. Hypothèse : comparer plusieurs moyens de stockage.\n\nSources :\n1. Référence de démonstration",
+        "timestamp": "2026-10-08T14:09:08"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy.",
+        "timestamp": "2026-10-09T13:22:54"
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !",
+        "timestamp": "2026-10-09T13:22:54"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !",
+        "timestamp": "2026-10-09T13:22:54"
+    },
+    {
+        "role": "user",
+        "content": "statut sauvegardes",
+        "timestamp": "2026-10-09T13:22:57"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy.",
+        "timestamp": "2026-10-09T13:39:54"
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !",
+        "timestamp": "2026-10-09T13:39:54"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !",
+        "timestamp": "2026-10-09T13:39:54"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy.",
+        "timestamp": "2026-10-09T13:42:23"
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !",
+        "timestamp": "2026-10-09T13:42:23"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !",
+        "timestamp": "2026-10-09T13:42:23"
+    },
+    {
+        "role": "user",
+        "content": "montre mes recherches",
+        "timestamp": "2026-10-09T13:42:30"
+    },
+    {
+        "role": "assistant",
+        "content": "Tes recherches :\n1. Stockage d'énergie",
+        "timestamp": "2026-10-09T13:42:30"
+    },
+    {
+        "role": "user",
+        "content": "export recherche 1",
+        "timestamp": "2026-10-09T13:42:33"
+    },
+    {
+        "role": "assistant",
+        "content": "Recherche exportée dans recherche_1_2026-10-09_13-42-33_790400.txt.",
+        "timestamp": "2026-10-09T13:42:33"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy.",
+        "timestamp": "2026-10-10T12:55:11"
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !",
+        "timestamp": "2026-10-10T12:55:11"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !",
+        "timestamp": "2026-10-10T12:55:11"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy.",
+        "timestamp": "2026-10-10T13:00:03"
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !",
+        "timestamp": "2026-10-10T13:00:03"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !",
+        "timestamp": "2026-10-10T13:00:03"
+    },
+    {
+        "role": "user",
+        "content": "export recherche 1",
+        "timestamp": "2026-10-10T13:00:15"
+    },
+    {
+        "role": "assistant",
+        "content": "Recherche exportée dans C:\\Users\\xiaot\\Documents\\Roy\\exports\\recherche_1_2026-10-10_13-00-15_188015.txt.",
+        "timestamp": "2026-10-10T13:00:15"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy.",
+        "timestamp": "2026-10-10T13:04:59"
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !",
+        "timestamp": "2026-10-10T13:04:59"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !",
+        "timestamp": "2026-10-10T13:04:59"
+    },
+    {
+        "role": "user",
+        "content": "\u0016",
+        "timestamp": "2026-10-10T13:05:00"
+    },
+    {
+        "role": "assistant",
+        "content": "Je ne sais pas encore quoi répondre.",
+        "timestamp": "2026-10-10T13:05:00"
+    },
+    {
+        "role": "user",
+        "content": "retiens que verification_redemarrage = Mémoire conservée",
+        "timestamp": "2026-10-10T13:05:03"
+    },
+    {
+        "role": "assistant",
+        "content": "J'ai appris une nouvelle information.",
+        "timestamp": "2026-10-10T13:05:03"
+    },
+    {
+        "role": "assistant",
+        "content": "Mémoire sauvegardée",
+        "timestamp": "2026-10-10T13:05:03"
+    },
+    {
+        "role": "user",
+        "content": "rappelle-moi verification_redemarrage",
+        "timestamp": "2026-10-10T13:05:14"
+    },
+    {
+        "role": "assistant",
+        "content": "Mémoire conservée",
+        "timestamp": "2026-10-10T13:05:14"
+    },
+    {
+        "role": "user",
+        "content": "quitter",
+        "timestamp": "2026-10-10T13:05:28"
+    },
+    {
+        "role": "assistant",
+        "content": "À bientôt !",
+        "timestamp": "2026-10-10T13:05:28"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy.",
+        "timestamp": "2026-10-10T13:05:34"
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !",
+        "timestamp": "2026-10-10T13:05:34"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !",
+        "timestamp": "2026-10-10T13:05:34"
+    },
+    {
+        "role": "user",
+        "content": "rappelle-moi verification_redemarrage",
+        "timestamp": "2026-10-10T13:05:43"
+    },
+    {
+        "role": "assistant",
+        "content": "Mémoire conservée",
+        "timestamp": "2026-10-10T13:05:43"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy.",
+        "timestamp": "2026-10-10T13:06:42"
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !",
+        "timestamp": "2026-10-10T13:06:42"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !",
+        "timestamp": "2026-10-10T13:06:42"
+    },
+    {
+        "role": "user",
+        "content": "ajoute une tâche : Vérification du redémarrage",
+        "timestamp": "2026-10-10T13:06:50"
+    },
+    {
+        "role": "assistant",
+        "content": "Tâche ajoutée.",
+        "timestamp": "2026-10-10T13:06:50"
+    },
+    {
+        "role": "user",
+        "content": "crée une recherche : Vérification du redémarrage",
+        "timestamp": "2026-10-10T13:06:56"
+    },
+    {
+        "role": "assistant",
+        "content": "Recherche créée.",
+        "timestamp": "2026-10-10T13:06:56"
+    },
+    {
+        "role": "user",
+        "content": "montre mes tâches",
+        "timestamp": "2026-10-10T13:07:03"
+    },
+    {
+        "role": "assistant",
+        "content": "1. ✓ [normale] [échéance : 2026-09-29] travailler sur roy\n2. ○ [normale] terminer le jour 29\n3. ○ [normale] [échéance : 2026-10-05] terminer le jour 29\n4. ○ [normale] [échéance : 2026-09-29] tester les retards\n5. ○ [normale] vérification du redémarrage",
+        "timestamp": "2026-10-10T13:07:03"
+    },
+    {
+        "role": "user",
+        "content": "montre mes recherches",
+        "timestamp": "2026-10-10T13:07:08"
+    },
+    {
+        "role": "assistant",
+        "content": "Tes recherches :\n1. Stockage d'énergie\n2. Vérification du redémarrage",
+        "timestamp": "2026-10-10T13:07:08"
+    },
+    {
+        "role": "user",
+        "content": "note recherche 2 : Cette note doit rester après le redémarrage.",
+        "timestamp": "2026-10-10T13:08:36"
+    },
+    {
+        "role": "assistant",
+        "content": "Note ajoutée.",
+        "timestamp": "2026-10-10T13:08:36"
+    },
+    {
+        "role": "user",
+        "content": "quitter",
+        "timestamp": "2026-10-10T13:08:38"
+    },
+    {
+        "role": "assistant",
+        "content": "À bientôt !",
+        "timestamp": "2026-10-10T13:08:38"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy.",
+        "timestamp": "2026-10-10T13:08:41"
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !",
+        "timestamp": "2026-10-10T13:08:41"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !",
+        "timestamp": "2026-10-10T13:08:41"
+    },
+    {
+        "role": "user",
+        "content": "montre mes tâches",
+        "timestamp": "2026-10-10T13:08:50"
+    },
+    {
+        "role": "assistant",
+        "content": "1. ✓ [normale] [échéance : 2026-09-29] travailler sur roy\n2. ○ [normale] terminer le jour 29\n3. ○ [normale] [échéance : 2026-10-05] terminer le jour 29\n4. ○ [normale] [échéance : 2026-09-29] tester les retards\n5. ○ [normale] vérification du redémarrage",
+        "timestamp": "2026-10-10T13:08:50"
+    },
+    {
+        "role": "user",
+        "content": "montre la recherche 2",
+        "timestamp": "2026-10-10T13:08:56"
+    },
+    {
+        "role": "assistant",
+        "content": "Recherche : Vérification du redémarrage\n\nNotes :\n1. Cette note doit rester après le redémarrage.\n\nSources :\nAucune source.",
+        "timestamp": "2026-10-10T13:08:56"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy.",
+        "timestamp": "2026-10-10T13:10:52"
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !",
+        "timestamp": "2026-10-10T13:10:52"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !",
+        "timestamp": "2026-10-10T13:10:52"
+    },
+    {
+        "role": "user",
+        "content": "recherche historique Cette note doit rester",
+        "timestamp": "2026-10-10T13:10:56"
+    },
+    {
+        "role": "user",
+        "content": "statut sauvegardes",
+        "timestamp": "2026-10-10T13:11:02"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy.",
+        "timestamp": "2026-10-10T13:11:49"
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !",
+        "timestamp": "2026-10-10T13:11:49"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !",
+        "timestamp": "2026-10-10T13:11:49"
+    },
+    {
+        "role": "user",
+        "content": "\u0016",
+        "timestamp": "2026-10-10T13:11:50"
+    },
+    {
+        "role": "assistant",
+        "content": "Je ne sais pas encore quoi répondre.",
+        "timestamp": "2026-10-10T13:11:50"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy.",
+        "timestamp": "2026-10-10T13:11:57"
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !",
+        "timestamp": "2026-10-10T13:11:57"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !",
+        "timestamp": "2026-10-10T13:11:57"
+    },
+    {
+        "role": "user",
+        "content": "montre la recherche abc",
+        "timestamp": "2026-10-10T13:12:19"
+    },
+    {
+        "role": "assistant",
+        "content": "Utilise le format : montre la recherche 1",
+        "timestamp": "2026-10-10T13:12:19"
+    },
+    {
+        "role": "user",
+        "content": "note recherche 2",
+        "timestamp": "2026-10-10T13:12:25"
+    },
+    {
+        "role": "assistant",
+        "content": "Utilise le format : note recherche 1 : texte",
+        "timestamp": "2026-10-10T13:12:25"
+    },
+    {
+        "role": "user",
+        "content": "export recherche 999",
+        "timestamp": "2026-10-10T13:12:34"
+    },
+    {
+        "role": "assistant",
+        "content": "Numéro de recherche invalide.",
+        "timestamp": "2026-10-10T13:12:34"
+    },
+    {
+        "role": "user",
+        "content": "commande_inconnue_verification",
+        "timestamp": "2026-10-10T13:12:37"
+    },
+    {
+        "role": "assistant",
+        "content": "Je ne sais pas encore quoi répondre.",
+        "timestamp": "2026-10-10T13:12:37"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy.",
+        "timestamp": "2026-10-11T20:03:24"
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !",
+        "timestamp": "2026-10-11T20:03:24"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !",
+        "timestamp": "2026-10-11T20:03:24"
+    },
+    {
+        "role": "user",
+        "content": "montre la recherche",
+        "timestamp": "2026-10-11T20:03:26"
+    },
+    {
+        "role": "assistant",
+        "content": "Je ne sais pas encore quoi répondre.",
+        "timestamp": "2026-10-11T20:03:26"
+    },
+    {
+        "role": "user",
+        "content": "export recherche",
+        "timestamp": "2026-10-11T20:03:33"
+    },
+    {
+        "role": "assistant",
+        "content": "Je ne sais pas encore quoi répondre.",
+        "timestamp": "2026-10-11T20:03:33"
+    },
+    {
+        "role": "user",
+        "content": "note recherche",
+        "timestamp": "2026-10-11T20:03:36"
+    },
+    {
+        "role": "assistant",
+        "content": "Je ne sais pas encore quoi répondre.",
+        "timestamp": "2026-10-11T20:03:36"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy.",
+        "timestamp": "2026-10-11T20:04:43"
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !",
+        "timestamp": "2026-10-11T20:04:43"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !",
+        "timestamp": "2026-10-11T20:04:43"
+    },
+    {
+        "role": "user",
+        "content": "montre la recherche",
+        "timestamp": "2026-10-11T20:04:45"
+    },
+    {
+        "role": "assistant",
+        "content": "Utilise le format : montre la recherche 1",
+        "timestamp": "2026-10-11T20:04:45"
+    },
+    {
+        "role": "user",
+        "content": "export recherche",
+        "timestamp": "2026-10-11T20:04:49"
+    },
+    {
+        "role": "assistant",
+        "content": "Utilise le format : export recherche 1",
+        "timestamp": "2026-10-11T20:04:49"
+    },
+    {
+        "role": "user",
+        "content": "note recherche",
+        "timestamp": "2026-10-11T20:04:52"
+    },
+    {
+        "role": "assistant",
+        "content": "Utilise le format : note recherche 1 : texte",
+        "timestamp": "2026-10-11T20:04:52"
+    },
+    {
+        "role": "user",
+        "content": "quitter",
+        "timestamp": "2026-10-11T20:05:25"
+    },
+    {
+        "role": "assistant",
+        "content": "À bientôt !",
+        "timestamp": "2026-10-11T20:05:25"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy.",
+        "timestamp": "2026-10-12T19:14:03"
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !",
+        "timestamp": "2026-10-12T19:14:03"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !",
+        "timestamp": "2026-10-12T19:14:03"
+    },
+    {
+        "role": "user",
+        "content": "connais-tu verification_interruption_j43",
+        "timestamp": "2026-10-12T19:14:10"
+    },
+    {
+        "role": "assistant",
+        "content": "Je ne connais encore aucune information sur verification_interruption_j43. Tu peux me dire : retiens que verification_interruption_j43 = valeur",
+        "timestamp": "2026-10-12T19:14:10"
+    },
+    {
+        "role": "user",
+        "content": "quitter",
+        "timestamp": "2026-10-12T19:14:19"
+    },
+    {
+        "role": "assistant",
+        "content": "À bientôt !",
+        "timestamp": "2026-10-12T19:14:19"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy.",
+        "timestamp": "2026-10-12T19:17:58"
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !",
+        "timestamp": "2026-10-12T19:17:58"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !",
+        "timestamp": "2026-10-12T19:17:58"
+    },
+    {
+        "role": "user",
+        "content": "désactive le système",
+        "timestamp": "2026-10-12T19:18:00"
+    },
+    {
+        "role": "assistant",
+        "content": "Système désactivé.",
+        "timestamp": "2026-10-12T19:18:00"
+    },
+    {
+        "role": "user",
+        "content": "crée une recherche : Test système désactivé J43",
+        "timestamp": "2026-10-12T19:18:03"
+    },
+    {
+        "role": "assistant",
+        "content": "Le système est désactivé. Réactive-le pour continuer.",
+        "timestamp": "2026-10-12T19:18:03"
+    },
+    {
+        "role": "user",
+        "content": "active le système",
+        "timestamp": "2026-10-12T19:18:07"
+    },
+    {
+        "role": "assistant",
+        "content": "Système activé.",
+        "timestamp": "2026-10-12T19:18:07"
+    },
+    {
+        "role": "user",
+        "content": "montre mes recherches",
+        "timestamp": "2026-10-12T19:18:09"
+    },
+    {
+        "role": "assistant",
+        "content": "Tes recherches :\n1. Stockage d'énergie\n2. Vérification du redémarrage",
+        "timestamp": "2026-10-12T19:18:09"
+    },
+    {
+        "role": "user",
+        "content": "Roy, retiens que verification_casse_j43 = Énergie ABC",
+        "timestamp": "2026-10-12T19:18:16"
+    },
+    {
+        "role": "assistant",
+        "content": "J'ai appris une nouvelle information.",
+        "timestamp": "2026-10-12T19:18:16"
+    },
+    {
+        "role": "assistant",
+        "content": "Mémoire sauvegardée",
+        "timestamp": "2026-10-12T19:18:16"
+    },
+    {
+        "role": "user",
+        "content": "rappelle-moi verification_casse_j43",
+        "timestamp": "2026-10-12T19:18:19"
+    },
+    {
+        "role": "assistant",
+        "content": "Énergie ABC",
+        "timestamp": "2026-10-12T19:18:19"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy.",
+        "timestamp": "2026-10-12T19:32:03"
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !",
+        "timestamp": "2026-10-12T19:32:03"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !",
+        "timestamp": "2026-10-12T19:32:03"
+    },
+    {
+        "role": "user",
+        "content": "retiens que verification_sortie_j43 = Information à conserver",
+        "timestamp": "2026-10-12T19:32:06"
+    },
+    {
+        "role": "assistant",
+        "content": "J'ai appris une nouvelle information.",
+        "timestamp": "2026-10-12T19:32:06"
+    },
+    {
+        "role": "assistant",
+        "content": "Mémoire sauvegardée",
+        "timestamp": "2026-10-12T19:32:06"
+    },
+    {
+        "role": "user",
+        "content": "oublie verification_sortie_j43",
+        "timestamp": "2026-10-12T19:32:09"
+    },
+    {
+        "role": "assistant",
+        "content": "Es-tu sûr de vouloir oublier verification_sortie_j43 ?",
+        "timestamp": "2026-10-12T19:32:09"
+    },
+    {
+        "role": "assistant",
+        "content": "À bientôt !",
+        "timestamp": "2026-10-12T19:32:20"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy.",
+        "timestamp": "2026-10-12T19:32:25"
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !",
+        "timestamp": "2026-10-12T19:32:25"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !",
+        "timestamp": "2026-10-12T19:32:25"
+    },
+    {
+        "role": "user",
+        "content": "rappelle-moi verification_sortie_j43",
+        "timestamp": "2026-10-12T19:32:28"
+    },
+    {
+        "role": "assistant",
+        "content": "Information à conserver",
+        "timestamp": "2026-10-12T19:32:28"
+    },
+    {
+        "role": "user",
+        "content": "oublie verification_sortie_j43",
+        "timestamp": "2026-10-12T19:34:08"
+    },
+    {
+        "role": "assistant",
+        "content": "Es-tu sûr de vouloir oublier verification_sortie_j43 ?",
+        "timestamp": "2026-10-12T19:34:08"
+    },
+    {
+        "role": "assistant",
+        "content": "D'accord, je garde cette information.",
+        "timestamp": "2026-10-12T19:34:23"
+    },
+    {
+        "role": "user",
+        "content": "rappelle-moi verification_sortie_j43",
+        "timestamp": "2026-10-12T19:34:26"
+    },
+    {
+        "role": "assistant",
+        "content": "Information à conserver",
+        "timestamp": "2026-10-12T19:34:26"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy.",
+        "timestamp": "2026-10-13T14:41:06"
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !",
+        "timestamp": "2026-10-13T14:41:06"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !",
+        "timestamp": "2026-10-13T14:41:06"
+    },
+    {
+        "role": "user",
+        "content": "oublie verification_sortie_j43",
+        "timestamp": "2026-10-13T14:41:10"
+    },
+    {
+        "role": "assistant",
+        "content": "Es-tu sûr de vouloir oublier verification_sortie_j43 ?",
+        "timestamp": "2026-10-13T14:41:10"
+    },
+    {
+        "role": "assistant",
+        "content": "D'accord, je garde cette information.",
+        "timestamp": "2026-10-13T14:41:15"
+    },
+    {
+        "role": "user",
+        "content": "rappelle-moi verification_sortie_j43",
+        "timestamp": "2026-10-13T14:41:20"
+    },
+    {
+        "role": "assistant",
+        "content": "Information à conserver",
+        "timestamp": "2026-10-13T14:41:20"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy.",
+        "timestamp": "2026-10-13T19:35:44"
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !",
+        "timestamp": "2026-10-13T19:35:44"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !",
+        "timestamp": "2026-10-13T19:35:44"
+    },
+    {
+        "role": "user",
+        "content": "retiens que verification_j44 = Valeur de test",
+        "timestamp": "2026-10-13T19:35:51"
+    },
+    {
+        "role": "assistant",
+        "content": "J'ai appris une nouvelle information.",
+        "timestamp": "2026-10-13T19:35:51"
+    },
+    {
+        "role": "assistant",
+        "content": "Mémoire sauvegardée",
+        "timestamp": "2026-10-13T19:35:51"
+    },
+    {
+        "role": "user",
+        "content": "oublie verification_j44",
+        "timestamp": "2026-10-13T19:35:55"
+    },
+    {
+        "role": "assistant",
+        "content": "Es-tu sûr de vouloir oublier verification_j44 ?",
+        "timestamp": "2026-10-13T19:35:55"
+    },
+    {
+        "role": "user",
+        "content": "Roy, ANNULER",
+        "timestamp": "2026-10-13T19:35:59"
+    },
+    {
+        "role": "assistant",
+        "content": "Action annulée.",
+        "timestamp": "2026-10-13T19:35:59"
+    },
+    {
+        "role": "user",
+        "content": "rappelle-moi verification_j44",
+        "timestamp": "2026-10-13T19:36:03"
+    },
+    {
+        "role": "assistant",
+        "content": "Valeur de test",
+        "timestamp": "2026-10-13T19:36:03"
+    },
+    {
+        "role": "user",
+        "content": "oublie verification_j44",
+        "timestamp": "2026-10-13T19:36:07"
+    },
+    {
+        "role": "assistant",
+        "content": "Es-tu sûr de vouloir oublier verification_j44 ?",
+        "timestamp": "2026-10-13T19:36:07"
+    },
+    {
+        "role": "user",
+        "content": "Roy, OUI",
+        "timestamp": "2026-10-13T19:36:09"
+    },
+    {
+        "role": "assistant",
+        "content": "J'ai oublié verification_j44",
+        "timestamp": "2026-10-13T19:36:09"
+    },
+    {
+        "role": "user",
+        "content": "rappelle-moi verification_j44",
+        "timestamp": "2026-10-13T19:36:12"
+    },
+    {
+        "role": "assistant",
+        "content": "Je n'ai aucune information sur verification_j44",
+        "timestamp": "2026-10-13T19:36:12"
+    },
+    {
+        "role": "user",
+        "content": "retiens que verification_sortie_j44 = À conserver",
+        "timestamp": "2026-10-13T19:37:35"
+    },
+    {
+        "role": "assistant",
+        "content": "J'ai appris une nouvelle information.",
+        "timestamp": "2026-10-13T19:37:35"
+    },
+    {
+        "role": "assistant",
+        "content": "Mémoire sauvegardée",
+        "timestamp": "2026-10-13T19:37:35"
+    },
+    {
+        "role": "user",
+        "content": "oublie verification_sortie_j44",
+        "timestamp": "2026-10-13T19:37:38"
+    },
+    {
+        "role": "assistant",
+        "content": "Es-tu sûr de vouloir oublier verification_sortie_j44 ?",
+        "timestamp": "2026-10-13T19:37:38"
+    },
+    {
+        "role": "user",
+        "content": "quitter",
+        "timestamp": "2026-10-13T19:37:41"
+    },
+    {
+        "role": "assistant",
+        "content": "À bientôt !",
+        "timestamp": "2026-10-13T19:37:41"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy.",
+        "timestamp": "2026-10-13T19:37:44"
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !",
+        "timestamp": "2026-10-13T19:37:44"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !",
+        "timestamp": "2026-10-13T19:37:44"
+    },
+    {
+        "role": "user",
+        "content": "rappelle-moi verification_sortie_j44",
+        "timestamp": "2026-10-13T19:37:47"
+    },
+    {
+        "role": "assistant",
+        "content": "À conserver",
+        "timestamp": "2026-10-13T19:37:47"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy.",
+        "timestamp": "2026-10-14T20:07:28"
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !",
+        "timestamp": "2026-10-14T20:07:28"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !",
+        "timestamp": "2026-10-14T20:07:28"
+    },
+    {
+        "role": "user",
+        "content": "retiens que verification_j45 = À conserver",
+        "timestamp": "2026-10-14T20:07:30"
+    },
+    {
+        "role": "assistant",
+        "content": "J'ai appris une nouvelle information.",
+        "timestamp": "2026-10-14T20:07:30"
+    },
+    {
+        "role": "assistant",
+        "content": "Mémoire sauvegardée",
+        "timestamp": "2026-10-14T20:07:30"
+    },
+    {
+        "role": "user",
+        "content": "oublie verification_j45",
+        "timestamp": "2026-10-14T20:07:34"
+    },
+    {
+        "role": "assistant",
+        "content": "Es-tu sûr de vouloir oublier verification_j45 ?",
+        "timestamp": "2026-10-14T20:07:34"
+    },
+    {
+        "role": "user",
+        "content": "désactive le système",
+        "timestamp": "2026-10-14T20:07:38"
+    },
+    {
+        "role": "assistant",
+        "content": "Système désactivé.",
+        "timestamp": "2026-10-14T20:07:38"
+    },
+    {
+        "role": "user",
+        "content": "active le système",
+        "timestamp": "2026-10-14T20:07:41"
+    },
+    {
+        "role": "assistant",
+        "content": "Système activé.",
+        "timestamp": "2026-10-14T20:07:41"
+    },
+    {
+        "role": "user",
+        "content": "oui",
+        "timestamp": "2026-10-14T20:07:45"
+    },
+    {
+        "role": "assistant",
+        "content": "J'ai oublié verification_j45",
+        "timestamp": "2026-10-14T20:07:45"
+    },
+    {
+        "role": "user",
+        "content": "rappelle-moi verification_j45",
+        "timestamp": "2026-10-14T20:07:48"
+    },
+    {
+        "role": "assistant",
+        "content": "Je n'ai aucune information sur verification_j45",
+        "timestamp": "2026-10-14T20:07:48"
+    },
+    {
+        "role": "assistant",
+        "content": "Bonjour ! Je m'appelle Roy.",
+        "timestamp": "2026-10-14T20:09:45"
+    },
+    {
+        "role": "assistant",
+        "content": "Je suis content de l'apprendre !",
+        "timestamp": "2026-10-14T20:09:45"
+    },
+    {
+        "role": "assistant",
+        "content": "Enchanté Cyan !",
+        "timestamp": "2026-10-14T20:09:45"
+    },
+    {
+        "role": "user",
+        "content": "retiens que verification_j45 = À conserver",
+        "timestamp": "2026-10-14T20:09:47"
+    },
+    {
+        "role": "assistant",
+        "content": "J'ai appris une nouvelle information.",
+        "timestamp": "2026-10-14T20:09:47"
+    },
+    {
+        "role": "assistant",
+        "content": "Mémoire sauvegardée",
+        "timestamp": "2026-10-14T20:09:47"
+    },
+    {
+        "role": "user",
+        "content": "oublie verification_j45",
+        "timestamp": "2026-10-14T20:09:50"
+    },
+    {
+        "role": "assistant",
+        "content": "Es-tu sûr de vouloir oublier verification_j45 ?",
+        "timestamp": "2026-10-14T20:09:50"
+    },
+    {
+        "role": "user",
+        "content": "désactive le système",
+        "timestamp": "2026-10-14T20:09:53"
+    },
+    {
+        "role": "assistant",
+        "content": "Système désactivé.",
+        "timestamp": "2026-10-14T20:09:53"
+    },
+    {
+        "role": "user",
+        "content": "active le système",
+        "timestamp": "2026-10-14T20:09:56"
+    },
+    {
+        "role": "assistant",
+        "content": "Système activé.",
+        "timestamp": "2026-10-14T20:09:56"
+    },
+    {
+        "role": "user",
+        "content": "oui",
+        "timestamp": "2026-10-14T20:09:59"
+    },
+    {
+        "role": "assistant",
+        "content": "Je ne sais pas encore quoi répondre.",
+        "timestamp": "2026-10-14T20:09:59"
+    },
+    {
+        "role": "user",
+        "content": "rappelle-moi verification_j45",
+        "timestamp": "2026-10-14T20:10:01"
     }
 ]

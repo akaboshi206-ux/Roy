@@ -266,3 +266,11 @@ def reparer_json_depuis_sauvegarde(
                 os.unlink(chemin_temporaire)
             except OSError:
                 pass
+
+def nettoyer_message(message_original: str) -> str:
+    message = " ".join(message_original.lower().split())
+
+    if message.startswith(("roy ", "roy,", "roy :")):
+        message = message.removeprefix("roy").lstrip(" ,:")
+
+    return message

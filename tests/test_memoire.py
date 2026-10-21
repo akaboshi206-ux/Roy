@@ -619,7 +619,8 @@ def tester_oubli_echoue_preserve_memoire():
     memoire_avant = roy.memoire.copy()
 
     with patch.object(
-        roy, "demander_confirmation", return_value=True
+        roy, "lire_entree",
+        side_effect=AssertionError("Saisie inattendue")
     ):
         with patch.object(
             roy, "sauvegarder_memoire", return_value=False
@@ -627,9 +628,15 @@ def tester_oubli_echoue_preserve_memoire():
             with patch.object(roy, "repondre") as reponse:
                 roy.oublier("couleur")
 
+                assert roy.memoire == memoire_avant
+                sauvegarde.assert_not_called()
+
+                assert roy.traiter_message("oui", "oui") is True
+
     assert roy.memoire == memoire_avant
+    assert roy.action_en_attente is None
     sauvegarde.assert_called_once_with()
-    reponse.assert_called_once_with(
+    reponse.assert_called_with(
         "L'oubli de l'information a échoué."
     )
 
@@ -762,7 +769,10 @@ def tester_confirmation_sans_clavier():
 
             assert resultat is True
             assert lecture.call_count == 2
-            reponse.assert_any_call("Réponds par oui ou non.")
+            reponse.assert_any_call(
+            "Réponds par oui ou non, "
+            "ou écris annuler ou quitter."
+            )
 
             with patch.object(
                 roy,
@@ -772,3 +782,141 @@ def tester_confirmation_sans_clavier():
                 resultat = roy.demander_confirmation("Confirmer ?")
 
             assert resultat is False
+
+def tester_interruption_oubli_preserve_memoire():
+    from unittest.mock import Mock
+    from roy import Roy, ArretRoyDemande
+
+    for reponse in ("annuler", "quitter"):
+        for cle in ("couleur", "tout", "tout sauf couleur"):
+            roy = Roy.__new__(Roy)
+            roy.action_en_attente = None
+            roy.memoire = {
+                "couleur": "cyan",
+                "ville": "Paris"
+            }
+            roy.verifier_memoire_active = Mock(
+                return_value=True
+            )
+            roy.repondre = Mock()
+            roy.lire_entree = Mock(return_value=reponse)
+            roy.sauvegarder_memoire = Mock(
+                return_value=True
+            )
+            memoire_avant = roy.memoire.copy()
+
+            if cle == "couleur":
+                roy.oublier(cle)
+
+                assert roy.memoire == memoire_avant
+                assert roy.action_en_attente is not None
+
+                if reponse == "annuler":
+                    assert roy.traiter_confirmation(
+                        reponse
+                    ) is True
+                    assert roy.action_en_attente is None
+
+                roy.lire_entree.assert_not_called()
+
+            else:
+                arret_demande = False
+
+                try:
+                    roy.oublier(cle)
+                except ArretRoyDemande:
+                    arret_demande = True
+
+                assert arret_demande == (
+                    reponse == "quitter"
+                )
+                roy.lire_entree.assert_called_once()
+
+            assert roy.memoire == memoire_avant
+            roy.sauvegarder_memoire.assert_not_called()
+            
+def tester_confirmation_en_attente():
+    from unittest.mock import Mock
+    from roy import Roy
+
+    roy = Roy.__new__(Roy)
+    roy.action_en_attente = None
+    roy.repondre = Mock()
+    roy.lire_entree = Mock(
+        side_effect=AssertionError(
+            "La confirmation ne doit pas lire le clavier."
+        )
+    )
+
+    action = Mock()
+    autre_action = Mock()
+
+    assert roy.traiter_confirmation("oui") is False
+
+    roy.preparer_confirmation("Confirmer ?", action)
+    action.assert_not_called()
+
+    roy.preparer_confirmation("Autre action ?", autre_action)
+    assert roy.action_en_attente is action
+
+    assert roy.traiter_confirmation("peut-être") is True
+    action.assert_not_called()
+    assert roy.action_en_attente is action
+
+    assert roy.traiter_confirmation("oui") is True
+    action.assert_called_once_with()
+    autre_action.assert_not_called()
+    assert roy.action_en_attente is None
+
+    assert roy.traiter_confirmation("oui") is False
+    action.assert_called_once_with()
+
+    for reponse in ("non", "annuler"):
+        action_annulee = Mock()
+        roy.preparer_confirmation(
+            "Confirmer ?",
+            action_annulee
+        )
+
+        assert roy.traiter_confirmation(reponse) is True
+        action_annulee.assert_not_called()
+        assert roy.action_en_attente is None
+
+    roy.lire_entree.assert_not_called()
+
+def tester_desactivation_annule_oubli_en_attente():
+    cas = (
+        ("désactive le système", "active le système"),
+        ("désactive ta mémoire", "active ta mémoire")
+    )
+
+    for desactivation, activation in cas:
+        roy = creer_roy_test(historique_actif=False)
+        roy.memoire = {"couleur": "cyan"}
+
+        with patch.object(roy, "repondre"):
+            with patch.object(
+                roy,
+                "sauvegarder_memoire"
+            ) as sauvegarde:
+                roy.oublier("couleur")
+
+                assert roy.action_en_attente is not None
+
+                assert roy.traiter_message(
+                    desactivation,
+                    desactivation
+                ) is True
+
+                assert roy.action_en_attente is None, desactivation
+
+                assert roy.traiter_message(
+                    activation,
+                    activation
+                ) is True
+
+                roy.traiter_message("oui", "oui")
+
+                assert roy.action_en_attente is None, desactivation
+                assert roy.memoire == {"couleur": "cyan"}
+                sauvegarde.assert_not_called()

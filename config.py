@@ -214,5 +214,12 @@ exemples_aide = [
     "répare ton historique",
     "répare mes tâches",
     "statut sauvegardes",
-    "crée une recherche : titre"
+    "crée une recherche : titre",
+    "montre mes recherches",
+    "montre la recherche 1",
+    "note recherche 1 : texte",
+    "source recherche 1 : référence",
+    "cherche recherche stockage",
+    "répare mes recherches",
+    "export recherche 1",
 ]

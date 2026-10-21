@@ -1,15 +1,9 @@
-from roy import Roy
+from roy import Roy, ArretRoyDemande
 from config import (
     commandes_quitter
 )
 
-def nettoyer_message(message_original: str) -> str:
-    message = " ".join(message_original.lower().split())
-
-    if message.startswith(("roy ", "roy,", "roy :")):
-        message = message.removeprefix("roy").lstrip(" ,:")
-
-    return message
+from outils import nettoyer_message
 
 if __name__ == "__main__":
     roy = Roy()
@@ -32,7 +26,16 @@ if __name__ == "__main__":
             roy.repondre("À bientôt !")
             break
 
-        if roy.traiter_message(message, message_original):
-            continue
+        try:
+            message_traite = roy.traiter_message(
+                message,
+                message_original
+            )
+        except ArretRoyDemande:
+            roy.repondre("À bientôt !")
+            break
 
+        if message_traite:
+            continue
+        
         roy.repondre("Je ne sais pas encore quoi répondre.")

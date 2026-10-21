@@ -5,3 +5,8 @@ historique.json
 conversation.txt
 conversation_*.txt
 taches.json
+recherches.json
+recherche.txt
+recherche_*.txt
+*.json.bak
+exports/

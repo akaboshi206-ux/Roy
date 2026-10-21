@@ -30,5 +30,8 @@
     "roy": "performant",
     "religion": "Jésus",
     "test_01": "py",
-    "verification_redemarrage": "jour36"
+    "verification_redemarrage": "Mémoire conservée",
+    "verification_casse_j43": "Énergie ABC",
+    "verification_sortie_j43": "Information à conserver",
+    "verification_sortie_j44": "À conserver"
 }

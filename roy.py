@@ -2,6 +2,7 @@ import json
 from collections.abc import Callable
 from datetime import datetime
 from typing import cast
+from pathlib import Path
 
 from taches import (
     Tache,
@@ -23,7 +24,8 @@ from commandes_systeme import (
 )
 
 from commandes_generales import (
-    traiter_commande_generale
+    traiter_commande_generale,
+    traiter_commande_etat_memoire
 )
 
 from commandes_conversation import (
@@ -38,7 +40,7 @@ from commandes_recherches import traiter_commande_recherche
 
 from outils import (
     charger_json_avec_sauvegarde,
-    nettoyer_texte,
+    nettoyer_message,
     formater_message_historique,
     sauvegarder_json_atomiquement,
     MessageHistorique,
@@ -61,8 +63,15 @@ from recherches import (
     Recherche,
     charger_recherches as charger_carnet,
     sauvegarder_recherches as sauvegarder_carnet,
-    creer_recherche
+    creer_recherche,
+    formater_recherche,
+    ajouter_note,
+    ajouter_source,
+    est_liste_recherches_valide
 )
+
+class ArretRoyDemande(Exception):
+    pass
 
 class Roy:
     def __init__(
@@ -73,7 +82,8 @@ class Roy:
         fichier_taches: str = "taches.json",
         fichier_recherches: str = "recherches.json"
     ):
-        self.nom = "Roy"        
+        self.nom = "Roy" 
+        self.action_en_attente: Callable[[], None] | None = None       
         self.historique_actif = historique_actif
         self.etat = {
             "memoire": {
@@ -101,6 +111,180 @@ class Roy:
         self.fichier_recherches = fichier_recherches
         self.recherches_sauvegardables = True
         self.charger_recherches()
+
+    def afficher_recherches(self) -> None:
+        if not self.recherches:
+            self.repondre(
+                "Tu n'as aucune recherche enregistrée."
+            )
+            return
+
+        lignes = ["Tes recherches :"]
+
+        for numero, recherche in enumerate(
+            self.recherches,
+            start=1
+        ):
+            lignes.append(
+                f"{numero}. {recherche['titre']}"
+            )
+
+        self.repondre("\n".join(lignes))
+
+    def exporter_recherche(
+        self,
+        numero: int,
+        nom_fichier: str = ""
+    ) -> bool:
+        if numero < 1 or numero > len(self.recherches):
+            self.repondre("Numéro de recherche invalide.")
+            return False
+
+        export_automatique = not nom_fichier
+
+        if export_automatique:
+            horodatage = datetime.now().strftime(
+                "%Y-%m-%d_%H-%M-%S_%f"
+            )
+            dossier = (
+                Path(self.fichier_recherches).resolve().parent
+                / "exports"
+            )
+            chemin = dossier / (
+                f"recherche_{numero}_{horodatage}.txt"
+            )
+        else:
+            chemin = Path(nom_fichier).resolve()
+
+        recherche = self.recherches[numero - 1]
+
+        try:
+            if export_automatique:
+                chemin.parent.mkdir(
+                    parents=True,
+                    exist_ok=True
+                )
+
+            with chemin.open(
+                "x",
+                encoding="utf-8"
+            ) as fichier:
+                fichier.write(
+                    formater_recherche(recherche) + "\n"
+                )
+
+        except FileExistsError:
+            self.repondre(
+                "Ce fichier existe déjà. Choisis un autre nom."
+            )
+            return False
+
+        except OSError:
+            self.repondre(
+                "Impossible d'exporter la recherche."
+            )
+            return False
+
+        self.repondre(
+            f"Recherche exportée dans {chemin}."
+        )
+        return True
+
+    def rechercher_recherches(self, mot: str) -> None:
+        mot = mot.strip().casefold()
+
+        if not mot:
+            self.repondre(
+                "Indique un mot à rechercher."
+            )
+            return
+
+        lignes = []
+
+        for numero, recherche in enumerate(
+            self.recherches,
+            start=1
+        ):
+            textes = [
+                recherche["titre"],
+                *recherche["notes"],
+                *recherche["sources"]
+            ]
+
+            if any(
+                mot in texte.casefold()
+                for texte in textes
+            ):
+                lignes.append(
+                    f"{numero}. {recherche['titre']}"
+                )
+
+        if not lignes:
+            self.repondre("Aucune recherche trouvée.")
+            return
+
+        self.repondre(
+            "Recherches trouvées :\n"
+            + "\n".join(lignes)
+        )
+
+    def afficher_recherche(self, numero: int) -> None:
+        if numero < 1 or numero > len(self.recherches):
+            self.repondre("Numéro de recherche invalide.")
+            return
+
+        recherche = self.recherches[numero - 1]
+        self.repondre(formater_recherche(recherche))
+
+    def ajouter_note_recherche(
+        self,
+        numero: int,
+        texte: str
+    ) -> bool:
+        if numero < 1 or numero > len(self.recherches):
+            self.repondre("Numéro de recherche invalide.")
+            return False
+
+        recherche = self.recherches[numero - 1]
+
+        if not ajouter_note(recherche, texte):
+            self.repondre("La note ne peut pas être vide.")
+            return False
+
+        if not self.sauvegarder_recherches():
+            recherche["notes"].pop()
+            self.repondre("L'ajout de la note a été annulé.")
+            return False
+
+        self.repondre("Note ajoutée.")
+        return True
+
+    def ajouter_source_recherche(
+        self,
+        numero: int,
+        texte: str
+    ) -> bool:
+        if numero < 1 or numero > len(self.recherches):
+            self.repondre("Numéro de recherche invalide.")
+            return False
+
+        recherche = self.recherches[numero - 1]
+
+        if not ajouter_source(recherche, texte):
+            self.repondre(
+                "La source est vide ou déjà enregistrée."
+            )
+            return False
+
+        if not self.sauvegarder_recherches():
+            recherche["sources"].pop()
+            self.repondre(
+                "L'ajout de la source a été annulé."
+            )
+            return False
+
+        self.repondre("Source ajoutée.")
+        return True
 
     def ajouter_recherche(self, titre: str) -> bool:
         try:
@@ -220,6 +404,30 @@ class Roy:
         self.taches_sauvegardables = True
         self.afficher_sortie(
             "Fichier des tâches réparé. Sauvegarde autorisée."
+        )
+        return True
+
+    def reparer_recherches(self) -> bool:
+        if self.recherches_sauvegardables:
+            self.afficher_sortie(
+                "Mes recherches ne nécessitent pas de réparation."
+            )
+            return True
+
+        erreur = reparer_json_depuis_sauvegarde(
+            self.fichier_recherches,
+            est_liste_recherches_valide
+        )
+
+        if erreur is not None:
+            self.afficher_sortie(
+                f"Impossible de réparer mes recherches.\n{erreur}"
+            )
+            return False
+
+        self.recherches_sauvegardables = True
+        self.afficher_sortie(
+            "Fichier des recherches réparé. Sauvegarde autorisée."
         )
         return True
     
@@ -738,18 +946,66 @@ class Roy:
     def lire_entree(self, invite: str) -> str:
         return input(invite)
 
+    def preparer_confirmation(
+        self,
+        question: str,
+        action: Callable[[], None]
+    ) -> None:
+        if self.action_en_attente is not None:
+            self.repondre(
+                "Une confirmation est déjà en attente."
+            )
+            return
+
+        self.action_en_attente = action
+        self.repondre(question)
+
+    def traiter_confirmation(self, message: str) -> bool:
+        message = nettoyer_message(message)
+
+        if self.action_en_attente is None:
+            return False
+
+        if message in ("non", "annuler"):
+            self.action_en_attente = None
+            self.repondre("Action annulée.")
+            return True
+
+        if message == "oui":
+            action = self.action_en_attente
+            self.action_en_attente = None
+            action()
+            return True
+
+        self.repondre(
+            "Réponds par oui ou non, "
+            "ou écris annuler ou quitter."
+        )
+        return True
+
     def demander_confirmation(self, question: str) -> bool:
+        from config import commandes_quitter
+
         self.repondre(question)
 
         while True:
-            reponse = nettoyer_texte(self.lire_entree("Toi : "))
+            reponse_originale = self.lire_entree("Toi : ")
+            reponse = nettoyer_message(reponse_originale)
+
+            if reponse in commandes_quitter:
+                raise ArretRoyDemande()
+
             if reponse == "oui":
                 return True
-            elif reponse == "non":
-                return False
-            else:
-                self.repondre("Réponds par oui ou non.")
 
+            if reponse in ("non", "annuler"):
+                return False
+
+            self.repondre(
+                "Réponds par oui ou non, "
+                "ou écris annuler ou quitter."
+            )
+            
     def oublier_tout_sauf(self, cle):
         elements = cle.removeprefix("tout sauf ").split(",")
         elements_propres = [element.strip() for element in elements]
@@ -814,24 +1070,31 @@ class Roy:
             return
         
         if cle in self.memoire:
-            if self.demander_confirmation(f"Es-tu sûr de vouloir oublier {cle} ?"):
-                ancienne_valeur = self.memoire[cle]
-                del self.memoire[cle]
+            self.preparer_confirmation(
+                f"Es-tu sûr de vouloir oublier {cle} ?",
+                lambda: self.effacer_information_confirmee(cle)
+            )
+            return
 
-                if self.sauvegarder_memoire():
-                    self.repondre(f"J'ai oublié {cle}")
-                    return
+        self.repondre(f"Je ne connaissais pas {cle}")
 
-                self.memoire[cle] = ancienne_valeur
-                self.repondre("L'oubli de l'information a échoué.")
-                return
+    def effacer_information_confirmee(self, cle: str) -> None:
+        if not self.verifier_memoire_active():
+            return
 
-            else:
-                self.repondre("D'accord, je garde cette information.")
-                return
-
-        else:
+        if cle not in self.memoire:
             self.repondre(f"Je ne connaissais pas {cle}")
+            return
+
+        ancienne_memoire = self.memoire.copy()
+        del self.memoire[cle]
+
+        if self.sauvegarder_memoire():
+            self.repondre(f"J'ai oublié {cle}")
+            return
+
+        self.memoire = ancienne_memoire
+        self.repondre("L'oubli de l'information a échoué.")
 
     def afficher_memoire(self):
         if not self.verifier_memoire_active():
@@ -875,6 +1138,13 @@ class Roy:
                 return False
             
         self.etat[categorie].update(changements)
+
+        if (
+            not self.etat["systeme"]["actif"]
+            or not self.etat["memoire"]["active"]
+        ):
+            self.action_en_attente = None
+
         return True
 
     def afficher_etat(self) -> list[str]:
@@ -973,6 +1243,16 @@ class Roy:
                 "Utilise : répare mes tâches."
             )
 
+        if self.recherches_sauvegardables:
+            lignes.append(
+                "Recherches : sauvegarde autorisée."
+            )
+        else:
+            lignes.append(
+                "Recherches : sauvegarde bloquée. "
+                "Utilise : répare mes recherches."
+            )
+
         return lignes
 
     def afficher_statut_sauvegardes(self) -> None:
@@ -1062,7 +1342,13 @@ class Roy:
                 
         if not self.etat["systeme"]["actif"]:
             self.repondre("Le système est désactivé. Réactive-le pour continuer.")
-            return True     
+            return True
+
+        if traiter_commande_etat_memoire(self, message):
+            return True    
+
+        if self.traiter_confirmation(message):
+            return True 
 
         if traiter_commande_recherche(self, message, message_original):
             return True
